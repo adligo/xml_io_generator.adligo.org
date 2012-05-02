@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="deploy" name="xml_io">
+<project basedir="." default="deploy" name="xml_io_generator">
 	<property file="${user.home}/conf/adligo/user.properties"
 			          description="properties that tailor the build to your computer."/>
 	<property file="${user.home}/conf/adligo/adligo_lib.properties"/>
