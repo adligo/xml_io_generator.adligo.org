@@ -8,5 +8,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/i_util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jse_util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xml_io"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xmlt"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/models_core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/models_core_relations"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/params"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
