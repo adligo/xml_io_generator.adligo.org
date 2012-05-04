@@ -2,12 +2,37 @@ package org.adligo.xml_io.generator.models;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
 
 public class FieldMethods {
 	private static final Log log = LogFactory.getLog(FieldMethods.class);
+	private static Set<Class<?>> ATTRIBUTE_CLASSES = getAttributeClasses();
+	
+	private static Set<Class<?>> getAttributeClasses() {
+		Set<Class<?>> toRet = new HashSet<Class<?>>();
+		toRet.add(String.class);
+		toRet.add(Boolean.class);
+		toRet.add(Byte.class);
+		toRet.add(Integer.class);
+		toRet.add(Short.class);
+		toRet.add(Long.class);
+		toRet.add(Double.class);
+		toRet.add(Float.class);
+		toRet.add(BigDecimal.class);
+		toRet.add(BigInteger.class);
+		toRet.add(Character.class);
+		toRet.add((new byte[]{}).getClass());
+		toRet.add((new boolean[]{}).getClass());
+		toRet.add((new char[]{}).getClass());
+		return Collections.unmodifiableSet(toRet);
+	}
 	
 	private Field field;
 	private Method setter;
@@ -91,5 +116,28 @@ public class FieldMethods {
 
 	public Method getGetter() {
 		return getter;
+	}
+	
+	public boolean isAttribute() {
+		Class<?> clazz = field.getType();
+		if (clazz.isPrimitive()) {
+			return true;
+		}
+		if (ATTRIBUTE_CLASSES.contains(clazz)) {
+			return true;
+		}
+		return false;
+	}
+	
+	public String getName() {
+		return field.getName();
+	}
+	
+	public String getGetterName() {
+		return getter.getName();
+	}
+	
+	public String getSetterName() {
+		return setter.getName();
 	}
 }

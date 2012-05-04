@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<templates>
+<template name="converter">
+package <param name="package"><value/></param>;
+<param name="extraImports">import <value/>;</param>
+import org.adligo.models.params.client.XMLBuilder;
+import org.adligo.models.params.client.I_XMLBuilder;
+import org.adligo.xml_io.client.I_Converter;
+import org.adligo.xml_io.client.Xml_IOWriterContext;
+import org.adligo.xml_io.client.Xml_IOReaderContext;
+import org.adligo.xml_io.client.ObjectFromXml;
+import org.adligo.models.params.client.TagInfo;
+import org.adligo.models.params.client.Parser;
+import org.adligo.xml_io.client.Xml_IOConstants;
+
+public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; {
+
+	@Override
+	public ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt; fromXml(String xml, TagInfo info, Xml_IOReaderContext context) {
+		String text = Parser.getTextContent(xml, info);
+		
+		return null;
+	}
+
+	@Override
+	public void toXml(<param name="genericClass"><value/></param> p, Xml_IOWriterContext context) {
+		I_XMLBuilder builder = context.getBuilder();
+		<param name="toXml">
+		context.appendTagHeaderStart("<param name="namespace"><value/></param>", "<param name="tagName"><value/></param>");
+		context.appendSchemaInfoToFirstTag();
+		
+		String name = context.getNextTagNameAttribute();
+		if (name != null) {
+			builder.appendAttribute(Xml_IOConstants.N_NAME_ATTRIBUTE, name);
+		}
+		<param name="attribute">
+			builder.appendAttribute("<value/>", p.<param name="getter"><value/></param>());
+		</param>
+		builder.appendTagHeaderEnd(true);
+		<param name="child">
+			context.setNextTagNameAttribute("<value/>");
+			context.writeXml(p.<param name="getter"><value/></param>());
+		</param>
+		
+		</param>
+	}
+}
+</template>
+</templates>
