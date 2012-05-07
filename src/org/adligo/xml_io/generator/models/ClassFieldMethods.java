@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
+import org.adligo.i.util.client.I_Immutable;
 
 public class ClassFieldMethods {
 	private static final Log log = LogFactory.getLog(ClassFieldMethods.class);
@@ -46,29 +47,67 @@ public class ClassFieldMethods {
 	}
 	
 	/**
-	 * if this class has a single field
-	 * and if that fields type matches with a single parameter constructor
+	 * it the class has a single argument constructor 
+	 * which can be cast to one of its fields
 	 * @return
 	 */
 	public boolean isValid() {
-		if (fieldMethods.size() == 1) {
-			FieldMethods fm = fieldMethods.get(0);
-			Field field = fm.getField();
-			Class<?> type = field.getType();
-			
-			Constructor<?> [] constructors =  clazz.getConstructors();
-			for (int i = 0; i < constructors.length; i++) {
-				Constructor<?> con = constructors[i];
-				Class<?> [] paramTypes = con.getParameterTypes();
-				if (paramTypes.length == 1) {
-					Class<?> paramType = paramTypes[0];
-					if (type.isAssignableFrom(paramType)) {
-						return true;
+		if (I_Immutable.class.isAssignableFrom(clazz)) {
+			try {
+				I_Immutable item = (I_Immutable) clazz.newInstance();
+				String fieldName = item.getImmutableFieldName();
+				if (fieldName == null) {
+					throw new IllegalArgumentException("I_Immutable " + 
+							clazz + " should not return null from getImmutableFieldName()");
+				}
+				FieldMethods fieldM = null;
+				for (FieldMethods fm: fieldMethods) {
+					Field field = fm.getField();
+					String name = field.getName();
+					if (fieldName.equals(name)) {
+						fieldM = fm;
+						break;
 					}
 				}
+				if (fieldM == null) {
+					throw new IllegalArgumentException("I_Immutable " + 
+							clazz + " does not have a non transient field " + fieldName);
+				}
+				Field field = fieldM.getField();
+				Class<?> fieldClass = field.getType();
+				
+				Constructor<?> [] constructors =  clazz.getConstructors();
+				for (int i = 0; i < constructors.length; i++) {
+					Constructor<?> con = constructors[i];
+					Class<?> [] paramTypes = con.getParameterTypes();
+					if (paramTypes.length == 1) {
+						Class<?> paramType = paramTypes[0];
+						
+						Constructor<?> [] fieldConstructors =  fieldClass.getConstructors();
+						for (int j = 0; j < fieldConstructors.length; j++) {
+							Constructor<?> fieldCon= constructors[i];
+							Class<?> [] fieldParamTypes = fieldCon.getParameterTypes();
+							if (fieldParamTypes.length == 1) {
+								Class<?> fieldParamType = fieldParamTypes[0];
+								
+								/*
+								 * the constructor of the field's type has a single argument that 
+								 * matches the single argument constructor of the immutable class
+								 * so this is the match.
+								 */
+								if (paramType.equals(fieldParamType)) {
+									return true;
+								}
+							}
+						}
+					}
+				}
+			} catch (InstantiationException e) {
+				log.error("the class " + clazz + " requires a default constructor.", e);
+			} catch (IllegalAccessException e) {
+				log.error(e.getMessage(), e);
 			}
 		}
-
 		return false;
 	}
 	

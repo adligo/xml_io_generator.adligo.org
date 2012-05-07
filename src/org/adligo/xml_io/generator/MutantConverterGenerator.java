@@ -11,9 +11,10 @@ import org.adligo.xml.parsers.template.TemplateParserEngine;
 import org.adligo.xml.parsers.template.Templates;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
 import org.adligo.xml_io.generator.models.FieldMethods;
+import org.adligo.xml_io.generator.models.FieldNameToUnderscore;
 import org.adligo.xml_io.generator.models.GeneratorContext;
 
-public class MutantGenerator extends BaseGenerator {
+public class MutantConverterGenerator extends BaseConverterGenerator {
 	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_template.xml", true);
 	private static final Template template = templates.getTemplate("converter");
 
@@ -23,7 +24,7 @@ public class MutantGenerator extends BaseGenerator {
 		ctx = pctx;
 		setUpTagName();
 		setupToXmlParams();
-		
+		addAttributesAndChildren(params);
 		writeFile(cfm.getClazz(), template);
 	}
 	
@@ -36,19 +37,37 @@ public class MutantGenerator extends BaseGenerator {
 		params.addParam("toXml",toXml);
 		String ns = ctx.getNamespace();
 		toXml.addParam("namespace", ns);
-		toXml.addParam("tagName", tagName);
 		
+		
+		addAttributesAndChildren(toXml);
+	}
+
+	private void addAttributesAndChildren(Params parent) {
+		parent.addParam("tagName", tagName);
 		List<FieldMethods> fields = clazz.getFieldMethods();
 		for (FieldMethods fm: fields) {
 			if (fm.isAttribute()) {
 				Params attributeParams = new Params();
 				String attributeName = fm.getName();
+				String attributeXml = attributeName;
 				if (!ctx.isUseFieldNamesInXml()) {
-					attributeName = ctx.getNextId();
+					attributeXml = attributeLetterCounter.getNextId();
 				}
-				toXml.addParam("attribute", attributeName, attributeParams);
+				String attributeConstant = FieldNameToUnderscore.toUnderscore(attributeName);
+				parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
+				attributeParams.addParam("attributeName", attributeXml);
 				String getterName = fm.getGetterName();
 				attributeParams.addParam("getter", getterName);
+				appendGenericClass(attributeParams);
+				
+				String fieldClass = fm.getFieldClassForSource();
+				attributeParams.addParam("fieldClass", fieldClass);
+				
+				String fieldClassCastable = fm.getFieldClassCastableForSource();
+				attributeParams.addParam("fieldClassCastable", fieldClassCastable);
+				
+				String setter = fm.getSetterName();
+				attributeParams.addParam("setter", setter);
 			} else {
 				//todo
 			}

@@ -3,9 +3,18 @@
 <template name="converter">
 package <param name="package"><value/></param>;
 <param name="extraImports">import <value/>;</param>
-import org.adligo.models.params.client.XMLBuilder;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.adligo.i.util.client.I_Iterator;
 import org.adligo.models.params.client.I_XMLBuilder;
+import org.adligo.models.params.client.Parser;
+import org.adligo.models.params.client.TagAttribute;
+import org.adligo.xml_io.client.I_AttributeSetter;
 import org.adligo.xml_io.client.I_Converter;
+import org.adligo.xml_io.client.I_FieldSetter;
 import org.adligo.xml_io.client.Xml_IOWriterContext;
 import org.adligo.xml_io.client.Xml_IOReaderContext;
 import org.adligo.xml_io.client.ObjectFromXml;
@@ -14,19 +23,86 @@ import org.adligo.models.params.client.Parser;
 import org.adligo.xml_io.client.Xml_IOConstants;
 
 public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; {
+	public static final String TAG_NAME = "<param name="tagName"><value/></param>";
+	<param name="attribute">
+	public static final String <value/> = "<param name="attributeName"><value/></param>";
+	</param>
+	<param name="child">
+	public static final String <value/> = "<param name="nameAttribute"><value/></param>";
+	</param>
+	private static final Map&lt;String, I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt;&gt; SETTERS = getSetters();
+	private static final Map&lt;String, I_FieldSetter&lt;<param name="genericClass"><value/></param>&gt;&gt; FIELD_SETTERS = getFieldSetters();
+	
+	public static Map&lt;String, I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt;&gt; getSetters() {
+		Map&lt;String, I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt;&gt; toRet = 
+			new HashMap&lt;String, I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt;&gt;();
+		
+		<param name="attribute">
+		toRet.put("<param name="fieldName"><value/></param>", new I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt;() {
+			public void set(<param name="genericClass"><value/></param> obj, String value, Xml_IOReaderContext context) {
+				Object toSet = context.readAttribute(<param name="fieldClass"><value/></param>, value);
+				try {
+					obj.<param name="setter"><value/></param>((<param name="fieldClassCastable"><value/></param>) toSet);
+				} catch (Exception x) {
+					throw new IllegalArgumentException(x);
+				}
+			}
+		});
+		</param>
+		return Collections.unmodifiableMap(toRet);
+	}
+	
+	
+	public static Map&lt;String, I_FieldSetter&lt;<param name="genericClass"><value/></param>&gt;&gt; getFieldSetters() {
+		Map&lt;String, I_FieldSetter&lt;<param name="genericClass"><value/></param>&gt;&gt; toRet = 
+			new HashMap&lt;String, I_FieldSetter&lt;<param name="genericClass"><value/></param>&gt;&gt;();
 
+		<param name="child">
+		toRet.put("stringsList", new I_FieldSetter&lt;<param name="genericClass"><value/></param>&gt;() {
+			@SuppressWarnings("unchecked")
+			public void set(<param name="genericClass"><value/></param> obj, Object value) {
+				obj.setStringsList((<param name="childClassCastable"><value/></param>) value);
+			}
+		});
+		</param>
+		
+		return Collections.unmodifiableMap(toRet);
+	}
+	
 	@Override
 	public ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt; fromXml(String xml, TagInfo info, Xml_IOReaderContext context) {
-		String text = Parser.getTextContent(xml, info);
+		//the <param name="genericClass"><value/></param> class is mutable so just call setters
+		<param name="genericClass"><value/></param> toRet = new <param name="genericClass"><value/></param>();
+		I_Iterator it = Parser.getAttributes(info, xml);
+		while (it.hasNext()) {
+			TagAttribute attrib = (TagAttribute) it.next();
+			String name = attrib.getName();
+			String value = attrib.getValue();
+			
+			I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt; setter = SETTERS.get(name);
+			if (setter != null) {
+				setter.set(toRet, value, context);
+			}
+		}
+		it = info.getChildren();
+		while (it.hasNext()) {
+			TagInfo child = (TagInfo) it.next();
+			String subTag = Parser.substring(xml, child);
+			ObjectFromXml&lt;?&gt; obj =  context.readXml(subTag);
+			String name = obj.getName();
+			I_FieldSetter&lt;<param name="genericClass"><value/></param>&gt; setter = FIELD_SETTERS.get(name);
+			Object value = obj.getValue();
+			setter.set(toRet, value);
+		}
 		
-		return null;
+		return new ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt;(toRet);
 	}
 
 	@Override
 	public void toXml(<param name="genericClass"><value/></param> p, Xml_IOWriterContext context) {
 		I_XMLBuilder builder = context.getBuilder();
 		<param name="toXml">
-		context.appendTagHeaderStart("<param name="namespace"><value/></param>", "<param name="tagName"><value/></param>");
+		context.appendTagHeaderStart("<param name="namespace"><value/></param>", TAG_NAME);
 		context.appendSchemaInfoToFirstTag();
 		
 		String name = context.getNextTagNameAttribute();
@@ -34,7 +110,7 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 			builder.appendAttribute(Xml_IOConstants.N_NAME_ATTRIBUTE, name);
 		}
 		<param name="attribute">
-			builder.appendAttribute("<value/>", p.<param name="getter"><value/></param>());
+			builder.appendAttribute(<value/>, p.<param name="getter"><value/></param>());
 		</param>
 		builder.appendTagHeaderEnd(true);
 		<param name="child">

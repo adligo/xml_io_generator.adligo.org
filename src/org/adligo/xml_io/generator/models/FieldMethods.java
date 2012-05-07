@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
+import org.adligo.xml_io.client.converters.DefaultNamespaceConverters;
 
 public class FieldMethods {
 	private static final Log log = LogFactory.getLog(FieldMethods.class);
@@ -139,5 +140,35 @@ public class FieldMethods {
 	
 	public String getSetterName() {
 		return setter.getName();
+	}
+	
+	public String getFieldClassForSource() {
+		Class<?> type = field.getType();
+		
+		if (type.equals(DefaultNamespaceConverters.CHAR_ARRAY_CLASS)) {
+			return "DefaultNamespaceConverters.CHAR_ARRAY_CLASS";
+		}
+		if (type.equals(DefaultNamespaceConverters.BOOLEAN_ARRAY_CLASS)) {
+			return "DefaultNamespaceConverters.BOOLEAN_ARRAY_CLASS";
+		}
+		if (type.equals(DefaultNamespaceConverters.BYTE_ARRAY_CLASS)) {
+			return "DefaultNamespaceConverters.BYTE_ARRAY_CLASS";
+		}
+		return type.getSimpleName() + ".class";
+	}
+	
+	public String getFieldClassCastableForSource() {
+		Class<?> type = field.getType();
+		
+		if (type.equals(DefaultNamespaceConverters.CHAR_ARRAY_CLASS)) {
+			return "char []";
+		}
+		if (type.equals(DefaultNamespaceConverters.BOOLEAN_ARRAY_CLASS)) {
+			return "boolean []";
+		}
+		if (type.equals(DefaultNamespaceConverters.BYTE_ARRAY_CLASS)) {
+			return "byte []";
+		}
+		return type.getSimpleName();
 	}
 }

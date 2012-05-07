@@ -1,6 +1,6 @@
 package org.adligo.xml_io.generator.models;
 
-import org.adligo.models.core.client.DomainNameMutant;
+import org.adligo.models.core.client.DomainName;
 import org.adligo.models.core.client.InvalidParameterException;
 
 public class Namespace {
@@ -16,7 +16,7 @@ public class Namespace {
 	 */
 	public static String toNamespace(String packageName) {
 		try {
-			DomainNameMutant dn = new DomainNameMutant(packageName);
+			DomainName dn = new DomainName(packageName);
 			int size = dn.getComponentSize();
 			if (size < 3) {
 				throw new IllegalStateException("The package name must have at least 3 components ie a.b.c");

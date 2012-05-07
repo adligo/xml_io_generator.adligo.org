@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<templates>
+<template name="setup">
+package <param name="package"><value/></param>;
+<param name="extraImports">import <value/>;</param>
+import org.adligo.xml_io.client.NamespaceConverters;
+
+public class ConverterSetup {
+	public static final String NAMESPACE = "<param name="namespace"><value/></param>";
+	
+	public static NamespaceConverters setUp() {
+		NamespaceConverters converters = new NamespaceConverters();
+		converters.setNamespace(NAMESPACE);
+		<param name="class" >
+		converters.addXmlToObjectConverter(<value/>.TAG_NAME, new <value/>());
+		converters.addObjectToXmlConverter(<param name="className"><value/></param>.class, new <value/>());
+		</param>
+		return converters;
+	}
+}
+</template>
+</templates>
