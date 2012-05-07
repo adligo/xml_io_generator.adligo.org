@@ -30,9 +30,13 @@ public class SourceCodeGeneratorParams {
 	 */
 	public static final String OUTPUT_DIRECTORY_PROPERTY = "outputDirectory";
 	/**
-	 * classes to ignore
+	 * a comma delimited list of classes to ignore
 	 */
 	public static final String IGNORE_CLASS_LIST = "ignoreClassList";
+	/**
+	 * a comma delimited list of text that will cause a class to be ignored
+	 */
+	public static final String IGNORE_CLASSES_CONTAINING = "ignoreClassesContaining";
 	/**
 	 * jars to ignore (not unzip into the xml_io_generator_temp for source code parsing)
 	 */
@@ -40,6 +44,7 @@ public class SourceCodeGeneratorParams {
 	
 	private Map<String, List<Class<?>>> packageClassModels = new HashMap<String, List<Class<?>>>();
 	private List<String> ignoreClassList = new ArrayList<String>();
+	private List<String> ignoreClassesContainingList = new ArrayList<String>();
 	private List<String> ignoreJarList = new ArrayList<String>();
 	
 	private String outputDirectory;
@@ -92,6 +97,20 @@ public class SourceCodeGeneratorParams {
 			}
 		}
 		
+		val = props.getProperty(IGNORE_CLASSES_CONTAINING);
+		if (val != null) {
+			if (val.indexOf(",") == -1) {
+				ignoreClassesContainingList.add(val);
+			} else {
+				StringTokenizer tokenizer = new StringTokenizer(val, ",");
+				while (tokenizer.hasMoreElements()) {
+					String name = tokenizer.nextToken();
+					ignoreClassesContainingList.add(name);
+				}
+			}
+		}
+		
+		
 		val = props.getProperty(IGNORE_JAR_LIST);
 		if (val != null) {
 			if (val.indexOf(",") == -1) {
@@ -126,8 +145,17 @@ public class SourceCodeGeneratorParams {
 		ModelDiscovery md = new ModelDiscovery(pu, packageName);
 		List<Class<?>> classes = md.getModels();
 		for (Class<?> mod: classes) {
-			if (!ignoreClassList.contains(mod.getName())) {
-				addClass(mod);
+			String name = mod.getName();
+			boolean ignore = false;
+			if (!ignoreClassList.contains(name)) {
+				for (String contain: ignoreClassesContainingList) {
+					if (name.indexOf(contain) != -1) {
+						ignore = true;
+					}
+				}
+				if (!ignore) {
+					addClass(mod);
+				}
 			}
 		}
 	}
@@ -173,6 +201,10 @@ public class SourceCodeGeneratorParams {
 
 	public void setUseFieldNamesInXml(boolean useFieldNamesInXml) {
 		this.useFieldNamesInXml = useFieldNamesInXml;
+	}
+
+	public List<String> getIgnoreClassesContainingList() {
+		return ignoreClassesContainingList;
 	}
 	
 }

@@ -24,7 +24,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		ctx = pctx;
 		setUpTagName();
 		setupToXmlParams();
-		addAttributesAndChildren(params);
+		addAttributes(params);
 		writeFile(cfm.getClazz(), template);
 	}
 	
@@ -37,28 +37,30 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		params.addParam("toXml",toXml);
 		String ns = ctx.getNamespace();
 		toXml.addParam("namespace", ns);
-		
-		
-		addAttributesAndChildren(toXml);
 	}
 
-	private void addAttributesAndChildren(Params parent) {
+	private void addAttributes(Params parent) {
 		parent.addParam("tagName", tagName);
 		List<FieldMethods> fields = clazz.getFieldMethods();
 		for (FieldMethods fm: fields) {
 			if (fm.isAttribute()) {
 				Params attributeParams = new Params();
-				String attributeName = fm.getName();
-				String attributeXml = attributeName;
+				String fieldName = fm.getName();
+				String attributeXml = fieldName;
 				if (!ctx.isUseFieldNamesInXml()) {
 					attributeXml = attributeLetterCounter.getNextId();
+					if ("n".equals(attributeXml)) {
+						//n is reserved for parent child objects the name attribute
+						attributeXml = attributeLetterCounter.getNextId();
+					}
 				}
-				String attributeConstant = FieldNameToUnderscore.toUnderscore(attributeName);
+				String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
 				parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
 				attributeParams.addParam("attributeName", attributeXml);
 				String getterName = fm.getGetterName();
 				attributeParams.addParam("getter", getterName);
 				appendGenericClass(attributeParams);
+				
 				
 				String fieldClass = fm.getFieldClassForSource();
 				attributeParams.addParam("fieldClass", fieldClass);
@@ -69,7 +71,27 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 				String setter = fm.getSetterName();
 				attributeParams.addParam("setter", setter);
 			} else {
-				//todo
+				Params childParams = new Params();
+				String fieldName = fm.getName();
+				String childName = fieldName;
+				if (!ctx.isUseFieldNamesInXml()) {
+					childName = childNameLetterCounter.getNextId();
+				}
+				String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+				parent.addParam("child", attributeConstant + "_CHILD", childParams);
+				childParams.addParam("childName", childName);
+				String getterName = fm.getGetterName();
+				childParams.addParam("getter", getterName);
+				appendGenericClass(childParams);
+				
+				String clazzName = fm.getFieldClassNameForImport();
+				params.addParam("extraImport", clazzName);
+				
+				String fieldClassCastable = fm.getFieldClassCastableForSource();
+				childParams.addParam("childClassCastable", fieldClassCastable);
+				
+				String setter = fm.getSetterName();
+				childParams.addParam("setter", setter);
 			}
 		}
 	}

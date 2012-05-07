@@ -15,6 +15,7 @@ public class BaseConverterGenerator {
 	Params toXml = new Params();
 	String tagName = "";
 	LetterCounter attributeLetterCounter = new LetterCounter();
+	LetterCounter childNameLetterCounter = new LetterCounter();
 	
 	void setUpTagName() {
 		if (ctx.isUseClassNamesInXml()) {

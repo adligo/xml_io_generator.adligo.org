@@ -169,6 +169,38 @@ public class FieldMethods {
 		if (type.equals(DefaultNamespaceConverters.BYTE_ARRAY_CLASS)) {
 			return "byte []";
 		}
-		return type.getSimpleName();
+		String toRet = type.getSimpleName();
+		if (type.isPrimitive()) {
+			if ("boolean".equals(toRet)) {
+				return "Boolean";
+			}
+			if ("byte".equals(toRet)) {
+				return "Byte";
+			}
+			if ("char".equals(toRet)) {
+				return "Character";
+			}
+			if ("short".equals(toRet)) {
+				return "Short";
+			}
+			if ("int".equals(toRet)) {
+				return "Integer";
+			}
+			if ("long".equals(toRet)) {
+				return "Long";
+			}
+			if ("double".equals(toRet)) {
+				return "Double";
+			}
+			if ("float".equals(toRet)) {
+				return "Float";
+			}
+		}
+		return toRet;
+	}
+	
+	public String getFieldClassNameForImport() {
+		Class<?> clazz = field.getType();
+		return clazz.getName();
 	}
 }
