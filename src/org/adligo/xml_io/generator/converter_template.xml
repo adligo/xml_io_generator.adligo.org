@@ -103,7 +103,7 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 	@Override
 	public void toXml(<param name="genericClass"><value/></param> p, Xml_IOWriterContext context) {
 		I_XMLBuilder builder = context.getBuilder();
-		context.appendTagHeaderStart("<param name="namespace"><value/></param>", TAG_NAME);
+		context.appendTagHeaderStart(ConverterSetup.NAMESPACE, TAG_NAME);
 		context.appendSchemaInfoToFirstTag();
 		
 		String name = context.getNextTagNameAttribute();
