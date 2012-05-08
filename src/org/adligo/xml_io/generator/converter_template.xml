@@ -111,7 +111,7 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 			builder.appendAttribute(Xml_IOConstants.N_NAME_ATTRIBUTE, name);
 		}
 		<param name="attribute">
-			builder.appendAttribute(<value/>, p.<param name="getter"><value/></param>());
+			context.writeXmlAttribute(<value/>, p.<param name="getter"><value/></param>());
 		</param>
 		builder.appendTagHeaderEnd(true);
 		<param name="child">
