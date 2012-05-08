@@ -42,6 +42,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 	private void addAttributes(Params parent) {
 		parent.addParam("tagName", tagName);
 		List<FieldMethods> fields = clazz.getFieldMethods();
+		boolean hasChildren = false;
 		for (FieldMethods fm: fields) {
 			if (fm.isAttribute()) {
 				Params attributeParams = new Params();
@@ -71,6 +72,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 				String setter = fm.getSetterName();
 				attributeParams.addParam("setter", setter);
 			} else {
+				hasChildren = true;
 				Params childParams = new Params();
 				String fieldName = fm.getName();
 				String childName = fieldName;
@@ -93,6 +95,11 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 				String setter = fm.getSetterName();
 				childParams.addParam("setter", setter);
 			}
+		}
+		if (hasChildren) {
+			parent.addParam("hasChildren");
+		} else {
+			parent.addParam("doesNotHaveChildren");
 		}
 	}
 }

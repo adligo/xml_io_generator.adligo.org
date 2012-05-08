@@ -113,12 +113,19 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		<param name="attribute">
 			context.writeXmlAttribute(<value/>, p.<param name="getter"><value/></param>());
 		</param>
+		<param name="hasChildren">
 		builder.appendTagHeaderEnd(true);
+		</param>
+		<param name="doesNotHaveChildren">
+		builder.appendTagHeaderEndNoChildren();
+		</param>
 		<param name="child">
 			context.setNextTagNameAttribute(<value/>);
 			context.writeXml(p.<param name="getter"><value/></param>());
 		</param>
-	
+		<param name="hasChildren">
+			context.appendEndTag(ConverterSetup.NAMESPACE, TAG_NAME);
+		</param>
 	}
 }
 </template>
