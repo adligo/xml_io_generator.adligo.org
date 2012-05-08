@@ -108,7 +108,7 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		
 		String name = context.getNextTagNameAttribute();
 		if (name != null) {
-			builder.appendAttribute(Xml_IOConstants.N_NAME_ATTRIBUTE, name);
+			context.writeXmlAttribute(Xml_IOConstants.N_NAME_ATTRIBUTE, name);
 		}
 		<param name="attribute">
 			context.writeXmlAttribute(<value/>, p.<param name="getter"><value/></param>());
