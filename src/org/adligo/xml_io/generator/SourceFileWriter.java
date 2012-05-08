@@ -3,6 +3,7 @@ package org.adligo.xml_io.generator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -21,10 +22,11 @@ public class SourceFileWriter {
 			file.createNewFile();
 			FileOutputStream fos = new FileOutputStream(file);
 			String result = TemplateParserEngine.parse(template, params);
-			fos.write(result.getBytes("UTF-16"));
+			
+			fos.write(result.getBytes("ASCII"));
 			fos.close();
 		} catch (UnsupportedEncodingException x) {
-			throw new IllegalStateException("the encoding UTF-16 is required by the java specification");
+			throw new IllegalStateException("the encoding ASCII is required by the java specification");
 		} catch (FileNotFoundException p) {
 			throw new IOException(p);
 		}
