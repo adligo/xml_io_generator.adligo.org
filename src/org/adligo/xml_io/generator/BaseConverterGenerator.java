@@ -27,7 +27,8 @@ public class BaseConverterGenerator {
 		} else {
 			tagName = ctx.getNextId();
 		}
-		
+
+		params.addParam("tagName", tagName);
 	}
 	void writeFile(Class<?> clazz, Template template) throws IOException {
 		String name = clazz.getSimpleName();

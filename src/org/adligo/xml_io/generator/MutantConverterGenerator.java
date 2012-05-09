@@ -34,6 +34,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		addAttributes(params);
 		writeFile(cfm.getClazz(), template);
 	}
+
 	
 	private void setupToXmlParams() {
 		params.addParam("toXml",toXml);
@@ -42,7 +43,6 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 	}
 
 	private void addAttributes(Params parent) {
-		parent.addParam("tagName", tagName);
 		List<FieldMethods> fields = clazz.getFieldMethods();
 		boolean hasChildren = false;
 		for (FieldMethods fm: fields) {

@@ -79,15 +79,21 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 	public ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt; fromXml(String xml, TagInfo info, Xml_IOReaderContext context) {
 		//the <param name="genericClass"><value/></param> class is mutable so just call setters
 		<param name="genericClass"><value/></param> toRet = new <param name="genericClass"><value/></param>();
+		
+		
 		I_Iterator it = Parser.getAttributes(info, xml);
+		String nameToRet = "";
 		while (it.hasNext()) {
 			TagAttribute attrib = (TagAttribute) it.next();
 			String name = attrib.getName();
 			String value = attrib.getValue();
-			
-			I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt; setter = SETTERS.get(name);
-			if (setter != null) {
-				setter.set(toRet, value, context);
+			if (Xml_IOConstants.N_NAME_ATTRIBUTE.equals(name)) {
+				nameToRet = value; 
+			} else {
+				I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt; setter = SETTERS.get(name);
+				if (setter != null) {
+					setter.set(toRet, value, context);
+				}
 			}
 		}
 		it = info.getChildren();
@@ -101,7 +107,7 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 			setter.set(toRet, value);
 		}
 		
-		return new ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt;(toRet);
+		return new ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt;(nameToRet, toRet);
 	}
 
 	@Override
