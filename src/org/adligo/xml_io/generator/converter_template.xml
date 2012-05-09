@@ -22,7 +22,10 @@ import org.adligo.models.params.client.TagInfo;
 import org.adligo.xml_io.client.Xml_IOConstants;
 
 public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; {
+	
 	public static final String TAG_NAME = "<param name="tagName"><value/></param>";
+	public static final String VERSION = "<param name="version"><value/></param>";
+	
 	<param name="attribute">
 	public static final String <value/> = "<param name="attributeName"><value/></param>";
 	</param>

@@ -150,4 +150,5 @@ public class ClassFieldMethods {
 	public List<FieldMethods> getFieldMethods() {
 		return fieldMethods;
 	}
+
 }

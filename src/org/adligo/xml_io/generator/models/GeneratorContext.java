@@ -1,6 +1,11 @@
 package org.adligo.xml_io.generator.models;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -14,6 +19,8 @@ public class GeneratorContext {
 	private String namespace;
 	private SourceCodeGeneratorParams params;
 	private Map<String,String> classToGeneratorNames = new HashMap<String, String>();
+	private List<ClassFieldMethods> classFieldMethods = new ArrayList<ClassFieldMethods>();
+	private String version = new Date(System.currentTimeMillis()).toString();
 	
 	public String getNextId() {
 		return counter.getNextId();
@@ -65,5 +72,25 @@ public class GeneratorContext {
 
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+
+	public boolean addClassFieldMethods(ClassFieldMethods e) {
+		return classFieldMethods.add(e);
+	}
+
+	public void clearClassFieldMethods() {
+		classFieldMethods.clear();
+	}
+
+	public Iterator<ClassFieldMethods> classFieldMethodsIterator() {
+		return classFieldMethods.iterator();
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 }

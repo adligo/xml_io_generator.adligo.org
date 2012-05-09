@@ -7,6 +7,7 @@ import org.adligo.xml_io.client.NamespaceConverters;
 
 public class ConverterSetup {
 	public static final String NAMESPACE = "<param name="namespace"><value/></param>";
+	public static final String NAMESPACE_VERSION = "<param name="namespaceVersion"><value/></param>";
 	
 	public static NamespaceConverters setUp() {
 		NamespaceConverters converters = new NamespaceConverters();

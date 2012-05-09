@@ -1,6 +1,7 @@
 package org.adligo.xml_io.generator;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
@@ -30,6 +31,21 @@ public class BaseConverterGenerator {
 		String name = clazz.getSimpleName();
 		String clazzName = name + "Generator";
 		ctx.addClassToConverterNames(name, clazzName);
+		
+		try {
+			Field serialVersionUID = clazz.getDeclaredField("serialVersionUID");
+			serialVersionUID.setAccessible(true);
+			Long value = serialVersionUID.getLong(clazz);
+			params.addParam("version", value);
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		}
 		
 		Package pkg = clazz.getPackage();
 		

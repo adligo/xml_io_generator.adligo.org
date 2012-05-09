@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.adligo.i.util.client.StringUtils;
 import org.adligo.jse.util.JSECommonInit;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
 import org.adligo.xml_io.generator.models.GeneratorContext;
@@ -60,6 +61,11 @@ public class SourceCodeGenerator {
 			ctx.setPackageDirectory(pkgDir);
 			ctx.setPackageName(name);
 			
+			String version = params.getVersion();
+			if (StringUtils.isEmpty(version)) {
+				ctx.setVersion(version);
+			}
+			
 			ctx.setParams(params);
 			String namespace = Namespace.toNamespace(name);
 			ctx.setNamespace(namespace);
@@ -75,6 +81,8 @@ public class SourceCodeGenerator {
 	
 	private static void generate(Class<?> clazz, GeneratorContext ctx) throws IOException {
 		ClassFieldMethods cfm = new ClassFieldMethods(clazz);
+		ctx.addClassFieldMethods(cfm);
+		
 		if (cfm.isMutant()) {
 			MutantConverterGenerator mg = new MutantConverterGenerator();
 			mg.generate(cfm,ctx);
