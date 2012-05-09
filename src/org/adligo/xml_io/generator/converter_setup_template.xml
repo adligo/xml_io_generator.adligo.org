@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="us-ascii"?>
 <templates>
 <template name="setup">
-package <param name="package"><value/></param>;
-<param name="extraImports">import <value/>;</param>
+package <param name="packageName"><value/></param>;
+<param name="extraImport">import <value/>;
+</param>
 import org.adligo.xml_io.client.NamespaceConverters;
 
 public class ConverterSetup {

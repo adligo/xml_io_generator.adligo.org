@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="us-ascii"?>
 <templates>
 <template name="converter">
-package <param name="package"><value/></param>;
-<param name="extraImport">import <value/>;</param>
+package <param name="packageName"><value/></param>;
+<param name="extraImport">import <value/>;
+</param>
 
 import java.util.Collections;
 import java.util.HashMap;

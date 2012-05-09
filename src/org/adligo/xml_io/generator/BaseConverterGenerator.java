@@ -1,8 +1,10 @@
 package org.adligo.xml_io.generator;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import org.adligo.i.util.client.StringUtils;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml_io.client.LetterCounter;
@@ -32,32 +34,23 @@ public class BaseConverterGenerator {
 		String clazzName = name + "Generator";
 		ctx.addClassToConverterNames(name, clazzName);
 		
-		try {
-			Field serialVersionUID = clazz.getDeclaredField("serialVersionUID");
-			serialVersionUID.setAccessible(true);
-			Long value = serialVersionUID.getLong(clazz);
-			params.addParam("version", value);
-		} catch (SecurityException e) {
-			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
-		} catch (NoSuchFieldException e) {
-			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
-		}
-		
 		Package pkg = clazz.getPackage();
 		
 		String packageName = pkg.getName();
-		params.addParam("package", packageName);
+		String packageSuffix = ctx.getPackageSuffix();
+		if (!StringUtils.isEmpty(packageSuffix)) {
+			packageName = packageName + "." + packageSuffix;
+		}
+		params.addParam("packageName", packageName);
 		params.addParam("className", clazzName);
-		
 		appendGenericClass(params);
-		params.addParam("extraImports", clazz.getName());
 		
+		if (!StringUtils.isEmpty(packageSuffix)) {
+			params.addParam("extraImport", clazz.getName());
+		}
 		SourceFileWriter sfw = new SourceFileWriter();
 		String dir = ctx.getPackageDirectory();
+		
 		sfw.setDir(dir);
 		sfw.setTemplate(template);
 		sfw.writeSourceFile(clazzName, params);

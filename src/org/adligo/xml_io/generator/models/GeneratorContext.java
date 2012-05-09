@@ -1,6 +1,7 @@
 package org.adligo.xml_io.generator.models;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.adligo.i.util.client.StringUtils;
 import org.adligo.xml_io.client.LetterCounter;
 
 public class GeneratorContext {
@@ -20,7 +22,9 @@ public class GeneratorContext {
 	private SourceCodeGeneratorParams params;
 	private Map<String,String> classToGeneratorNames = new HashMap<String, String>();
 	private List<ClassFieldMethods> classFieldMethods = new ArrayList<ClassFieldMethods>();
-	private String version = new Date(System.currentTimeMillis()).toString();
+	private String packageVersion;
+	private BigDecimal packageVersionNumber = new BigDecimal(0);
+	private String packageSuffix;
 	
 	public String getNextId() {
 		return counter.getNextId();
@@ -82,15 +86,41 @@ public class GeneratorContext {
 		classFieldMethods.clear();
 	}
 
-	public Iterator<ClassFieldMethods> classFieldMethodsIterator() {
+	public Iterator<ClassFieldMethods> getClassFieldMethodsIterator() {
 		return classFieldMethods.iterator();
 	}
 
-	public String getVersion() {
-		return version;
+	
+	public void addToPackageVersion(BigDecimal p) {
+		packageVersionNumber = packageVersionNumber.add(p);
 	}
 
-	public void setVersion(String version) {
-		this.version = version;
+	public String getPackageVersion() {
+		if (StringUtils.isEmpty(packageVersion)) {
+			BigDecimal toRet = packageVersionNumber.divide(
+					new BigDecimal(VersionCalculator.PACKGE_DIVISOR));
+			return toRet.toPlainString();
+		}
+		return packageVersion;
+	}
+
+	public void setPackageVersion(String packageVersion) {
+		this.packageVersion = packageVersion;
+	}
+
+	public BigDecimal getPackageVersionNumber() {
+		return packageVersionNumber;
+	}
+
+	public void setPackageVersionNumber(BigDecimal packageVersionNumber) {
+		this.packageVersionNumber = packageVersionNumber;
+	}
+
+	public String getPackageSuffix() {
+		return packageSuffix;
+	}
+
+	public void setPackageSuffix(String packageSuffix) {
+		this.packageSuffix = packageSuffix;
 	}
 }

@@ -15,9 +15,10 @@ public class SourceFileWriter {
 	private Template template;
 	private String dir;
 	
-	public void writeSourceFile(String clazzName, I_TemplateParams params) throws IOException {
+	public void writeSourceFile(String clazzName, I_TemplateParams params) {
+		String filePath = dir + File.separator + clazzName + ".java";
 		try {
-			String filePath = dir + File.separator + clazzName + ".java";
+			
 			File file = new File(filePath);
 			file.createNewFile();
 			FileOutputStream fos = new FileOutputStream(file);
@@ -28,7 +29,11 @@ public class SourceFileWriter {
 		} catch (UnsupportedEncodingException x) {
 			throw new IllegalStateException("the encoding ASCII is required by the java specification");
 		} catch (FileNotFoundException p) {
-			throw new IOException(p);
+			throw new IllegalStateException("there was a problem working with the file " + filePath
+					+ p.getMessage(), p);
+		} catch (IOException x) {
+			throw new IllegalStateException("there was a problem working with the file " + filePath
+					+ x.getMessage(), x);
 		}
 	}
 

@@ -3,6 +3,7 @@ package org.adligo.xml_io.generator;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.adligo.models.params.client.Params;
@@ -22,15 +23,16 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
 		ctx = pctx;
+		
+		BigDecimal version = clazz.calculateFieldVersion();
+		String versionString = version.toPlainString();
+		params.addParam("version", versionString);
+		ctx.addToPackageVersion(version);
+		
 		setUpTagName();
 		setupToXmlParams();
 		addAttributes(params);
 		writeFile(cfm.getClazz(), template);
-	}
-	
-	private void setupFromXmlParams() {
-		
-		
 	}
 	
 	private void setupToXmlParams() {

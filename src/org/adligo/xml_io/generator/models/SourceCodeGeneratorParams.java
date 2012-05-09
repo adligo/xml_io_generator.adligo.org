@@ -28,9 +28,13 @@ public class SourceCodeGeneratorParams {
 	public static final String PACKAGE_LIST_PROPERTY = "packageList";
 	
 	/**
-	 * client projects are responsible for versioning.
+	 * client projects may take on responsible for versioning, other wise versions are calculated.
 	 */
 	public static final String NAMESPACE_VERSION_PROPERTY = "namespaceVersion";
+	/**
+	 * the namespace suffic to add to the classes generated
+	 */
+	public static final String NAMESPACE_SUFFIX_PROPERTY = "namespaceSuffix";
 	/**
 	 * where to put the generated source classes
 	 */
@@ -53,6 +57,7 @@ public class SourceCodeGeneratorParams {
 	private List<String> ignoreClassesContainingList = new ArrayList<String>();
 	private List<String> ignoreJarList = new ArrayList<String>();
 	private String version;
+	private String namespaceSuffix;
 	
 	private String outputDirectory;
 	/**
@@ -88,6 +93,11 @@ public class SourceCodeGeneratorParams {
 		val = props.getProperty(NAMESPACE_VERSION_PROPERTY);
 		if (!StringUtils.isEmpty(val)) {
 			version = val;
+		}
+	
+		val = props.getProperty(NAMESPACE_SUFFIX_PROPERTY);
+		if (!StringUtils.isEmpty(val)) {
+			namespaceSuffix = val;
 		}
 		
 		val = props.getProperty(OUTPUT_DIRECTORY_PROPERTY);
@@ -225,6 +235,10 @@ public class SourceCodeGeneratorParams {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getNamespaceSuffix() {
+		return namespaceSuffix;
 	}
 	
 }

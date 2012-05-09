@@ -38,10 +38,14 @@ public class SourceCodeGenerator {
 			SourceCodeGeneratorParams params = new SourceCodeGeneratorParams(props);
 			generate(params);
 		} catch (FileNotFoundException e) {
-			System.err.println("SouceCodeGenerator was not able to find the property file " + args[0]);
+			System.err.println("SouceCodeGenerator was not able to find the property file " + args[0] +
+					" at " + file.getAbsolutePath());
+			e.printStackTrace();
 			return;
 		} catch (IOException e) {
-			System.err.println("SouceCodeGenerator had a problem loading the the property file " + args[0]);
+			System.err.println("SouceCodeGenerator had a problem loading the the property file " + args[0] +
+					" at " + file.getAbsolutePath());
+			e.printStackTrace();
 			return;
 		} catch (Exception x) {
 			x.printStackTrace();
@@ -52,18 +56,21 @@ public class SourceCodeGenerator {
 	}
 	public static void generate(SourceCodeGeneratorParams params) throws IOException {
 		String dir = params.getOutputDirectory();
+		String suffix = params.getNamespaceSuffix();
 		makeRootDir(dir);
+		
 		
 		Set<String> packages = params.getPackages();
 		for (String name : packages) {
 			GeneratorContext ctx = new GeneratorContext();
-			String pkgDir = makePackageDirectories(name, dir);
+			String pkgDir = makePackageDirectories(name, dir, suffix);
 			ctx.setPackageDirectory(pkgDir);
 			ctx.setPackageName(name);
+			ctx.setPackageSuffix(suffix);
 			
 			String version = params.getVersion();
-			if (StringUtils.isEmpty(version)) {
-				ctx.setVersion(version);
+			if (!StringUtils.isEmpty(version)) {
+				ctx.setPackageVersion(version);
 			}
 			
 			ctx.setParams(params);
@@ -97,7 +104,7 @@ public class SourceCodeGenerator {
 		
 	}
 	
-	private static String makePackageDirectories(String packageName, String rootDir) {
+	private static String makePackageDirectories(String packageName, String rootDir, String suffix) {
 		StringTokenizer token = new StringTokenizer(packageName, ".");
 	
 		StringBuilder sb = new StringBuilder();
@@ -113,6 +120,15 @@ public class SourceCodeGenerator {
 		if (!directories.exists()) {
 			if (!directories.mkdirs()) {
 				throw new IllegalStateException(THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY + dirs);
+			}
+		}
+		if (!StringUtils.isEmpty(suffix)) {
+			dirs = dirs + File.separator + suffix;
+			directories = new File(dirs);
+			if (!directories.exists()) {
+				if (!directories.mkdirs()) {
+					throw new IllegalStateException(THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY + dirs);
+				}
 			}
 		}
 		return dirs;

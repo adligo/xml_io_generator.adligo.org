@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,4 +152,39 @@ public class ClassFieldMethods {
 		return fieldMethods;
 	}
 
+	public BigDecimal calculateFieldVersion() {
+		long result = 0;
+		result = VersionCalculator.calculate(clazz);
+		result = result * 10;
+		for (int i = 0; i < fieldMethods.size(); i++) {
+			FieldMethods fm = fieldMethods.get(i);
+			String name = fm.getName();
+			
+			result = result + VersionCalculator.calculate(name);
+			Field field = fm.getField();
+			Class<?> type = field.getType();
+			result = result + VersionCalculator.calculate(type);
+		}
+		
+		BigDecimal bd = new BigDecimal(result);
+		bd = bd.divide(new BigDecimal(VersionCalculator.DIVISOR));
+		bd = bd.add(new BigDecimal(getSerialVersionUID()));
+		return bd;
+	}
+	
+	public long getSerialVersionUID() {
+		try {
+			Field serialVersionUID = clazz.getDeclaredField("serialVersionUID");
+			serialVersionUID.setAccessible(true);
+			return serialVersionUID.getLong(clazz);
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
+		}
+	}
 }

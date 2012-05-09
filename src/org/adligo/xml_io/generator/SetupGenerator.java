@@ -2,6 +2,7 @@ package org.adligo.xml_io.generator;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.adligo.i.util.client.StringUtils;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.Templates;
+import org.adligo.xml_io.generator.models.ClassFieldMethods;
 import org.adligo.xml_io.generator.models.GeneratorContext;
 
 public class SetupGenerator {
@@ -22,14 +24,18 @@ public class SetupGenerator {
 		Params params = new Params();
 		String ns = ctx.getNamespace();
 		params.addParam("namespace", ns);
-		String version = ctx.getVersion();
+		String version = ctx.getPackageVersion();
 		if (StringUtils.isEmpty(version)) {
 			version = new Date(System.currentTimeMillis()).toString();
 		}
 		params.addParam("namespaceVersion", version);
 		
 		String pkg = ctx.getPackageName();
-		params.addParam("package", pkg);
+		String packageSuffix = ctx.getPackageSuffix();
+		if (!StringUtils.isEmpty(packageSuffix)) {
+			pkg = pkg + "." + packageSuffix;
+		}
+		params.addParam("packageName", pkg);
 		
 		Set<Entry<String,String>> classNames = gc.getClassToConverterNames();
 		for (Entry<String,String> names: classNames) {
@@ -40,6 +46,14 @@ public class SetupGenerator {
 			clazzParams.addParam("className", clazz);
 		}
 		
+		if (!StringUtils.isEmpty(packageSuffix)) {
+			Iterator<ClassFieldMethods> cfms = gc.getClassFieldMethodsIterator();
+			while (cfms.hasNext()) {
+				ClassFieldMethods cfm = cfms.next();
+				Class<?> clazz = cfm.getClazz();
+				params.addParam("extraImport", clazz.getName());
+			}
+		}
 		SourceFileWriter sfw = new SourceFileWriter();
 		String dir = ctx.getPackageDirectory();
 		sfw.setDir(dir);
