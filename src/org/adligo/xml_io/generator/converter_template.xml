@@ -139,4 +139,81 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 	}
 }
 </template>
+<template name="simpleImutableConverter">
+package <param name="packageName"><value/></param>;
+<param name="extraImport">import <value/>;
+</param>
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.adligo.i.util.client.I_Iterator;
+import org.adligo.models.params.client.I_XMLBuilder;
+import org.adligo.models.params.client.Parser;
+import org.adligo.models.params.client.TagAttribute;
+import org.adligo.xml_io.client.I_AttributeSetter;
+import org.adligo.xml_io.client.I_Converter;
+import org.adligo.xml_io.client.I_FieldSetter;
+import org.adligo.xml_io.client.Xml_IOWriterContext;
+import org.adligo.xml_io.client.Xml_IOReaderContext;
+import org.adligo.xml_io.client.ObjectFromXml;
+import org.adligo.models.params.client.TagInfo;
+import org.adligo.xml_io.client.Xml_IOConstants;
+
+public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; {
+	
+	public static final String TAG_NAME = "<param name="tagName"><value/></param>";
+	public static final String VERSION = "<param name="version"><value/></param>";
+	
+	<param name="attribute">
+	public static final String <value/> = "<param name="attributeName"><value/></param>";
+	</param>
+	
+	@Override
+	public ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt; fromXml(String xml, TagInfo info, Xml_IOReaderContext context) {
+		//the <param name="genericClass"><value/></param> class is immutable so just call constructor
+		
+		
+		I_Iterator it = Parser.getAttributes(info, xml);
+		String nameToRet = "";
+		<param name="constructorClass" ><value/></param> obj = null;
+		while (it.hasNext()) {
+			TagAttribute attrib = (TagAttribute) it.next();
+			String name = attrib.getName();
+			String value = attrib.getValue();
+			if (Xml_IOConstants.N_NAME_ATTRIBUTE.equals(name)) {
+				nameToRet = value; 
+			} else {
+				obj = (<param name="constructorClass" ><value/></param>) context.readAttribute(
+							<param name="constructorClass" ><value/></param>.class, value);
+			}
+		}
+		<param name="genericClass"><value/></param> toRet = null;
+		try {
+			toRet = new <param name="genericClass"><value/></param>(obj);
+		} catch (Exception x) {
+			throw new IllegalArgumentException(x);
+		}
+		return new ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt;(nameToRet, toRet);
+	}
+
+	@Override
+	public void toXml(<param name="genericClass"><value/></param> p, Xml_IOWriterContext context) {
+		I_XMLBuilder builder = context.getBuilder();
+		context.appendTagHeaderStart(ConverterSetup.NAMESPACE, TAG_NAME);
+		context.appendSchemaInfoToFirstTag();
+		
+		String name = context.getNextTagNameAttribute();
+		if (name != null) {
+			context.writeXmlAttribute(Xml_IOConstants.N_NAME_ATTRIBUTE, name);
+		}
+		<param name="attribute">
+			context.writeXmlAttribute(<value/>, p.<param name="getter"><value/></param>());
+		</param>
+		builder.appendTagHeaderEndNoChildren();
+		
+	}
+}
+</template>
 </templates>

@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.jse.util.JSECommonInit;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
+import org.adligo.xml_io.generator.models.FieldMethods;
 import org.adligo.xml_io.generator.models.GeneratorContext;
 import org.adligo.xml_io.generator.models.Namespace;
 import org.adligo.xml_io.generator.models.SourceCodeGeneratorParams;
@@ -79,22 +80,43 @@ public class SourceCodeGenerator {
 			
 			List<Class<?>> classes = params.getClasses(name);
 			for (Class<?> clazz : classes) {
-				generate(clazz, ctx);
+				//mutants must be done first for complex non mutants
+				generateMutant(clazz, ctx);
+			}
+			for (Class<?> clazz : classes) {
+				generateNonMutant(clazz, ctx);
 			}
 			SetupGenerator setup = new SetupGenerator();
 			setup.generate(ctx);
 		}
 	}
 	
-	private static void generate(Class<?> clazz, GeneratorContext ctx) throws IOException {
+	private static void generateMutant(Class<?> clazz, GeneratorContext ctx) throws IOException {
 		ClassFieldMethods cfm = new ClassFieldMethods(clazz);
 		ctx.addClassFieldMethods(cfm);
 		
 		if (cfm.isMutant()) {
 			MutantConverterGenerator mg = new MutantConverterGenerator();
 			mg.generate(cfm,ctx);
+			ctx.addMutant(clazz);
+		} 
+	}
+	
+	private static void generateNonMutant(Class<?> clazz, GeneratorContext ctx) throws IOException {
+		ClassFieldMethods cfm = new ClassFieldMethods(clazz);
+		ctx.addClassFieldMethods(cfm);
+		
+		if (cfm.isMutant()) {
+			//do nothing
 		} else if (cfm.isValid()) {
-			
+			Class<?> wrappedFieldType = cfm.getImmutableFieldType();
+			if (FieldMethods.ATTRIBUTE_CLASSES.contains(wrappedFieldType)) {
+				SimpleNonMutantConverterGenerator gen = new SimpleNonMutantConverterGenerator();
+				gen.generate(cfm, ctx);
+			} else {
+				NonMutantConverterGenerator gen = new NonMutantConverterGenerator();
+				gen.generate(cfm, ctx);
+			}
 		} else {
 			String errorStart = cfm.logFieldMethods();
 			throw new IllegalArgumentException(THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS +
@@ -103,7 +125,6 @@ public class SourceCodeGenerator {
 		
 		
 	}
-	
 	private static String makePackageDirectories(String packageName, String rootDir, String suffix) {
 		StringTokenizer token = new StringTokenizer(packageName, ".");
 	

@@ -14,7 +14,7 @@ import org.adligo.xml_io.client.converters.DefaultNamespaceConverters;
 
 public class FieldMethods {
 	private static final Log log = LogFactory.getLog(FieldMethods.class);
-	private static Set<Class<?>> ATTRIBUTE_CLASSES = getAttributeClasses();
+	public static Set<Class<?>> ATTRIBUTE_CLASSES = getAttributeClasses();
 	
 	private static Set<Class<?>> getAttributeClasses() {
 		Set<Class<?>> toRet = new HashSet<Class<?>>();

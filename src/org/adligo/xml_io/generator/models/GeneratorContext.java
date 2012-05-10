@@ -25,6 +25,7 @@ public class GeneratorContext {
 	private String packageVersion;
 	private BigDecimal packageVersionNumber = new BigDecimal(0);
 	private String packageSuffix;
+	private List<Class<?>> mutants = new ArrayList<Class<?>>();
 	
 	public String getNextId() {
 		return counter.getNextId();
@@ -122,5 +123,16 @@ public class GeneratorContext {
 
 	public void setPackageSuffix(String packageSuffix) {
 		this.packageSuffix = packageSuffix;
+	}
+	
+	public void addMutant(Class<?> c) {
+		mutants.add(c);
+	}
+	
+	public boolean isMutant(Class<?> c) {
+		if (mutants.contains(c)) {
+			return true;
+		}
+		return false;
 	}
 }

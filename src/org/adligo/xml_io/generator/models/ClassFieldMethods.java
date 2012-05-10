@@ -16,6 +16,14 @@ public class ClassFieldMethods {
 	private static final Log log = LogFactory.getLog(ClassFieldMethods.class);
 	private Class<?> clazz;
 	private List<FieldMethods> fieldMethods = new ArrayList<FieldMethods>();
+	/**
+	 * should be set during the validate method
+	 */
+	private Class<?> immutableFieldType;
+	/**
+	 * this is the name of the field in the immutable class that needs to be serialized;
+	 */
+	private String immutableFieldName;
 	
 	public ClassFieldMethods(Class<?> clazz) {
 		this.clazz = clazz;
@@ -56,8 +64,8 @@ public class ClassFieldMethods {
 		if (I_Immutable.class.isAssignableFrom(clazz)) {
 			try {
 				I_Immutable item = (I_Immutable) clazz.newInstance();
-				String fieldName = item.getImmutableFieldName();
-				if (fieldName == null) {
+				immutableFieldName = item.getImmutableFieldName();
+				if (immutableFieldName == null) {
 					throw new IllegalArgumentException("I_Immutable " + 
 							clazz + " should not return null from getImmutableFieldName()");
 				}
@@ -65,14 +73,14 @@ public class ClassFieldMethods {
 				for (FieldMethods fm: fieldMethods) {
 					Field field = fm.getField();
 					String name = field.getName();
-					if (fieldName.equals(name)) {
+					if (immutableFieldName.equals(name)) {
 						fieldM = fm;
 						break;
 					}
 				}
 				if (fieldM == null) {
 					throw new IllegalArgumentException("I_Immutable " + 
-							clazz + " does not have a non transient field " + fieldName);
+							clazz + " does not have a non transient field " + immutableFieldName);
 				}
 				Field field = fieldM.getField();
 				Class<?> fieldClass = field.getType();
@@ -97,6 +105,7 @@ public class ClassFieldMethods {
 								 * so this is the match.
 								 */
 								if (paramType.equals(fieldParamType)) {
+									immutableFieldType = paramType;
 									return true;
 								}
 							}
@@ -186,5 +195,13 @@ public class ClassFieldMethods {
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("unable to identify serialVersionUID for class " + clazz, e);
 		}
+	}
+
+	public Class<?> getImmutableFieldType() {
+		return immutableFieldType;
+	}
+
+	public String getImmutableFieldName() {
+		return immutableFieldName;
 	}
 }
