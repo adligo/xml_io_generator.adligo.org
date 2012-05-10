@@ -62,7 +62,8 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 						attributeXml = attributeLetterCounter.getNextId();
 					}
 				}
-				String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+				String attributeConstant = immutableFieldType.getSimpleName() + "Generator." +
+					FieldNameToUnderscore.toUnderscore(fieldName);
 				parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
 				attributeParams.addParam("attributeName", attributeXml);
 				String getterName = fm.getGetterName();
@@ -87,7 +88,8 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 				if (!ctx.isUseFieldNamesInXml()) {
 					childName = childNameLetterCounter.getNextId();
 				}
-				String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+				String attributeConstant =  immutableFieldType.getSimpleName() + "Generator." +
+						FieldNameToUnderscore.toUnderscore(fieldName);
 				parent.addParam("child", attributeConstant + "_CHILD", childParams);
 				childParams.addParam("childName", childName);
 				String getterName = fm.getGetterName();

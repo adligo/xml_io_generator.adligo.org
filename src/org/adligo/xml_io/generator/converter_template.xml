@@ -243,12 +243,6 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 	public static final String TAG_NAME = "<param name="tagName"><value/></param>";
 	public static final String VERSION = "<param name="version"><value/></param>";
 	
-	<param name="attribute">
-	public static final String <value/> = "<param name="attributeName"><value/></param>";
-	</param>
-	<param name="child">
-	public static final String <value/> = "<param name="childName"><value/></param>";
-	</param>
 	private static final Map&lt;String, I_AttributeSetter&lt;<param name="genericMutantClass"><value/></param>&gt;&gt; SETTERS = getSetters();
 	private static final Map&lt;String, I_FieldSetter&lt;<param name="genericMutantClass"><value/></param>&gt;&gt; FIELD_SETTERS = getFieldSetters();
 	
