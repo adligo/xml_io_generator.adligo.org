@@ -43,28 +43,6 @@ public class ClassFieldMethods {
 				}
 			}
 		}
-	}
-	
-	/**
-	 * return true if this class has a getter and setter for each 
-	 * non transient method
-	 * @return
-	 */
-	public boolean isMutant() {
-		for (FieldMethods fm : fieldMethods) {
-			if (fm.getGetter() == null || fm.getSetter() == null) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * it the class has a single argument constructor 
-	 * which can be cast to one of its fields
-	 * @return
-	 */
-	public boolean isValid() {
 		if (I_Immutable.class.isAssignableFrom(clazz)) {
 			try {
 				I_Immutable item = (I_Immutable) clazz.newInstance();
@@ -104,7 +82,6 @@ public class ClassFieldMethods {
 						if (constructorParamType.isAssignableFrom(fieldClass)) {
 							immutableFieldType = fieldClass;
 							constructorType = constructorParamType;
-							return true;
 						}
 					}
 				}
@@ -114,7 +91,83 @@ public class ClassFieldMethods {
 				log.error(e.getMessage(), e);
 			}
 		}
+	}
+	
+	/**
+	 * return true if this class has a getter and setter for each 
+	 * non transient method
+	 * @return
+	 */
+	public boolean isMutant() {
+		for (FieldMethods fm : fieldMethods) {
+			if (fm.getGetter() == null || fm.getSetter() == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * it the class has a single argument constructor 
+	 * which can be cast to one of its fields
+	 * @return
+	 */
+	public boolean isValid() {
+
+		if (immutableFieldType != null && constructorType != null) {
+			return true;
+		}
 		return false;
+	}
+	/**
+	 * assumes isValid has been called
+	 */
+	public boolean isSimpleImmutable() {
+		if (FieldMethods.ATTRIBUTE_CLASSES.contains(immutableFieldType)) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 *  a recursive method to find if this is a SimpleAttribute class
+	 *  at it's root ie LongIdentifier -> LongIdentifierMutant -> Long yes it is
+	 *  User -> UserMutant -> multiple fields no it is NOT
+	 * @return
+	 */
+	public boolean isAttribute() {
+		if (FieldMethods.isAttribute(clazz)) {
+			return true;
+		}
+		if (isValid()) {
+			ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
+			return cfm.isAttribute();
+		} else if (fieldMethods.size() == 1) {
+			FieldMethods fm = fieldMethods.get(0);
+			Field field = fm.getField();
+			Class<?> clazz = field.getType();
+			ClassFieldMethods cfm = new ClassFieldMethods(clazz);
+			return cfm.isAttribute();
+		}
+		return false;
+	}
+	
+	
+	public Class<?> getAttributeClass() {
+		if (FieldMethods.isAttribute(clazz)) {
+			return clazz;
+		}
+		if (isValid()) {
+			ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
+			return cfm.getAttributeClass();
+		} else if (fieldMethods.size() == 1) {
+			FieldMethods fm = fieldMethods.get(0);
+			Field field = fm.getField();
+			Class<?> clazz = field.getType();
+			ClassFieldMethods cfm = new ClassFieldMethods(clazz);
+			return cfm.getAttributeClass();
+		}
+		return null;
 	}
 	
 	public String logFieldMethods() {

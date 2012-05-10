@@ -22,7 +22,8 @@ import org.adligo.xml_io.client.ObjectFromXml;
 import org.adligo.models.params.client.TagInfo;
 import org.adligo.xml_io.client.Xml_IOConstants;
 
-public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; {
+public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt;
+	<param name="attributeConverter">, I_AttributeConverter&lt;<param name="genericClass"><value/></param>&gt; </param>{
 	
 	public static final String TAG_NAME = "<param name="tagName"><value/></param>";
 	public static final String VERSION = "<param name="version"><value/></param>";
@@ -137,6 +138,27 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 			context.appendEndTag(ConverterSetup.NAMESPACE, TAG_NAME);
 		</param>
 	}
+	<param name="attributeConverter">
+	@Override
+	public <param name="genericClass"><value/></param> fromXmlAttribute(String attributeValue, Xml_IOReaderContext context) {
+		<param name="constructorClass" ><value/></param> obj = 
+				(<param name="constructorClass" ><value/></param>) context.readAttribute(
+							<param name="constructorClass" ><value/></param>.class, attributeValue);
+		try {
+			return new <param name="genericClass"><value/></param>(obj);
+		} catch (Exception x) {
+			throw new IllegalArgumentException(x);
+		}
+	}
+
+	@Override
+	public void toXmlAttribute(<param name="genericClass"><value/></param> p, Xml_IOWriterContext context) {
+		String name = context.getNextTagNameAttribute();
+		<param name="attribute">
+		context.writeXmlAttribute(name, p.<param name="getter"><value/></param>());
+		</param>
+	}
+	</param>
 }
 </template>
 <template name="simpleImutableConverter">
@@ -153,6 +175,7 @@ import org.adligo.models.params.client.I_XMLBuilder;
 import org.adligo.models.params.client.Parser;
 import org.adligo.models.params.client.TagAttribute;
 import org.adligo.xml_io.client.I_AttributeSetter;
+import org.adligo.xml_io.client.I_AttributeConverter;
 import org.adligo.xml_io.client.I_Converter;
 import org.adligo.xml_io.client.I_FieldSetter;
 import org.adligo.xml_io.client.Xml_IOWriterContext;
@@ -161,7 +184,7 @@ import org.adligo.xml_io.client.ObjectFromXml;
 import org.adligo.models.params.client.TagInfo;
 import org.adligo.xml_io.client.Xml_IOConstants;
 
-public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; {
+public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt;, I_AttributeConverter&lt;<param name="genericClass"><value/></param>&gt; {
 	
 	public static final String TAG_NAME = "<param name="tagName"><value/></param>";
 	public static final String VERSION = "<param name="version"><value/></param>";
@@ -214,6 +237,26 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		builder.appendTagHeaderEndNoChildren();
 		
 	}
+	
+	@Override
+	public <param name="genericClass"><value/></param> fromXmlAttribute(String attributeValue, Xml_IOReaderContext context) {
+		<param name="constructorClass" ><value/></param> obj = 
+				(<param name="constructorClass" ><value/></param>) context.readAttribute(
+							<param name="constructorClass" ><value/></param>.class, attributeValue);
+		try {
+			return new <param name="genericClass"><value/></param>(obj);
+		} catch (Exception x) {
+			throw new IllegalArgumentException(x);
+		}
+	}
+
+	@Override
+	public void toXmlAttribute(<param name="genericClass"><value/></param> p, Xml_IOWriterContext context) {
+		String name = context.getNextTagNameAttribute();
+		<param name="attribute">
+		context.writeXmlAttribute(name, p.<param name="getter"><value/></param>());
+		</param>
+	}
 }
 </template>
 <template name="immutableConverter">
@@ -238,7 +281,9 @@ import org.adligo.xml_io.client.ObjectFromXml;
 import org.adligo.models.params.client.TagInfo;
 import org.adligo.xml_io.client.Xml_IOConstants;
 
-public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; {
+public class <param name="className"><value/></param> implements I_Converter&lt;<param name="genericClass"><value/></param>&gt; 
+	<param name="attributeConverter">, I_AttributeConverter&lt;<param name="genericClass"><value/></param>&gt; </param>{
+	
 	
 	public static final String TAG_NAME = "<param name="tagName"><value/></param>";
 	public static final String VERSION = "<param name="version"><value/></param>";
@@ -352,6 +397,27 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 			context.appendEndTag(ConverterSetup.NAMESPACE, TAG_NAME);
 		</param>
 	}
+	<param name="attributeConverter">
+	@Override
+	public <param name="genericClass"><value/></param> fromXmlAttribute(String attributeValue, Xml_IOReaderContext context) {
+		<param name="constructorClass" ><value/></param> obj = 
+				(<param name="constructorClass" ><value/></param>) context.readAttribute(
+							<param name="constructorClass" ><value/></param>.class, attributeValue);
+		try {
+			return new <param name="genericClass"><value/></param>(obj);
+		} catch (Exception x) {
+			throw new IllegalArgumentException(x);
+		}
+	}
+
+	@Override
+	public void toXmlAttribute(<param name="genericClass"><value/></param> p, Xml_IOWriterContext context) {
+		String name = context.getNextTagNameAttribute();
+		<param name="attribute">
+		context.writeXmlAttribute(name, p.<param name="getter"><value/></param>());
+		</param>
+	}
+	</param>
 }
 </template>
 </templates>

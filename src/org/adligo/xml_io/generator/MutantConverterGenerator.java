@@ -3,6 +3,7 @@ package org.adligo.xml_io.generator;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.TemplateParserEngine;
 import org.adligo.xml.parsers.template.Templates;
+import org.adligo.xml_io.client.I_AttributeConverter;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
 import org.adligo.xml_io.generator.models.FieldMethods;
 import org.adligo.xml_io.generator.models.FieldNameToUnderscore;
@@ -46,56 +48,41 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		List<FieldMethods> fields = clazz.getFieldMethods();
 		boolean hasChildren = false;
 		for (FieldMethods fm: fields) {
+			
 			if (fm.isAttribute()) {
-				Params attributeParams = new Params();
-				String fieldName = fm.getName();
-				String attributeXml = fieldName;
-				if (!ctx.isUseFieldNamesInXml()) {
-					attributeXml = attributeLetterCounter.getNextId();
-					if ("n".equals(attributeXml)) {
-						//n is reserved for parent child objects the name attribute
-						attributeXml = attributeLetterCounter.getNextId();
-					}
-				}
-				String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
-				parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
-				attributeParams.addParam("attributeName", attributeXml);
-				String getterName = fm.getGetterName();
-				attributeParams.addParam("getter", getterName);
-				appendGenericClass(attributeParams);
-				
-				
-				String fieldClass = fm.getFieldClassForSource();
-				attributeParams.addParam("fieldClass", fieldClass);
-				
-				String fieldClassCastable = fm.getFieldClassCastableForSource();
-				attributeParams.addParam("fieldClassCastable", fieldClassCastable);
-				
-				String setter = fm.getSetterName();
-				attributeParams.addParam("setter", setter);
+				addAttributeParams(parent, fm);
 			} else {
-				hasChildren = true;
-				Params childParams = new Params();
-				String fieldName = fm.getName();
-				String childName = fieldName;
-				if (!ctx.isUseFieldNamesInXml()) {
-					childName = childNameLetterCounter.getNextId();
+				Class<?> fieldType = fm.getFieldClass();
+				ClassFieldMethods cfm = new ClassFieldMethods(fieldType);
+				if (cfm.isAttribute()) {
+					addAttributeParams(parent, fm);
+				} else {
+					hasChildren = true;
+					Params childParams = new Params();
+					String fieldName = fm.getName();
+					String childName = fieldName;
+					if (!ctx.isUseFieldNamesInXml()) {
+						childName = childNameLetterCounter.getNextId();
+					}
+					String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+					parent.addParam("child", attributeConstant + "_CHILD", childParams);
+					childParams.addParam("childName", childName);
+					String getterName = fm.getGetterName();
+					childParams.addParam("getter", getterName);
+					appendGenericClass(childParams);
+					
+					Class<?> clazz = fm.getFieldClass();
+					if (!FieldMethods.isAttribute(clazz)) {
+						String clazzName = fm.getFieldClassNameForImport();
+						params.addParam("extraImport", clazzName);
+					}
+					
+					String fieldClassCastable = fm.getFieldClassCastableForSource();
+					childParams.addParam("childClassCastable", fieldClassCastable);
+					
+					String setter = fm.getSetterName();
+					childParams.addParam("setter", setter);
 				}
-				String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
-				parent.addParam("child", attributeConstant + "_CHILD", childParams);
-				childParams.addParam("childName", childName);
-				String getterName = fm.getGetterName();
-				childParams.addParam("getter", getterName);
-				appendGenericClass(childParams);
-				
-				String clazzName = fm.getFieldClassNameForImport();
-				params.addParam("extraImport", clazzName);
-				
-				String fieldClassCastable = fm.getFieldClassCastableForSource();
-				childParams.addParam("childClassCastable", fieldClassCastable);
-				
-				String setter = fm.getSetterName();
-				childParams.addParam("setter", setter);
 			}
 		}
 		if (hasChildren) {
@@ -103,5 +90,46 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		} else {
 			parent.addParam("doesNotHaveChildren");
 		}
+		if (clazz.isAttribute()) {
+			params.addParam("extraImport", I_AttributeConverter.class.getName());
+			Params attribParams = new Params();
+			parent.addParam("attributeConverter", attribParams);
+			attribParams.addParam("genericClass", clazz.getClazz().getSimpleName());
+			FieldMethods fm = fields.get(0);
+			Class<?> attribConstructorClass = clazz.getAttributeClass();
+			params.addParam("extraImport", attribConstructorClass.getName());
+			attribParams.addParam("constructorClass", attribConstructorClass.getSimpleName());
+			addAttributeParams(attribParams, fm);
+		}
+	}
+
+
+	private void addAttributeParams(Params parent, FieldMethods fm) {
+		Params attributeParams = new Params();
+		String fieldName = fm.getName();
+		String attributeXml = fieldName;
+		if (!ctx.isUseFieldNamesInXml()) {
+			attributeXml = attributeLetterCounter.getNextId();
+			if ("n".equals(attributeXml)) {
+				//n is reserved for parent child objects the name attribute
+				attributeXml = attributeLetterCounter.getNextId();
+			}
+		}
+		String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+		parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
+		attributeParams.addParam("attributeName", attributeXml);
+		String getterName = fm.getGetterName();
+		attributeParams.addParam("getter", getterName);
+		appendGenericClass(attributeParams);
+		
+		
+		String fieldClass = fm.getFieldClassForSource();
+		attributeParams.addParam("fieldClass", fieldClass);
+		
+		String fieldClassCastable = fm.getFieldClassCastableForSource();
+		attributeParams.addParam("fieldClassCastable", fieldClassCastable);
+		
+		String setter = fm.getSetterName();
+		attributeParams.addParam("setter", setter);
 	}
 }

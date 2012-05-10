@@ -120,7 +120,10 @@ public class FieldMethods {
 	}
 	
 	public boolean isAttribute() {
-		Class<?> clazz = field.getType();
+		return isAttribute(field.getType());
+	}
+	
+	public static boolean isAttribute(Class<?> clazz) {
 		if (clazz.isPrimitive()) {
 			return true;
 		}
@@ -140,6 +143,9 @@ public class FieldMethods {
 	
 	public String getSetterName() {
 		return setter.getName();
+	}
+	public Class<?> getFieldClass() {
+		return field.getType();
 	}
 	
 	public String getFieldClassForSource() {

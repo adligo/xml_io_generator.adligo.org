@@ -109,8 +109,7 @@ public class SourceCodeGenerator {
 		if (cfm.isMutant()) {
 			//do nothing
 		} else if (cfm.isValid()) {
-			Class<?> wrappedFieldType = cfm.getImmutableFieldType();
-			if (FieldMethods.ATTRIBUTE_CLASSES.contains(wrappedFieldType)) {
+			if (cfm.isSimpleImmutable()) {
 				SimpleNonMutantConverterGenerator gen = new SimpleNonMutantConverterGenerator();
 				gen.generate(cfm, ctx);
 			} else {
