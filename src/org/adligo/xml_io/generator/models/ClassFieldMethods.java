@@ -21,6 +21,10 @@ public class ClassFieldMethods {
 	 */
 	private Class<?> immutableFieldType;
 	/**
+	 * should be set during the validate method
+	 */
+	private Class<?> constructorType;
+	/**
 	 * this is the name of the field in the immutable class that needs to be serialized;
 	 */
 	private String immutableFieldName;
@@ -84,31 +88,23 @@ public class ClassFieldMethods {
 				}
 				Field field = fieldM.getField();
 				Class<?> fieldClass = field.getType();
-				
+				//loop through the constructors
 				Constructor<?> [] constructors =  clazz.getConstructors();
 				for (int i = 0; i < constructors.length; i++) {
 					Constructor<?> con = constructors[i];
 					Class<?> [] paramTypes = con.getParameterTypes();
 					if (paramTypes.length == 1) {
-						Class<?> paramType = paramTypes[0];
+						Class<?> constructorParamType = paramTypes[0];
 						
-						Constructor<?> [] fieldConstructors =  fieldClass.getConstructors();
-						for (int j = 0; j < fieldConstructors.length; j++) {
-							Constructor<?> fieldCon= constructors[i];
-							Class<?> [] fieldParamTypes = fieldCon.getParameterTypes();
-							if (fieldParamTypes.length == 1) {
-								Class<?> fieldParamType = fieldParamTypes[0];
-								
-								/*
-								 * the constructor of the field's type has a single argument that 
-								 * matches the single argument constructor of the immutable class
-								 * so this is the match.
-								 */
-								if (paramType.equals(fieldParamType)) {
-									immutableFieldType = paramType;
-									return true;
-								}
-							}
+						/*
+						 * the constructor of the field's type has a single argument that 
+						 * matches the single argument constructor of the immutable class
+						 * so this is the match.
+						 */
+						if (constructorParamType.isAssignableFrom(fieldClass)) {
+							immutableFieldType = fieldClass;
+							constructorType = constructorParamType;
+							return true;
 						}
 					}
 				}
@@ -203,5 +199,9 @@ public class ClassFieldMethods {
 
 	public String getImmutableFieldName() {
 		return immutableFieldName;
+	}
+
+	public Class<?> getConstructorType() {
+		return constructorType;
 	}
 }
