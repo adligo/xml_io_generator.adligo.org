@@ -1,17 +1,15 @@
 package org.adligo.xml_io.generator;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
-import org.adligo.xml.parsers.template.TemplateParserEngine;
 import org.adligo.xml.parsers.template.Templates;
 import org.adligo.xml_io.client.I_AttributeConverter;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
@@ -82,7 +80,11 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 						ctx.addExtraImport(clazzName);
 					}
 					
-					String fieldClassCastable = fm.getFieldClassCastableForSource();
+					Class<?> setterParamClass = fm.getSetterParameterClass();
+					if (!FieldMethods.isAttribute(setterParamClass)) {
+						ctx.addExtraImport(setterParamClass.getName());
+					}
+					String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
 					childParams.addParam("childClassCastable", fieldClassCastable);
 					
 					String setter = fm.getSetterName();
@@ -136,7 +138,11 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		String fieldClass = fm.getFieldClassForSource();
 		attributeParams.addParam("fieldClass", fieldClass);
 		
-		String fieldClassCastable = fm.getFieldClassCastableForSource();
+		Class<?> setterParamClass = fm.getSetterParameterClass();
+		if (!FieldMethods.isAttribute(setterParamClass)) {
+			ctx.addExtraImport(setterParamClass.getName());
+		}
+		String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
 		attributeParams.addParam("fieldClassCastable", fieldClassCastable);
 		
 		String setter = fm.getSetterName();

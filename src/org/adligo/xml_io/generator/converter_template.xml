@@ -124,19 +124,26 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		<param name="attribute">
 			context.writeXmlAttribute(<value/>, p.<param name="getter"><value/></param>());
 		</param>
-		<param name="hasChildren">
-		builder.appendTagHeaderEnd(true);
-		</param>
-		<param name="doesNotHaveChildren">
-		builder.appendTagHeaderEndNoChildren();
-		</param>
+				
+		boolean setChild = false;
 		<param name="child">
+		Object obj_<param name="getter"><value/></param> = p.<param name="getter"><value/></param>();
+		if (obj_<param name="getter"><value/></param> != null) {
+			setChild = true;
+		}
+		</param>
+		if (setChild) {
+			builder.appendTagHeaderEnd(true);
+			builder.addIndentLevel();
+			<param name="child">
 			context.setNextTagNameAttribute(<value/>);
 			context.writeXml(p.<param name="getter"><value/></param>());
-		</param>
-		<param name="hasChildren">
+			</param>
+			builder.removeIndentLevel();
 			context.appendEndTag(ConverterSetup.NAMESPACE, TAG_NAME);
-		</param>
+		} else {
+			builder.appendTagHeaderEndNoChildren();
+		}
 	}
 	<param name="attributeConverter">
 	@Override
@@ -383,19 +390,26 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		<param name="attribute">
 			context.writeXmlAttribute(<value/>, p.<param name="getter"><value/></param>());
 		</param>
-		<param name="hasChildren">
-		builder.appendTagHeaderEnd(true);
-		</param>
-		<param name="doesNotHaveChildren">
-		builder.appendTagHeaderEndNoChildren();
-		</param>
+		
+		boolean setChild = false;
 		<param name="child">
+		Object obj_<param name="getter"><value/></param> = p.<param name="getter"><value/></param>();
+		if (obj_<param name="getter"><value/></param> != null) {
+			setChild = true;
+		}
+		</param>
+		if (setChild) {
+			builder.appendTagHeaderEnd(true);
+			builder.addIndentLevel();
+			<param name="child">
 			context.setNextTagNameAttribute(<value/>);
 			context.writeXml(p.<param name="getter"><value/></param>());
-		</param>
-		<param name="hasChildren">
+			</param>
+			builder.removeIndentLevel();
 			context.appendEndTag(ConverterSetup.NAMESPACE, TAG_NAME);
-		</param>
+		} else {
+			builder.appendTagHeaderEndNoChildren();
+		}
 	}
 	<param name="attributeConverter">
 	@Override

@@ -2,7 +2,9 @@ package org.adligo.xml_io.generator;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
@@ -91,7 +93,11 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 					
 					childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 						
-					String fieldClassCastable = fm.getFieldClassCastableForSource();
+					Class<?> setterParamClass = fm.getSetterParameterClass();
+					if (!FieldMethods.isAttribute(setterParamClass)) {
+						ctx.addExtraImport(setterParamClass.getName());
+					}
+					String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
 					childParams.addParam("childClassCastable", fieldClassCastable);
 					
 					String setter = fm.getSetterName();
@@ -148,7 +154,12 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		String fieldClass = fm.getFieldClassForSource();
 		attributeParams.addParam("fieldClass", fieldClass);
 		
-		String fieldClassCastable = fm.getFieldClassCastableForSource();
+
+		Class<?> setterParamClass = fm.getSetterParameterClass();
+		if (!FieldMethods.isAttribute(setterParamClass)) {
+			ctx.addExtraImport(setterParamClass.getName());
+		}
+		String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
 		attributeParams.addParam("fieldClassCastable", fieldClassCastable);
 		
 		String setter = fm.getSetterName();

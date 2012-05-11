@@ -12,9 +12,12 @@ import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
 import org.adligo.xml_io.client.converters.DefaultNamespaceConverters;
 
+
 public class FieldMethods {
+	public static final String MAP = "Map";
+	public static final String COLLECTION = "Collection";
 	private static final Log log = LogFactory.getLog(FieldMethods.class);
-	public static Set<Class<?>> ATTRIBUTE_CLASSES = getAttributeClasses();
+	protected static Set<Class<?>> ATTRIBUTE_CLASSES = getAttributeClasses();
 	
 	private static Set<Class<?>> getAttributeClasses() {
 		Set<Class<?>> toRet = new HashSet<Class<?>>();
@@ -120,6 +123,10 @@ public class FieldMethods {
 	public Method getSetter() {
 		return setter;
 	}
+	
+	public Class<?> getSetterParameterClass() {
+		return setter.getParameterTypes()[0];
+	}
 
 	public Method getGetter() {
 		return getter;
@@ -175,9 +182,7 @@ public class FieldMethods {
 		return type.getSimpleName() + ".class";
 	}
 	
-	public String getFieldClassCastableForSource() {
-		Class<?> type = field.getType();
-		
+	public static String getClassCastableForSource(Class<?> type) {
 		if (type.equals(DefaultNamespaceConverters.CHAR_ARRAY_CLASS)) {
 			return "char []";
 		}

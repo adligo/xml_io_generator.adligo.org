@@ -81,10 +81,6 @@ public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 					
 					String fieldClass = fm.getFieldClassForSource();
 					attributeParams.addParam("fieldClass", fieldClass);
-					
-					
-					String fieldClassCastable = fm.getFieldClassCastableForSource();
-					attributeParams.addParam("fieldClassCastable", fieldClassCastable);
 				}
 			} 
 		}
