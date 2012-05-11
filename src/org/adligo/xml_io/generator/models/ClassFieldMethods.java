@@ -64,6 +64,9 @@ public class ClassFieldMethods {
 					throw new IllegalArgumentException("I_Immutable " + 
 							clazz + " does not have a non transient field " + immutableFieldName);
 				}
+				fieldMethods.clear();
+				fieldMethods.add(fieldM);
+				
 				Field field = fieldM.getField();
 				Class<?> fieldClass = field.getType();
 				//loop through the constructors
@@ -90,6 +93,8 @@ public class ClassFieldMethods {
 			} catch (IllegalAccessException e) {
 				log.error(e.getMessage(), e);
 			}
+		} else {
+			
 		}
 	}
 	

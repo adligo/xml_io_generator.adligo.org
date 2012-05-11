@@ -1,10 +1,10 @@
 package org.adligo.xml_io.generator.models;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +27,7 @@ public class GeneratorContext {
 	private String packageSuffix;
 	private List<Class<?>> mutants = new ArrayList<Class<?>>();
 	private Map<String,String> classToAttributeGeneratorNames = new HashMap<String, String>();
+	private Set<String> extraImports = new HashSet<String>();
 	
 	public String getNextId() {
 		return counter.getNextId();
@@ -143,5 +144,21 @@ public class GeneratorContext {
 
 	public Set<Entry<String, String>> getClassToAttributeGeneratorNames() {
 		return classToAttributeGeneratorNames.entrySet();
+	}
+
+	public Set<String> getExtraImports() {
+		return Collections.unmodifiableSet(extraImports);
+	}
+
+	public void setExtraImports(Set<String> p) {
+		extraImports.clear();
+		extraImports.addAll(p);
+	}
+	public void addExtraImport(String p) {
+		extraImports.add(p);
+	}
+	
+	public void clearExtraImports() {
+		extraImports.clear();
 	}
 }

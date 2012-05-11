@@ -60,7 +60,7 @@ public class SetupGenerator {
 			while (cfms.hasNext()) {
 				ClassFieldMethods cfm = cfms.next();
 				Class<?> clazz = cfm.getClazz();
-				params.addParam("extraImport", clazz.getName());
+				ctx.addExtraImport(clazz.getName());
 			}
 		}
 		SourceFileWriter sfw = new SourceFileWriter();

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.adligo.i.log.client.Log;
+import org.adligo.i.log.client.LogFactory;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.Templates;
@@ -13,6 +15,8 @@ import org.adligo.xml_io.generator.models.FieldNameToUnderscore;
 import org.adligo.xml_io.generator.models.GeneratorContext;
 
 public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
+	private static final Log log = LogFactory.getLog(SimpleNonMutantConverterGenerator.class);
+	
 	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_template.xml", true);
 	private static final Template template = templates.getTemplate("simpleImutableConverter");
 
@@ -20,6 +24,7 @@ public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
 		ctx = pctx;
+		log.info("working on generators for class " + cfm.getClazz());
 		
 		BigDecimal version = clazz.calculateFieldVersion();
 		String versionString = version.toPlainString();
@@ -49,6 +54,10 @@ public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 		
 		
 		for (FieldMethods fm: fields) {
+			String fname = fm.getName();
+			if (log.isDebugEnabled()) {
+				log.debug("working on field " + fname);
+			}
 			if (fm.isAttribute()) {
 
 				Params attributeParams = new Params();

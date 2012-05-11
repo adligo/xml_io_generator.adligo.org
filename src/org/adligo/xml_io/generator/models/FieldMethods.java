@@ -52,26 +52,30 @@ public class FieldMethods {
 			if (isBoolean(type)) {
 				if (new String("is" + name).equalsIgnoreCase(methodName) ) {
 					Class<?> returnType = meth.getReturnType();
-					if (returnType.equals(field.getType())) {
+					Class<?> fieldClass = field.getType();
+					if (returnType.isAssignableFrom(fieldClass)) {
 						getter = meth;
 						log.debug("it is!");
 					}
 				} else if (new String("has" + name).equalsIgnoreCase(methodName) ) {
 					Class<?> returnType = meth.getReturnType();
-					if (returnType.equals(field.getType())) {
+					Class<?> fieldClass = field.getType();
+					if (returnType.isAssignableFrom(fieldClass)) {
 						getter = meth;
 						log.debug("it is!");
 					}
 				} else if (new String("get" + name).equalsIgnoreCase(methodName) ) {
 					Class<?> returnType = meth.getReturnType();
-					if (returnType.equals(field.getType())) {
+					Class<?> fieldClass = field.getType();
+					if (returnType.isAssignableFrom(fieldClass)) {
 						getter = meth;
 						log.debug("it is!");
 					}
 				}
 			} else if (new String("get" + name).equalsIgnoreCase(methodName) ) {
 				Class<?> returnType = meth.getReturnType();
-				if (returnType.equals(field.getType())) {
+				Class<?> fieldClass = field.getType();
+				if (returnType.isAssignableFrom(fieldClass)) {
 					getter = meth;
 					log.debug("it is!");
 				}
@@ -81,7 +85,9 @@ public class FieldMethods {
 			if (new String("set" + name).equalsIgnoreCase(methodName) ) {
 				Class<?> [] params = meth.getParameterTypes();
 				if (params.length == 1) {
-					if (field.getType().equals(params[0])) {
+					Class<?> param = params[0];
+					Class<?> fieldClass = field.getType();
+					if (param.isAssignableFrom(fieldClass)) {
 						setter = meth;
 						log.debug("it is!");
 					}
@@ -138,10 +144,16 @@ public class FieldMethods {
 	}
 	
 	public String getGetterName() {
+		if (getter == null) {
+			throw new NullPointerException("getter is null for " + field.getName());
+		}
 		return getter.getName();
 	}
 	
 	public String getSetterName() {
+		if (setter == null) {
+			throw new NullPointerException("setter is null for " + field.getName());
+		}
 		return setter.getName();
 	}
 	public Class<?> getFieldClass() {
@@ -208,5 +220,21 @@ public class FieldMethods {
 	public String getFieldClassNameForImport() {
 		Class<?> clazz = field.getType();
 		return clazz.getName();
+	}
+
+	@Override
+	public String toString() {
+		String toRet = "FieldMethods [field=" + field.getName();
+		if (setter != null) {
+			toRet = toRet + ", setter=" + setter.getName();
+		} else {
+			toRet = toRet + ", setter=null";
+		}
+		if (getter != null) {
+			toRet = toRet + ", getter=" + getter.getName();
+		} else {
+			toRet = toRet + ", getter=null";
+		}
+		return toRet;
 	}
 }

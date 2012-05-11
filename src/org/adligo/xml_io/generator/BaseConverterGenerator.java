@@ -1,8 +1,7 @@
 package org.adligo.xml_io.generator;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.util.Set;
 
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.models.params.client.Params;
@@ -35,6 +34,11 @@ public class BaseConverterGenerator {
 		String clazzName = name + "Generator";
 		ctx.addClassToConverterNames(name, clazzName);
 		
+		Set<String> extraImports = ctx.getExtraImports();
+		for (String p: extraImports) {
+			params.addParam("extraImport", p);
+		}
+		
 		Package pkg = clazz.getPackage();
 		
 		String packageName = pkg.getName();
@@ -47,7 +51,7 @@ public class BaseConverterGenerator {
 		appendGenericClass(params);
 		
 		if (!StringUtils.isEmpty(packageSuffix)) {
-			params.addParam("extraImport", clazz.getName());
+			ctx.addExtraImport(clazz.getName());
 		}
 		SourceFileWriter sfw = new SourceFileWriter();
 		String dir = ctx.getPackageDirectory();

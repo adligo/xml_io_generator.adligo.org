@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.adligo.i.log.client.Log;
+import org.adligo.i.log.client.LogFactory;
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
@@ -15,6 +17,8 @@ import org.adligo.xml_io.generator.models.FieldNameToUnderscore;
 import org.adligo.xml_io.generator.models.GeneratorContext;
 
 public class NonMutantConverterGenerator extends BaseConverterGenerator {
+	private static final Log log = LogFactory.getLog(NonMutantConverterGenerator.class);
+	
 	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_template.xml", true);
 	private static final Template template = templates.getTemplate("immutableConverter");
 
@@ -23,6 +27,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
 		ctx = pctx;
+		log.info("working on generators for class " + cfm.getClazz());
 		
 		BigDecimal version = clazz.calculateFieldVersion();
 		String versionString = version.toPlainString();
@@ -48,11 +53,16 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
 		List<FieldMethods> fields = cfm.getFieldMethods();
 		if (!StringUtils.isEmpty(ctx.getPackageSuffix())) {
-			parent.addParam("extraImport", immutableFieldType.getName());
+			ctx.addExtraImport(immutableFieldType.getName());
 		}
 		parent.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 		boolean hasChildren = false;
 		for (FieldMethods fm: fields) {
+			String fname = fm.getName();
+			if (log.isDebugEnabled()) {
+				log.debug("working on field " + fname);
+			}
+			
 			if (fm.isAttribute()) {
 				addAttributeParams(parent, fm);
 			} else {
@@ -77,7 +87,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 					appendGenericClass(childParams);
 					
 					String clazzName = fm.getFieldClassNameForImport();
-					params.addParam("extraImport", clazzName);
+					ctx.addExtraImport(clazzName);
 					
 					childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 						
@@ -95,13 +105,13 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 			parent.addParam("doesNotHaveChildren");
 		}
 		if (clazz.isAttribute()) {
-			params.addParam("extraImport", I_AttributeConverter.class.getName());
+			ctx.addExtraImport(I_AttributeConverter.class.getName());
 			Params attribParams = new Params();
 			parent.addParam("attributeConverter", attribParams);
 			attribParams.addParam("genericClass", clazz.getClazz().getSimpleName());
 			FieldMethods fm = fields.get(0);
 			Class<?> attribConstructorClass = clazz.getAttributeClass();
-			params.addParam("extraImport", attribConstructorClass.getName());
+			ctx.addExtraImport(attribConstructorClass.getName());
 			attribParams.addParam("constructorClass", attribConstructorClass.getSimpleName());
 			addAttributeParams(attribParams, fm);
 		}
@@ -132,7 +142,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		Class<?> clazz = fm.getFieldClass();
 		if (!FieldMethods.isAttribute(clazz)) {
 			String clazzName = fm.getFieldClassNameForImport();
-			params.addParam("extraImport", clazzName);
+			ctx.addExtraImport(clazzName);
 		}
 		
 		String fieldClass = fm.getFieldClassForSource();

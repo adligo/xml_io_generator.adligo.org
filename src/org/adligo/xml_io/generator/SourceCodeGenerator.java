@@ -9,6 +9,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.adligo.i.log.client.Log;
+import org.adligo.i.log.client.LogFactory;
+import org.adligo.i.log.client.LogPlatform;
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.jse.util.JSECommonInit;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
@@ -18,13 +21,15 @@ import org.adligo.xml_io.generator.models.Namespace;
 import org.adligo.xml_io.generator.models.SourceCodeGeneratorParams;
 
 public class SourceCodeGenerator {
-
+	private static final Log log = LogFactory.getLog(SourceCodeGenerator.class);
+	
 	public static final String THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY = "There was a error creating the directory ";
 	public static final String THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS = 
 		"The SourceCodeGenerator requires either a Mutant implementation of I_Immutable for model xml_io souce code generation.";
 
 	public static void main(String [] args) {
 		JSECommonInit.callLogDebug("main");
+		LogPlatform.resetLevels("adligo_log.properties");
 		
 		if (args.length == 0) {
 			System.err.println("SouceCodeGenerator requires a property file path!");
@@ -41,15 +46,15 @@ public class SourceCodeGenerator {
 		} catch (FileNotFoundException e) {
 			System.err.println("SouceCodeGenerator was not able to find the property file " + args[0] +
 					" at " + file.getAbsolutePath());
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			return;
 		} catch (IOException e) {
 			System.err.println("SouceCodeGenerator had a problem loading the the property file " + args[0] +
 					" at " + file.getAbsolutePath());
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			return;
 		} catch (Exception x) {
-			x.printStackTrace();
+			log.error(x.getMessage(), x);
 			return;
 		}
 		
@@ -80,10 +85,12 @@ public class SourceCodeGenerator {
 			
 			List<Class<?>> classes = params.getClasses(name);
 			for (Class<?> clazz : classes) {
+				ctx.clearExtraImports();
 				//mutants must be done first for complex non mutants
 				generateMutant(clazz, ctx);
 			}
 			for (Class<?> clazz : classes) {
+				ctx.clearExtraImports();
 				generateNonMutant(clazz, ctx);
 			}
 			SetupGenerator setup = new SetupGenerator();
