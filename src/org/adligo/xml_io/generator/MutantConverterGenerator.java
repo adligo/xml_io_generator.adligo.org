@@ -122,6 +122,11 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		attributeParams.addParam("getter", getterName);
 		appendGenericClass(attributeParams);
 		
+		Class<?> clazz = fm.getFieldClass();
+		if (!FieldMethods.isAttribute(clazz)) {
+			String clazzName = fm.getFieldClassNameForImport();
+			params.addParam("extraImport", clazzName);
+		}
 		
 		String fieldClass = fm.getFieldClassForSource();
 		attributeParams.addParam("fieldClass", fieldClass);

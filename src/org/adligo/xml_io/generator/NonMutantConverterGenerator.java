@@ -129,6 +129,12 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		
 		attributeParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 		
+		Class<?> clazz = fm.getFieldClass();
+		if (!FieldMethods.isAttribute(clazz)) {
+			String clazzName = fm.getFieldClassNameForImport();
+			params.addParam("extraImport", clazzName);
+		}
+		
 		String fieldClass = fm.getFieldClassForSource();
 		attributeParams.addParam("fieldClass", fieldClass);
 		
