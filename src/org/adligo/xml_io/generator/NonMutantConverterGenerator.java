@@ -18,6 +18,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_template.xml", true);
 	private static final Template template = templates.getTemplate("immutableConverter");
 
+	private Class<?> immutableFieldType;
 	
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
@@ -43,7 +44,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 
 	private void addAttributes(Params parent) {
 		
-		Class<?> immutableFieldType = clazz.getImmutableFieldType();
+		immutableFieldType = clazz.getImmutableFieldType();
 		ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
 		List<FieldMethods> fields = cfm.getFieldMethods();
 		if (!StringUtils.isEmpty(ctx.getPackageSuffix())) {
@@ -53,60 +54,39 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		boolean hasChildren = false;
 		for (FieldMethods fm: fields) {
 			if (fm.isAttribute()) {
-				Params attributeParams = new Params();
-				String fieldName = fm.getName();
-				String attributeXml = fieldName;
-				if (!ctx.isUseFieldNamesInXml()) {
-					attributeXml = attributeLetterCounter.getNextId();
-					if ("n".equals(attributeXml)) {
-						//n is reserved for parent child objects the name attribute
-						attributeXml = attributeLetterCounter.getNextId();
-					}
-				}
-				String attributeConstant = immutableFieldType.getSimpleName() + "Generator." +
-					FieldNameToUnderscore.toUnderscore(fieldName);
-				parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
-				attributeParams.addParam("attributeName", attributeXml);
-				String getterName = fm.getGetterName();
-				attributeParams.addParam("getter", getterName);
-				appendGenericClass(attributeParams);
-				
-				attributeParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
-				
-				String fieldClass = fm.getFieldClassForSource();
-				attributeParams.addParam("fieldClass", fieldClass);
-				
-				String fieldClassCastable = fm.getFieldClassCastableForSource();
-				attributeParams.addParam("fieldClassCastable", fieldClassCastable);
-				
-				String setter = fm.getSetterName();
-				attributeParams.addParam("setter", setter);
+				addAttributeParams(parent, fm);
 			} else {
-				hasChildren = true;
-				Params childParams = new Params();
-				String fieldName = fm.getName();
-				String childName = fieldName;
-				if (!ctx.isUseFieldNamesInXml()) {
-					childName = childNameLetterCounter.getNextId();
-				}
-				String attributeConstant =  immutableFieldType.getSimpleName() + "Generator." +
-						FieldNameToUnderscore.toUnderscore(fieldName);
-				parent.addParam("child", attributeConstant + "_CHILD", childParams);
-				childParams.addParam("childName", childName);
-				String getterName = fm.getGetterName();
-				childParams.addParam("getter", getterName);
-				appendGenericClass(childParams);
-				
-				String clazzName = fm.getFieldClassNameForImport();
-				params.addParam("extraImport", clazzName);
-				
-				childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
+				Class<?> fieldType = fm.getFieldClass();
+				ClassFieldMethods cfmField = new ClassFieldMethods(fieldType);
+				if (cfmField.isAttribute()) {
+					addAttributeParams(parent, fm);
+				} else {
+					hasChildren = true;
+					Params childParams = new Params();
+					String fieldName = fm.getName();
+					String childName = fieldName;
+					if (!ctx.isUseFieldNamesInXml()) {
+						childName = childNameLetterCounter.getNextId();
+					}
+					String attributeConstant =  immutableFieldType.getSimpleName() + "Generator." +
+							FieldNameToUnderscore.toUnderscore(fieldName);
+					parent.addParam("child", attributeConstant + "_CHILD", childParams);
+					childParams.addParam("childName", childName);
+					String getterName = fm.getGetterName();
+					childParams.addParam("getter", getterName);
+					appendGenericClass(childParams);
 					
-				String fieldClassCastable = fm.getFieldClassCastableForSource();
-				childParams.addParam("childClassCastable", fieldClassCastable);
-				
-				String setter = fm.getSetterName();
-				childParams.addParam("setter", setter);
+					String clazzName = fm.getFieldClassNameForImport();
+					params.addParam("extraImport", clazzName);
+					
+					childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
+						
+					String fieldClassCastable = fm.getFieldClassCastableForSource();
+					childParams.addParam("childClassCastable", fieldClassCastable);
+					
+					String setter = fm.getSetterName();
+					childParams.addParam("setter", setter);
+				}
 			}
 		}
 		if (hasChildren) {
@@ -139,13 +119,15 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 				attributeXml = attributeLetterCounter.getNextId();
 			}
 		}
-		String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+		String attributeConstant = immutableFieldType.getSimpleName() + "Generator." +
+			FieldNameToUnderscore.toUnderscore(fieldName);
 		parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
 		attributeParams.addParam("attributeName", attributeXml);
 		String getterName = fm.getGetterName();
 		attributeParams.addParam("getter", getterName);
 		appendGenericClass(attributeParams);
 		
+		attributeParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 		
 		String fieldClass = fm.getFieldClassForSource();
 		attributeParams.addParam("fieldClass", fieldClass);

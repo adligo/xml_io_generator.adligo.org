@@ -17,6 +17,9 @@ public class ConverterSetup {
 		converters.addXmlToObjectConverter(<value/>.TAG_NAME, new <value/>());
 		converters.addObjectToXmlConverter(<param name="className"><value/></param>.class, new <value/>());
 		</param>
+		<param name="attributeClass" >
+		converters.addXmlAttributeToObjectConverter(<param name="attributeClassName"><value/></param>.class, new <value/>());
+		</param>
 		return converters;
 	}
 }

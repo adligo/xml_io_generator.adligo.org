@@ -26,6 +26,8 @@ public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 		params.addParam("version", versionString);
 		ctx.addToPackageVersion(version);
 		
+		String genericClassName = clazz.getClazz().getSimpleName();
+		ctx.addClassToAttributeConverterNames(genericClassName, genericClassName + "Generator");
 		setUpTagName();
 		setupToXmlParams();
 		addAttributes(params);

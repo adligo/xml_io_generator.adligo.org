@@ -46,6 +46,15 @@ public class SetupGenerator {
 			clazzParams.addParam("className", clazz);
 		}
 		
+		classNames = gc.getClassToAttributeGeneratorNames();
+		for (Entry<String,String> names: classNames) {
+			String clazz = names.getKey();
+			String gen = names.getValue();
+			Params clazzParams = new Params();
+			params.addParam("attributeClass", gen, clazzParams);
+			clazzParams.addParam("attributeClassName", clazz);
+		}
+		
 		if (!StringUtils.isEmpty(packageSuffix)) {
 			Iterator<ClassFieldMethods> cfms = gc.getClassFieldMethodsIterator();
 			while (cfms.hasNext()) {

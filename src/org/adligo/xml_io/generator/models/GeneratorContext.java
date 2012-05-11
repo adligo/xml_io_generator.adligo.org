@@ -26,6 +26,7 @@ public class GeneratorContext {
 	private BigDecimal packageVersionNumber = new BigDecimal(0);
 	private String packageSuffix;
 	private List<Class<?>> mutants = new ArrayList<Class<?>>();
+	private Map<String,String> classToAttributeGeneratorNames = new HashMap<String, String>();
 	
 	public String getNextId() {
 		return counter.getNextId();
@@ -67,6 +68,10 @@ public class GeneratorContext {
 		classToGeneratorNames.put(className, converterName);
 	}
 
+	public void addClassToAttributeConverterNames(String className, String converterName) {
+		classToAttributeGeneratorNames.put(className, converterName);
+	}
+	
 	public Set<Entry<String,String>> getClassToConverterNames() {
 		return classToGeneratorNames.entrySet();
 	}
@@ -134,5 +139,9 @@ public class GeneratorContext {
 			return true;
 		}
 		return false;
+	}
+
+	public Set<Entry<String, String>> getClassToAttributeGeneratorNames() {
+		return classToAttributeGeneratorNames.entrySet();
 	}
 }
