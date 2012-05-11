@@ -30,6 +30,11 @@ public class SetupGenerator {
 		}
 		params.addParam("namespaceVersion", version);
 		
+		Set<String> extraImports = ctx.getExtraClassImports();
+		for (String p: extraImports) {
+			params.addParam("extraImport", p);
+		}
+		
 		String pkg = ctx.getPackageName();
 		String packageSuffix = ctx.getPackageSuffix();
 		if (!StringUtils.isEmpty(packageSuffix)) {
@@ -60,7 +65,7 @@ public class SetupGenerator {
 			while (cfms.hasNext()) {
 				ClassFieldMethods cfm = cfms.next();
 				Class<?> clazz = cfm.getClazz();
-				ctx.addExtraImport(clazz.getName());
+				params.addParam("extraImport",clazz.getName());
 			}
 		}
 		SourceFileWriter sfw = new SourceFileWriter();

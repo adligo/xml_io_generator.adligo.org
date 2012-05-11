@@ -85,12 +85,12 @@ public class SourceCodeGenerator {
 			
 			List<Class<?>> classes = params.getClasses(name);
 			for (Class<?> clazz : classes) {
-				ctx.clearExtraImports();
+				ctx.clearExtraClassImports();
 				//mutants must be done first for complex non mutants
 				generateMutant(clazz, ctx);
 			}
 			for (Class<?> clazz : classes) {
-				ctx.clearExtraImports();
+				ctx.clearExtraClassImports();
 				generateNonMutant(clazz, ctx);
 			}
 			SetupGenerator setup = new SetupGenerator();

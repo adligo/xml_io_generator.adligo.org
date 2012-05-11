@@ -28,6 +28,7 @@ public class GeneratorContext {
 	private List<Class<?>> mutants = new ArrayList<Class<?>>();
 	private Map<String,String> classToAttributeGeneratorNames = new HashMap<String, String>();
 	private Set<String> extraImports = new HashSet<String>();
+	private Set<String> extraClassImports = new HashSet<String>();
 	
 	public String getNextId() {
 		return counter.getNextId();
@@ -146,19 +147,24 @@ public class GeneratorContext {
 		return classToAttributeGeneratorNames.entrySet();
 	}
 
-	public Set<String> getExtraImports() {
+	public Set<String> getExtraPackageImports() {
 		return Collections.unmodifiableSet(extraImports);
 	}
 
-	public void setExtraImports(Set<String> p) {
-		extraImports.clear();
-		extraImports.addAll(p);
-	}
-	public void addExtraImport(String p) {
-		extraImports.add(p);
+	public Set<String> getExtraClassImports() {
+		return Collections.unmodifiableSet(extraClassImports);
 	}
 	
-	public void clearExtraImports() {
+	public void addExtraImport(String p) {
+		extraImports.add(p);
+		extraClassImports.add(p);
+	}
+	
+	public void clearExtraClassImports() {
+		extraClassImports.clear();
+	}
+	
+	public void clearExtraPackateImports() {
 		extraImports.clear();
 	}
 }

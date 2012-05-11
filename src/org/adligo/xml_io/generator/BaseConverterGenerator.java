@@ -34,7 +34,7 @@ public class BaseConverterGenerator {
 		String clazzName = name + "Generator";
 		ctx.addClassToConverterNames(name, clazzName);
 		
-		Set<String> extraImports = ctx.getExtraImports();
+		Set<String> extraImports = ctx.getExtraClassImports();
 		for (String p: extraImports) {
 			params.addParam("extraImport", p);
 		}
@@ -51,7 +51,7 @@ public class BaseConverterGenerator {
 		appendGenericClass(params);
 		
 		if (!StringUtils.isEmpty(packageSuffix)) {
-			ctx.addExtraImport(clazz.getName());
+			params.addParam("extraImport",clazz.getName());
 		}
 		SourceFileWriter sfw = new SourceFileWriter();
 		String dir = ctx.getPackageDirectory();
