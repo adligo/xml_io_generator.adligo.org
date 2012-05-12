@@ -242,4 +242,12 @@ public class FieldMethods {
 		}
 		return toRet;
 	}
+	
+	public Class<?>[] getSetterExceptions() {
+		return setter.getExceptionTypes();
+	}
+	
+	public Class<?>[] getGetterExceptions() {
+		return getter.getExceptionTypes();
+	}
 }

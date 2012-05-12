@@ -45,11 +45,17 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		toRet.put(<value/>, new I_AttributeSetter&lt;<param name="genericClass"><value/></param>&gt;() {
 			public void set(<param name="genericClass"><value/></param> obj, String value, Xml_IOReaderContext context) {
 				Object toSet = context.readAttribute(<param name="fieldClass"><value/></param>, value);
+				<param name="setterThrowsExceptions">
 				try {
-					obj.<param name="setter"><value/></param>((<param name="fieldClassCastable"><value/></param>) toSet);
-				} catch (Exception x) {
+				</param>
+					obj.<param name="setter"><value/></param>((<param name="classCastable"><value/></param>) toSet);
+				<param name="setterException">
+				} catch (<value/> x) {
 					throw new IllegalArgumentException(x);
+				</param>
+				<param name="setterThrowsExceptions">
 				}
+				</param>
 			}
 		});
 		</param>
@@ -64,11 +70,17 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		<param name="child">
 		toRet.put(<value/>, new I_FieldSetter&lt;<param name="genericClass"><value/></param>&gt;() {
 			public void set(<param name="genericClass"><value/></param> obj, Object value) {
+				<param name="setterThrowsExceptions">
 				try {
-					obj.<param name="setter"><value/></param>((<param name="childClassCastable"><value/></param>) value);
-				} catch (Exception x) {
+				</param>
+					obj.<param name="setter"><value/></param>((<param name="classCastable"><value/></param>) value);
+				<param name="setterException">
+				} catch (<value/> x) {
 					throw new IllegalArgumentException(x);
+				</param>
+				<param name="setterThrowsExceptions">
 				}
+				</param>
 			}
 		});
 		</param>
@@ -250,11 +262,17 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		<param name="constructorClass" ><value/></param> obj = 
 				(<param name="constructorClass" ><value/></param>) context.readAttribute(
 							<param name="constructorClass" ><value/></param>.class, attributeValue);
+		<param name="constructorThrowsExceptions">
 		try {
+		</param>
 			return new <param name="genericClass"><value/></param>(obj);
-		} catch (Exception x) {
+		<param name="constructorException">
+		} catch (<value/> x) {
 			throw new IllegalArgumentException(x);
+		</param>
+		<param name="constructorThrowsExceptions">
 		}
+		</param>
 	}
 
 	@Override
@@ -306,11 +324,17 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		toRet.put(<value/>, new I_AttributeSetter&lt;<param name="genericMutantClass"><value/></param>&gt;() {
 			public void set(<param name="genericMutantClass"><value/></param> obj, String value, Xml_IOReaderContext context) {
 				Object toSet = context.readAttribute(<param name="fieldClass"><value/></param>, value);
+				<param name="setterThrowsExceptions">
 				try {
-					obj.<param name="setter"><value/></param>((<param name="fieldClassCastable"><value/></param>) toSet);
-				} catch (Exception x) {
+				</param>
+					obj.<param name="setter"><value/></param>((<param name="classCastable"><value/></param>) toSet);
+				<param name="setterException">
+				} catch (<value/> x) {
 					throw new IllegalArgumentException(x);
+				</param>
+				<param name="setterThrowsExceptions">
 				}
+				</param>
 			}
 		});
 		</param>
@@ -325,11 +349,17 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 		<param name="child">
 		toRet.put(<value/>, new I_FieldSetter&lt;<param name="genericMutantClass"><value/></param>&gt;() {
 			public void set(<param name="genericMutantClass"><value/></param> obj, Object value) {
+				<param name="setterThrowsExceptions">
 				try {
-					obj.<param name="setter"><value/></param>((<param name="childClassCastable"><value/></param>) value);
-				} catch (Exception x) {
+				</param>
+					obj.<param name="setter"><value/></param>((<param name="classCastable"><value/></param>) value);
+				<param name="setterException">
+				} catch (<value/> x) {
 					throw new IllegalArgumentException(x);
+				</param>
+				<param name="setterThrowsExceptions">
 				}
+				</param>
 			}
 		});
 		</param>
@@ -369,11 +399,17 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 			setter.set(toRet, value);
 		}
 		<param name="genericClass"><value/></param> immutable = null;
+		<param name="constructorThrowsExceptions">
 		try {
+		</param>
 			immutable = new <param name="genericClass"><value/></param>(toRet);
-		} catch (Exception x) {
+		<param name="constructorException">
+		} catch (<value/> x) {
 			throw new IllegalArgumentException(x);
+		</param>
+		<param name="constructorThrowsExceptions">
 		}
+		</param>
 		return new ObjectFromXml&lt;<param name="genericClass"><value/></param>&gt;(nameToRet, immutable);
 	}
 

@@ -8,6 +8,7 @@ import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml_io.client.LetterCounter;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
+import org.adligo.xml_io.generator.models.FieldMethods;
 import org.adligo.xml_io.generator.models.GeneratorContext;
 
 public class BaseConverterGenerator {
@@ -67,4 +68,38 @@ public class BaseConverterGenerator {
 		parent.addParam("genericClass", name);
 	}
 	
+	void addSetter(FieldMethods fm, Params parentParams) {
+		Class<?> setterParamClass = fm.getSetterParameterClass();
+		if (!FieldMethods.isAttribute(setterParamClass)) {
+			ctx.addExtraImport(setterParamClass.getName());
+		}
+		String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
+		parentParams.addParam("classCastable", fieldClassCastable);
+		
+		String setter = fm.getSetterName();
+		parentParams.addParam("setter", setter);
+		
+		Class<?> [] setterExceptions = fm.getSetterExceptions();
+		if (setterExceptions.length >= 1) {
+			parentParams.addParam("setterThrowsExceptions");
+			for (int i = 0; i < setterExceptions.length; i++) {
+				Class<?> exception = setterExceptions[i];
+				parentParams.addParam("setterException", exception.getSimpleName());
+				ctx.addExtraImport(exception.getName());
+			}
+		}
+	}
+	
+	void addConstructorExceptions(ClassFieldMethods cfm, Params parentParams) {
+		
+		Class<?> [] exceptions = cfm.constructorExceptions();
+		if (exceptions.length >= 1) {
+			parentParams.addParam("constructorThrowsExceptions");
+			for (int i = 0; i < exceptions.length; i++) {
+				Class<?> exception = exceptions[i];
+				parentParams.addParam("constructorException", exception.getSimpleName());
+				ctx.addExtraImport(exception.getName());
+			}
+		}
+	}
 }

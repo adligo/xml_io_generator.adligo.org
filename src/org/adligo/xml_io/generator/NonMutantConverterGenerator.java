@@ -39,6 +39,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		setUpTagName();
 		setupToXmlParams();
 		addAttributes(params);
+		addConstructorExceptions(clazz, params);
 		writeFile(cfm.getClazz(), template);
 	}
 
@@ -93,15 +94,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 					
 					childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 						
-					Class<?> setterParamClass = fm.getSetterParameterClass();
-					if (!FieldMethods.isAttribute(setterParamClass)) {
-						ctx.addExtraImport(setterParamClass.getName());
-					}
-					String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
-					childParams.addParam("childClassCastable", fieldClassCastable);
-					
-					String setter = fm.getSetterName();
-					childParams.addParam("setter", setter);
+					addSetter(fm, childParams);
 				}
 			}
 		}
@@ -154,15 +147,6 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		String fieldClass = fm.getFieldClassForSource();
 		attributeParams.addParam("fieldClass", fieldClass);
 		
-
-		Class<?> setterParamClass = fm.getSetterParameterClass();
-		if (!FieldMethods.isAttribute(setterParamClass)) {
-			ctx.addExtraImport(setterParamClass.getName());
-		}
-		String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
-		attributeParams.addParam("fieldClassCastable", fieldClassCastable);
-		
-		String setter = fm.getSetterName();
-		attributeParams.addParam("setter", setter);
+		addSetter(fm, attributeParams);
 	}
 }

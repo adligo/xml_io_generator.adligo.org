@@ -29,6 +29,8 @@ public class ClassFieldMethods {
 	 */
 	private String immutableFieldName;
 	
+	private Constructor constructor;
+	
 	public ClassFieldMethods(Class<?> clazz) {
 		this.clazz = clazz;
 		Field [] fields = clazz.getDeclaredFields();
@@ -85,6 +87,7 @@ public class ClassFieldMethods {
 						if (constructorParamType.isAssignableFrom(fieldClass)) {
 							immutableFieldType = fieldClass;
 							constructorType = constructorParamType;
+							constructor = con;
 						}
 					}
 				}
@@ -261,5 +264,9 @@ public class ClassFieldMethods {
 
 	public Class<?> getConstructorType() {
 		return constructorType;
+	}
+	
+	public Class<?>[] constructorExceptions() {
+		return constructor.getExceptionTypes();
 	}
 }

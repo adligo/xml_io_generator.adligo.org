@@ -36,6 +36,7 @@ public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 		setUpTagName();
 		setupToXmlParams();
 		addAttributes(params);
+		addConstructorExceptions(clazz, params);
 		writeFile(cfm.getClazz(), template);
 	}
 
