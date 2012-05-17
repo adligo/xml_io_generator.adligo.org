@@ -33,18 +33,8 @@ public class ClassFieldMethods {
 	
 	public ClassFieldMethods(Class<?> clazz) {
 		this.clazz = clazz;
-		Field [] fields = clazz.getDeclaredFields();
 		
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			int modifiers = f.getModifiers();
-			if (!Modifier.isStatic(modifiers)) {
-				if (!Modifier.isTransient(modifiers)) {
-					FieldMethods fm = new FieldMethods(clazz, f);
-					fieldMethods.add(fm);
-				}
-			}
-		}
+		recurseAllParentFieldMethods(clazz);
 		if (I_Immutable.class.isAssignableFrom(clazz)) {
 			try {
 				I_Immutable item = (I_Immutable) clazz.newInstance();
@@ -57,6 +47,9 @@ public class ClassFieldMethods {
 				for (FieldMethods fm: fieldMethods) {
 					Field field = fm.getField();
 					String name = field.getName();
+					if (log.isInfoEnabled()) {
+						log.info("checking field " + name);
+					}
 					if (immutableFieldName.equals(name)) {
 						fieldM = fm;
 						break;
@@ -99,6 +92,36 @@ public class ClassFieldMethods {
 		} else {
 			
 		}
+	}
+
+	/**
+	 * this should add all the fields to the fieldMethod instance
+	 * respecting inheritance so parent first so that fields with the 
+	 * same name use the leaf most instance.
+	 * 
+	 * @param clazz
+	 */
+	void recurseAllParentFieldMethods(Class<?> clazz) {
+		Field [] fields = clazz.getDeclaredFields();
+		
+		Class<?> superClazz = clazz.getSuperclass();
+		if (superClazz != null) {
+			if (!Object.class.equals(superClazz)) {
+				recurseAllParentFieldMethods(superClazz);
+			}
+		}
+		
+		for (int i = 0; i < fields.length; i++) {
+			Field f = fields[i];
+			int modifiers = f.getModifiers();
+			if (!Modifier.isStatic(modifiers)) {
+				if (!Modifier.isTransient(modifiers)) {
+					FieldMethods fm = new FieldMethods(clazz, f);
+					fieldMethods.add(fm);
+				}
+			}
+		}
+		
 	}
 	
 	/**
