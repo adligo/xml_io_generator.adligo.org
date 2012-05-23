@@ -70,34 +70,32 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 				addAttributeParams(parent, fm);
 			} else {
 				Class<?> fieldType = fm.getFieldClass();
-				if (!fieldType.isInterface()) {
 					
-					ClassFieldMethods cfmField = new ClassFieldMethods(fieldType);
-					if (cfmField.isAttribute()) {
-						addAttributeParams(parent, fm);
-					} else {
-						hasChildren = true;
-						Params childParams = new Params();
-						String fieldName = fm.getName();
-						String childName = fieldName;
-						if (!ctx.isUseFieldNamesInXml()) {
-							childName = childNameLetterCounter.getNextId();
-						}
-						String attributeConstant =  immutableFieldType.getSimpleName() + "Generator." +
-								FieldNameToUnderscore.toUnderscore(fieldName);
-						parent.addParam("child", attributeConstant + "_CHILD", childParams);
-						childParams.addParam("childName", childName);
-						String getterName = fm.getGetterName();
-						childParams.addParam("getter", getterName);
-						appendGenericClass(childParams);
-						
-						String clazzName = fm.getFieldClassNameForImport();
-						ctx.addExtraImport(clazzName);
-						
-						childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
-							
-						addSetter(fm, childParams);
+				ClassFieldMethods cfmField = new ClassFieldMethods(fieldType);
+				if (cfmField.isAttribute()) {
+					addAttributeParams(parent, fm);
+				} else {
+					hasChildren = true;
+					Params childParams = new Params();
+					String fieldName = fm.getName();
+					String childName = fieldName;
+					if (!ctx.isUseFieldNamesInXml()) {
+						childName = childNameLetterCounter.getNextId();
 					}
+					String attributeConstant =  immutableFieldType.getSimpleName() + "Generator." +
+							FieldNameToUnderscore.toUnderscore(fieldName);
+					parent.addParam("child", attributeConstant + "_CHILD", childParams);
+					childParams.addParam("childName", childName);
+					String getterName = fm.getGetterName();
+					childParams.addParam("getter", getterName);
+					appendGenericClass(childParams);
+					
+					String clazzName = fm.getFieldClassNameForImport();
+					ctx.addExtraImport(clazzName);
+					
+					childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
+						
+					addSetter(fm, childParams);
 				}
 			}
 		}
