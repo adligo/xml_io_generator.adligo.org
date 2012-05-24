@@ -23,6 +23,10 @@ public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 	
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
+		if (!isClassSerilizable()) {
+			return;
+		}
+		
 		ctx = pctx;
 		log.info("working on generators for class " + cfm.getClazz());
 		

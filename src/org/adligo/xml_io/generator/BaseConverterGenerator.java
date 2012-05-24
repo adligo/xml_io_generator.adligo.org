@@ -1,6 +1,7 @@
 package org.adligo.xml_io.generator;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Set;
 
 import org.adligo.i.util.client.StringUtils;
@@ -101,5 +102,13 @@ public class BaseConverterGenerator {
 				ctx.addExtraImport(exception.getName());
 			}
 		}
+	}
+	
+	boolean isClassSerilizable() {
+		Class<?> mutantClazz = clazz.getClazz();
+		if (Serializable.class.isAssignableFrom(mutantClazz)) {
+			return true;
+		}
+		return false;
 	}
 }
