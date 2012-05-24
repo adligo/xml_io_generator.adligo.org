@@ -2,6 +2,7 @@ package org.adligo.xml_io.generator.models;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +30,11 @@ public class GeneratorContext {
 	private Map<String,String> classToAttributeGeneratorNames = new HashMap<String, String>();
 	private Set<String> extraImports = new HashSet<String>();
 	private Set<String> extraClassImports = new HashSet<String>();
+	private Set<Class<?>> awareOfClasses = new HashSet<Class<?>>();
+	
+	public GeneratorContext() {
+		awareOfClasses.addAll(FieldMethods.ATTRIBUTE_CLASSES);
+	}
 	
 	public String getNextId() {
 		return counter.getNextId();
@@ -158,13 +164,28 @@ public class GeneratorContext {
 	public void addExtraImport(String p) {
 		extraImports.add(p);
 		extraClassImports.add(p);
+		try {
+			awareOfClasses.add(Class.forName(p));
+		} catch (ClassNotFoundException x) {
+			throw new IllegalArgumentException(x);
+		}
 	}
 	
 	public void clearExtraClassImports() {
 		extraClassImports.clear();
 	}
 	
+	public boolean isAwareOfClass(Class<?> c) {
+		return awareOfClasses.contains(c);
+	}
+	
 	public void clearExtraPackateImports() {
 		extraImports.clear();
 	}
+	
+	public boolean isGeneratedClassesInThisPackage(String simpleName) {
+		Collection<String> classes = classToGeneratorNames.values();
+		return classes.contains(simpleName);
+	}
+	
 }

@@ -55,7 +55,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		immutableFieldType = clazz.getImmutableFieldType();
 		ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
 		List<FieldMethods> fields = cfm.getFieldMethods();
-		if (!StringUtils.isEmpty(ctx.getPackageSuffix())) {
+		if (!ctx.isAwareOfClass(immutableFieldType)) {
 			ctx.addExtraImport(immutableFieldType.getName());
 		}
 		parent.addParam("genericMutantClass", immutableFieldType.getSimpleName());
@@ -129,7 +129,19 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 				attributeXml = attributeLetterCounter.getNextId();
 			}
 		}
-		String attributeConstant = immutableFieldType.getSimpleName() + "Generator." +
+		String shortGenClassName = immutableFieldType.getSimpleName() + "Generator";
+		if (!ctx.isGeneratedClassesInThisPackage(shortGenClassName)) {
+			try {
+				Class<?> genClass = Class.forName(immutableFieldType.getName() + "Generator");
+				if (!ctx.isAwareOfClass(genClass)) {
+					ctx.addExtraImport(genClass.getName());
+				}
+			} catch (ClassNotFoundException e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+		
+		String attributeConstant = shortGenClassName + "." +
 			FieldNameToUnderscore.toUnderscore(fieldName);
 		parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
 		attributeParams.addParam("attributeName", attributeXml);
