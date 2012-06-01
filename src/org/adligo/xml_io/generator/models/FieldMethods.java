@@ -146,6 +146,20 @@ public class FieldMethods {
 		return false;
 	}
 	
+	
+	public static boolean isImportClass(Class<?> clazz) {
+		if (clazz.isPrimitive()) {
+			return false;
+		}
+		if (ATTRIBUTE_CLASSES.contains(clazz)) {
+			if (clazz.equals(BigDecimal.class) ||  clazz.equals(BigInteger.class)) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+	
 	public String getName() {
 		return field.getName();
 	}

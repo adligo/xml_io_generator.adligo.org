@@ -13,8 +13,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.adligo.i.log.client.Log;
+import org.adligo.i.log.client.LogFactory;
+
 
 public class PackageUtils {
+	private static final Log log = LogFactory.getLog(PackageUtils.class);
+	
 	private List<String> cpJarEntries = new ArrayList<String>();
 	private List<String> cpDirEntries = new ArrayList<String>();
 	/**
@@ -22,15 +27,13 @@ public class PackageUtils {
 	 */
 	private Map<String,List<String>> packageClassMap= new HashMap<String, List<String>>();
 	private File explodeTemp;
-	private boolean debugLog = false;
 	private List<String> ignoreList = new ArrayList<String>();
 	
 	public PackageUtils() {
-		this(false, null);
+		this( null);
 	}
 
-	public PackageUtils(boolean debug, List<String> p) {
-		debugLog = debug;
+	public PackageUtils( List<String> p) {
 		if (p != null) {
 			ignoreList.addAll(p);
 		}
@@ -43,8 +46,8 @@ public class PackageUtils {
 		Properties props = System.getProperties();
 		Set<Object> keys = props.keySet();
 		for (Object key: keys) {
-			if (debug) {
-				System.out.println("" + this.getClass().getName() + " says " + key + "=" + System.getProperty(key.toString()));
+			if (log.isDebugEnabled()) {
+				log.debug("" + this.getClass().getName() + " says " + key + "=" + System.getProperty(key.toString()));
 			}
 		}
 		
@@ -68,10 +71,9 @@ public class PackageUtils {
 			addPackageClassNames(dirName, dirName, "");
 		}
 		ZipUtils unzip = new ZipUtils();
-		unzip.setVerbose(debugLog);
 		for (String zipName: cpJarEntries) {
-			if (debugLog) {
-				System.out.println("" + this.getClass().getName() + " says extracting jar \n"+
+			if (log.isDebugEnabled()) {
+				log.debug("" + this.getClass().getName() + " says extracting jar \n"+
 						zipName + " to \n" + explodeTemp.getAbsolutePath());
 			}
 			
@@ -96,11 +98,11 @@ public class PackageUtils {
 		});
 		if (classes != null) {
 			if (classes.length >= 1) {
-				if (debugLog) {
-					System.out.println("" + this.getClass().getName() + " says adding the following classes to pacakge \n"
+				if (log.isDebugEnabled()) {
+					log.debug("" + this.getClass().getName() + " says adding the following classes to pacakge \n"
 							+ packageName);
 					for (int i = 0; i < classes.length; i++) {
-						System.out.println("" + classes[i]);
+						log.debug("" + classes[i]);
 					}
 				}
 				List<String> classesList = Arrays.asList(classes);	
@@ -124,8 +126,8 @@ public class PackageUtils {
 				//skip loop block
 			} else {
 				String subName = thisDir.getName();
-				if (debugLog) {
-					System.out.println("" + this.getClass().getName() + " says checking directory " + subName);
+				if (log.isDebugEnabled()) {
+					log.debug("" + this.getClass().getName() + " says checking directory " + subName);
 				}
 				String newPackageName = "";
 				if (packageName.length() == 0) {
@@ -135,8 +137,8 @@ public class PackageUtils {
 				}
 				String newDirName = dirName + File.separator + subName;
 				
-				if (debugLog) {
-					System.out.println("" + this.getClass().getName() + " says package " +newPackageName  + 
+				if (log.isDebugEnabled()) {
+					log.debug("" + this.getClass().getName() + " says package " +newPackageName  + 
 							" is under directory" + rootDirName);
 				}
 				addPackageClassNames(rootDirName, newDirName, newPackageName);

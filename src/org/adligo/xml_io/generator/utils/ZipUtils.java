@@ -8,9 +8,13 @@ import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.adligo.i.log.client.Log;
+import org.adligo.i.log.client.LogFactory;
+	
 public class ZipUtils {
+	private static final Log log = LogFactory.getLog(ZipUtils.class);
+	
 	private int BUFFER = 2048; 
-	private boolean verbose = true;
 	
  	public File unzip(File inFile, File outFolder) {
  		String newFileName = "";
@@ -26,8 +30,8 @@ public class ZipUtils {
             	 if (entry.isDirectory()) {
             		 File newFolder = new File(outFolder.getAbsolutePath() + File.separator + 
             		 	entry.getName());
-            		 if (verbose) {
-            			 System.out.println("Unzip making directory " + newFolder.getAbsolutePath());
+            		 if (log.isDebugEnabled()) {
+         				log.debug("Unzip making directory " + newFolder.getAbsolutePath());
             		 }
             		 newFolder.mkdir();
             	 } 
@@ -57,9 +61,9 @@ public class ZipUtils {
 						  }
 	                  }
 	                  newFileName = outFolder.getAbsolutePath() + File.separator + sb.toString();
-	                  if (verbose) {
-	            			 System.out.println("creating file " + newFileName);
-	            		 }
+	                  if (log.isDebugEnabled()) {
+	      				log.debug("creating file " + newFileName);
+	            	  }
 	                  File newFile = new File(newFileName);
 	                  File parentFile = newFile.getParentFile();
 	                  if (!parentFile.exists()) {
@@ -91,9 +95,9 @@ public class ZipUtils {
    }
  	
  	private void recurseParentTree(File parentFile) {
- 		if (verbose) {
-			 System.out.println("Unzip recurseParentTree making directory " + parentFile.getName());
-		 }
+ 		if (log.isDebugEnabled()) {
+			log.debug("Unzip recurseParentTree making directory " + parentFile.getName());
+		}
  		File grandParent = parentFile.getParentFile();
  		if (!grandParent.exists()) {
  			recurseParentTree(grandParent);
@@ -101,22 +105,12 @@ public class ZipUtils {
  		parentFile.mkdir();
  	}
 
-
-public synchronized boolean isVerbose() {
-	return verbose;
-}
-
-public synchronized void setVerbose(boolean verbose) {
-	this.verbose = verbose;
-}
-
-
-public synchronized int getBUFFER() {
-	return BUFFER;
-}
-
-
-public synchronized void setBUFFER(int bUFFER) {
-	BUFFER = bUFFER;
-} 
+	public synchronized int getBUFFER() {
+		return BUFFER;
+	}
+	
+	
+	public synchronized void setBUFFER(int bUFFER) {
+		BUFFER = bUFFER;
+	} 
 }

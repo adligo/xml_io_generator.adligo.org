@@ -33,7 +33,9 @@ public class ClassFieldMethods {
 	
 	public ClassFieldMethods(Class<?> clazz) {
 		this.clazz = clazz;
-		
+		if (clazz.isInterface()) {
+			return;
+		}
 		recurseAllParentFieldMethods(clazz);
 		if (I_Immutable.class.isAssignableFrom(clazz)) {
 			try {
@@ -148,7 +150,14 @@ public class ClassFieldMethods {
 		if (immutableFieldType != null && constructorType != null) {
 			return true;
 		}
+		if (clazz.isEnum()) {
+			return true;
+		}
 		return false;
+	}
+	
+	public boolean isEnum() {
+		return clazz.isEnum();
 	}
 	/**
 	 * assumes isValid has been called
@@ -171,6 +180,9 @@ public class ClassFieldMethods {
 			return true;
 		}
 		if (isValid()) {
+			if (isEnum()) {
+				return true;
+			}
 			ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
 			return cfm.isAttribute();
 		} else if (fieldMethods.size() == 1) {

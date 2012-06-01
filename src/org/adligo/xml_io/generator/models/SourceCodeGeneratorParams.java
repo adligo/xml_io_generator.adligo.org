@@ -9,11 +9,15 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.adligo.i.log.client.Log;
+import org.adligo.i.log.client.LogFactory;
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.xml_io.generator.utils.ModelDiscovery;
 import org.adligo.xml_io.generator.utils.PackageUtils;
 
 public class SourceCodeGeneratorParams {
+	private static final Log log = LogFactory.getLog(SourceCodeGeneratorParams.class);
+	
 	/**
 	 * true or false, see the field in this class useClassNamesInXml
 	 */
@@ -147,10 +151,13 @@ public class SourceCodeGeneratorParams {
 		}
 		
 		val = props.getProperty(PACKAGE_LIST_PROPERTY);
+		if (log.isInfoEnabled()) {
+			log.info("read " + PACKAGE_LIST_PROPERTY + "=" + val);
+		}
 		if (val == null) {
 			throw new IllegalArgumentException("The property " + PACKAGE_LIST_PROPERTY + " is required");
 		}
-		PackageUtils pu = new PackageUtils(true, ignoreJarList);
+		PackageUtils pu = new PackageUtils(ignoreJarList);
 		if (val.indexOf(",") == -1) {
 			discoverClassesInPackage(pu, val);
 		} else {
@@ -165,8 +172,15 @@ public class SourceCodeGeneratorParams {
 	private void discoverClassesInPackage(PackageUtils pu, String packageName)
 			throws IOException, ClassNotFoundException {
 		ModelDiscovery md = new ModelDiscovery(pu, packageName);
+		
 		List<Class<?>> classes = md.getModels();
+		if (log.isInfoEnabled()) {
+			log.info("there are " + classes.size() + " classes in package " + packageName);
+		}
 		for (Class<?> mod: classes) {
+			if (log.isDebugEnabled()) {
+				log.debug("checking class " +mod);
+			}
 			String name = mod.getName();
 			boolean ignore = false;
 			if (!ignoreClassList.contains(name)) {
@@ -176,6 +190,9 @@ public class SourceCodeGeneratorParams {
 					}
 				}
 				if (!ignore) {
+					if (log.isDebugEnabled()) {
+						log.debug("adding class " +mod);
+					}
 					addClass(mod);
 				}
 			}

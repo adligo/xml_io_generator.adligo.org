@@ -29,7 +29,12 @@ public class SourceCodeGenerator {
 
 	public static void main(String [] args) {
 		JSECommonInit.callLogDebug("main");
-		LogPlatform.resetLevels("adligo_log.properties");
+		
+		File runFile = new File(".");
+		String path = runFile.getAbsolutePath();
+		path = path.substring(0, path.length() - 1);
+		System.err.println("running in " + path);
+		LogPlatform.resetLevels(path + "adligo_log.properties");
 		
 		if (args.length == 0) {
 			System.err.println("SouceCodeGenerator requires a property file path!");
@@ -67,7 +72,13 @@ public class SourceCodeGenerator {
 		
 		
 		Set<String> packages = params.getPackages();
+		if (log.isInfoEnabled()) {
+			log.info("there are " + packages.size() + " packages");
+		}
 		for (String name : packages) {
+			if (log.isInfoEnabled()) {
+				log.info("working on package " + name);
+			}
 			GeneratorContext ctx = new GeneratorContext();
 			String pkgDir = makePackageDirectories(name, dir, suffix);
 			ctx.setPackageDirectory(pkgDir);
@@ -103,10 +114,17 @@ public class SourceCodeGenerator {
 		ctx.addClassFieldMethods(cfm);
 		
 		if (cfm.isMutant()) {
+			if (log.isInfoEnabled()) {
+				log.info("generating mutant for " + clazz);
+			}
 			MutantConverterGenerator mg = new MutantConverterGenerator();
 			mg.generate(cfm,ctx);
 			ctx.addMutant(clazz);
-		} 
+		} else {
+			if (log.isInfoEnabled()) {
+				log.info(clazz + " is not a mutant");
+			}
+		}
 	}
 	
 	private static void generateNonMutant(Class<?> clazz, GeneratorContext ctx) throws IOException {
@@ -117,9 +135,20 @@ public class SourceCodeGenerator {
 			//do nothing
 		} else if (cfm.isValid()) {
 			if (cfm.isSimpleImmutable()) {
+				if (log.isInfoEnabled()) {
+					log.info("generating simple immutable generator for " + clazz);
+				}
 				SimpleNonMutantConverterGenerator gen = new SimpleNonMutantConverterGenerator();
 				gen.generate(cfm, ctx);
+			} else if (cfm.isEnum()) {
+				if (log.isInfoEnabled()) {
+					log.info("NOT generating enum generator for " + clazz + 
+							" enums not currently supported");
+				}
 			} else {
+				if (log.isInfoEnabled()) {
+					log.info("generating non mutant generator for " + clazz);
+				}
 				NonMutantConverterGenerator gen = new NonMutantConverterGenerator();
 				gen.generate(cfm, ctx);
 			}

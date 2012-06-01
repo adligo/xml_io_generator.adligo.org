@@ -73,6 +73,8 @@ public class BaseConverterGenerator {
 		Class<?> setterParamClass = fm.getSetterParameterClass();
 		if (!FieldMethods.isAttribute(setterParamClass)) {
 			ctx.addExtraImport(setterParamClass.getName());
+		} else if (FieldMethods.isImportClass(setterParamClass)) {
+			ctx.addExtraImport(setterParamClass.getName());
 		}
 		String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
 		parentParams.addParam("classCastable", fieldClassCastable);
