@@ -28,6 +28,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
 		if (!isClassSerilizable()) {
+			log.error("The class " + cfm.getClazz() + " is Not serilizable!");
 			return;
 		}
 		ctx = pctx;

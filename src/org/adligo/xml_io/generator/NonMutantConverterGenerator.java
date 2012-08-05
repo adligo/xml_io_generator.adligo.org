@@ -56,6 +56,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 	private void addAttributes(Params parent) {
 		
 		immutableFieldType = clazz.getImmutableFieldType();
+		ctx.addExtraImport(immutableFieldType.getName());
 		ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
 		List<FieldMethods> fields = cfm.getFieldMethods();
 		if (!ctx.isAwareOfClass(immutableFieldType)) {
