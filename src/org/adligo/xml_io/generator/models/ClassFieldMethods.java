@@ -134,6 +134,9 @@ public class ClassFieldMethods {
 	public boolean isMutant() {
 		for (FieldMethods fm : fieldMethods) {
 			if (fm.getGetter() == null || fm.getSetter() == null) {
+				if (log.isInfoEnabled()) {
+					log.info("FieldMethod " + fm + " caused class " + clazz + " to not be a mutant.");
+				}
 				return false;
 			}
 		}

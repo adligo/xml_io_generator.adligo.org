@@ -133,15 +133,16 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 				attributeXml = attributeLetterCounter.getNextId();
 			}
 		}
+		String firstFieldName = immutableFieldType.getSimpleName();
 		String shortGenClassName = immutableFieldType.getSimpleName() + "Generator";
 		if (!ctx.isGeneratedClassesInThisPackage(shortGenClassName)) {
 			try {
-				Class<?> genClass = Class.forName(immutableFieldType.getName() + "Generator");
+				Class<?> genClass = Class.forName(firstFieldName + "Generator");
 				if (!ctx.isAwareOfClass(genClass)) {
 					ctx.addExtraImport(genClass.getName());
 				}
 			} catch (ClassNotFoundException e) {
-				throw new IllegalArgumentException(e);
+				throw new IllegalArgumentException("Error with attribute of class " + firstFieldName, e);
 			}
 		}
 		
