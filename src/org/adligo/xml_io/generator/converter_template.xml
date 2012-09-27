@@ -226,7 +226,7 @@ public class <param name="className"><value/></param> implements I_Converter&lt;
 			String value = attrib.getValue();
 			if (Xml_IOConstants.N_NAME_ATTRIBUTE.equals(name)) {
 				nameToRet = value; 
-			} else {
+			} else if (<param name="attribute"><value/></param>.equals(name)) {
 				obj = (<param name="constructorClass" ><value/></param>) context.readAttribute(
 							<param name="constructorClass" ><value/></param>.class, value);
 			}
