@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="gwt-jar" name="gwt-xml_io_generator">
+<project basedir="." default="gwt_jar" name="gwt-xml_io_generator">
     <!--  note this is just a regular jar, the source code this jar can generate is 
     	gwt complatible not the jar itself-->
     <import file="${user.home}/conf/adligo/gwt-build.xml"/>
