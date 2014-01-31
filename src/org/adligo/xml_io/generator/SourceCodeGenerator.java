@@ -62,7 +62,11 @@ public class SourceCodeGenerator {
 			log.error(x.getMessage(), x);
 			return;
 		}
-		
+		log.warn("outputDirectory is " + props.getProperty("outputDirectory"));
+		log.warn("packageList is " + props.getProperty("packageList"));
+		log.warn("ignoreClassList is " + props.getProperty("ignoreClassList"));
+		log.warn("ignoreClassesContaining is " + props.getProperty("ignoreClassesContaining"));
+		log.warn("ignoreJarList is " + props.getProperty("ignoreJarList"));
 		
 	}
 	public static void generate(SourceCodeGeneratorParams params) throws IOException {
