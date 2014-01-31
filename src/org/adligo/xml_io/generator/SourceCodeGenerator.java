@@ -29,21 +29,18 @@ public class SourceCodeGenerator {
 		"The SourceCodeGenerator requires either a Mutant implementation of I_Immutable for model xml_io souce code generation.";
 
 	public static void main(String [] args) throws Exception {
-		System.err.println("SourceCodeGenerator running");
 		System.out.println("SourceCodeGenerator running" );
 		
 		String path = args[0];
 		if (StringUtils.isEmpty(path)) {
 			path = new File(".").getAbsolutePath();
 		} 
-		System.err.println("SourceCodeGenerator path is " + path);
 		System.out.println("SourceCodeGenerator path is " + path );
 		
 		
 		File runningDir = new File(path);
 		
 		if (!runningDir.isDirectory()) {
-			System.err.println("The first argument passed in must be a directory.");
 			System.out.println("The first argument passed in must be a directory.");
 			log.error("The first argument passed in must be a directory.");
 			return;
@@ -52,7 +49,6 @@ public class SourceCodeGenerator {
 		if (!LogPlatform.isInit()) {
 			LogPlatform.init(path + File.separator + "adligo_log.properties");
 		}
-		System.err.println("running in " + path);
 		System.out.println("running in " + path);
 		
 		File propsFile = new File(path + File.separator + "gen.properties");
