@@ -14,6 +14,7 @@ import org.adligo.i.log.client.LogFactory;
 import org.adligo.i.log.client.LogPlatform;
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.jse.util.JSECommonInit;
+import org.adligo.jse.util.JSEPlatform;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
 import org.adligo.xml_io.generator.models.FieldMethods;
 import org.adligo.xml_io.generator.models.GeneratorContext;
@@ -27,22 +28,32 @@ public class SourceCodeGenerator {
 	public static final String THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS = 
 		"The SourceCodeGenerator requires either a Mutant implementation of I_Immutable for model xml_io souce code generation.";
 
-	public static void main(String [] args) {
-		JSECommonInit.callLogDebug("main");
+	public static void main(String [] args) throws Exception {
+		System.err.println("SourceCodeGenerator running");
+		System.out.println("SourceCodeGenerator running" );
 		
 		String path = args[0];
 		if (StringUtils.isEmpty(path)) {
 			path = new File(".").getAbsolutePath();
-		} else {
-			File runningDir = new File(path);
-			if (!runningDir.isDirectory()) {
-				log.error("The first argument passed in must be a directory.");
-			}
-			return;
 		} 
+		System.err.println("SourceCodeGenerator path is " + path);
+		System.out.println("SourceCodeGenerator path is " + path );
+		
+		
+		File runningDir = new File(path);
+		
+		if (!runningDir.isDirectory()) {
+			System.err.println("The first argument passed in must be a directory.");
+			System.out.println("The first argument passed in must be a directory.");
+			log.error("The first argument passed in must be a directory.");
+			return;
+		}
+		JSEPlatform.init();
+		if (!LogPlatform.isInit()) {
+			LogPlatform.init(path + File.separator + "adligo_log.properties");
+		}
 		System.err.println("running in " + path);
 		System.out.println("running in " + path);
-		LogPlatform.resetLevels(path + File.separator + "adligo_log.properties");
 		
 		File propsFile = new File(path + File.separator + "gen.properties");
 
@@ -51,27 +62,33 @@ public class SourceCodeGenerator {
 		try {
 			fis = new FileInputStream(propsFile);
 			props.load(fis);
+			log.warn("outputDirectory is " + props.getProperty("outputDirectory"));
+			log.warn("packageList is " + props.getProperty("packageList"));
+			log.warn("ignoreClassList is " + props.getProperty("ignoreClassList"));
+			log.warn("ignoreClassesContaining is " + props.getProperty("ignoreClassesContaining"));
+			log.warn("ignoreJarList is " + props.getProperty("ignoreJarList"));
+			
+			log.warn("starting souce code generation");
 			SourceCodeGeneratorParams params = new SourceCodeGeneratorParams(props);
 			generate(params);
 		} catch (FileNotFoundException e) {
 			System.err.println("SouceCodeGenerator was not able to find the property file " + args[0] +
 					" at " + propsFile.getAbsolutePath());
+			e.printStackTrace();
 			log.error(e.getMessage(), e);
 			return;
 		} catch (IOException e) {
 			System.err.println("SouceCodeGenerator had a problem loading the the property file " + args[0] +
 					" at " + propsFile.getAbsolutePath());
+			e.printStackTrace();
 			log.error(e.getMessage(), e);
 			return;
 		} catch (Exception x) {
+			x.printStackTrace();
 			log.error(x.getMessage(), x);
 			return;
 		}
-		log.warn("outputDirectory is " + props.getProperty("outputDirectory"));
-		log.warn("packageList is " + props.getProperty("packageList"));
-		log.warn("ignoreClassList is " + props.getProperty("ignoreClassList"));
-		log.warn("ignoreClassesContaining is " + props.getProperty("ignoreClassesContaining"));
-		log.warn("ignoreJarList is " + props.getProperty("ignoreJarList"));
+		
 		
 	}
 	public static void generate(SourceCodeGeneratorParams params) throws IOException {
