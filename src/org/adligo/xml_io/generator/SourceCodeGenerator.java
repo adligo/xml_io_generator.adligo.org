@@ -30,32 +30,37 @@ public class SourceCodeGenerator {
 	public static void main(String [] args) {
 		JSECommonInit.callLogDebug("main");
 		
-		File runFile = new File(".");
-		String path = runFile.getAbsolutePath();
-		path = path.substring(0, path.length() - 1);
-		System.err.println("running in " + path);
-		LogPlatform.resetLevels(path + "adligo_log.properties");
-		
-		if (args.length == 0) {
-			System.err.println("SouceCodeGenerator requires a property file path!");
+		String path = args[0];
+		if (StringUtils.isEmpty(path)) {
+			path = new File(".").getAbsolutePath();
+		} else {
+			File runningDir = new File(path);
+			if (!runningDir.isDirectory()) {
+				log.error("The first argument passed in must be a directory.");
+			}
 			return;
-		}
-		File file = new File(args[0]);
+		} 
+		System.err.println("running in " + path);
+		System.out.println("running in " + path);
+		LogPlatform.resetLevels(path + File.separator + "adligo_log.properties");
+		
+		File propsFile = new File(path + File.separator + "gen.properties");
+
 		Properties props = new Properties();
 		FileInputStream fis;
 		try {
-			fis = new FileInputStream(file);
+			fis = new FileInputStream(propsFile);
 			props.load(fis);
 			SourceCodeGeneratorParams params = new SourceCodeGeneratorParams(props);
 			generate(params);
 		} catch (FileNotFoundException e) {
 			System.err.println("SouceCodeGenerator was not able to find the property file " + args[0] +
-					" at " + file.getAbsolutePath());
+					" at " + propsFile.getAbsolutePath());
 			log.error(e.getMessage(), e);
 			return;
 		} catch (IOException e) {
 			System.err.println("SouceCodeGenerator had a problem loading the the property file " + args[0] +
-					" at " + file.getAbsolutePath());
+					" at " + propsFile.getAbsolutePath());
 			log.error(e.getMessage(), e);
 			return;
 		} catch (Exception x) {
