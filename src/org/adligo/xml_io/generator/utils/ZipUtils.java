@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -18,12 +19,18 @@ public class ZipUtils {
 	
  	public File unzip(File inFile, File outFolder) {
  		String newFileName = "";
+ 		
+ 		BufferedOutputStream out = null;
+ 		FileInputStream fis = null;
+ 		BufferedInputStream bis = null;
+ 		ZipInputStream in = null;
+ 		
         try
         {
-             BufferedOutputStream out = null;
-             ZipInputStream  in = new ZipInputStream(
-                                           new BufferedInputStream(
-                                                new FileInputStream(inFile)));
+        	 fis = new FileInputStream(inFile);
+        	 bis = new BufferedInputStream(fis);
+             in = new ZipInputStream(bis);
+             
              ZipEntry entry;
              while((entry = in.getNextEntry()) != null)
              {
@@ -37,10 +44,13 @@ public class ZipUtils {
             	 } 
              }
              in.close();
+             bis.close();
+             fis.close();
              
-             in = new ZipInputStream(
-                     new BufferedInputStream(
-                          new FileInputStream(inFile)));
+        	 fis = new FileInputStream(inFile);
+        	 bis = new BufferedInputStream(fis);
+             in = new ZipInputStream(bis);
+             
              while((entry = in.getNextEntry()) != null)
              {
             	 if (!entry.isDirectory()) {
@@ -85,12 +95,41 @@ public class ZipUtils {
              in.close();
              return outFolder;
         }
-        catch(Exception e)
+        catch(IOException e)
         {
         	System.err.println("error with inFile '"+ inFile + "' outFolder '" + outFolder + "' " +
         			" newFileName is '" +  newFileName + "'");
              e.printStackTrace();
              return inFile;
+        } finally {
+        	if (out != null) {
+        		try {
+        			out.close();
+        		} catch (IOException x) {
+        			log.error(x.getMessage());
+        		}
+        	}
+        	if (in != null) {
+        		try {
+        			in.close();
+        		} catch (IOException x) {
+        			log.error(x.getMessage());
+        		}
+        	}
+        	if (bis != null) {
+        		try {
+        			bis.close();
+        		} catch (IOException x) {
+        			log.error(x.getMessage());
+        		}
+        	}
+        	if (fis != null) {
+        		try {
+        			fis.close();
+        		} catch (IOException x) {
+        			log.error(x.getMessage());
+        		}
+        	}
         }
    }
  	

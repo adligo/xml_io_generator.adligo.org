@@ -3,5 +3,5 @@
     <!--  note this is just a regular jar, the source code this jar can generate is 
     	gwt complatible 
     	the jar xml_io_generator.jar itself is NOT to be used on the gwt client-->
-    <import file="${user.home}/conf/adligo/gwt-build.xml"/>
+    <import file="${user.home}/conf/adligo/builds/gwt-build.xml"/>
 </project>
