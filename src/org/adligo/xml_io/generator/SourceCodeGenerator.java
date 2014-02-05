@@ -13,10 +13,8 @@ import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
 import org.adligo.i.log.client.LogPlatform;
 import org.adligo.i.util.client.StringUtils;
-import org.adligo.jse.util.JSECommonInit;
 import org.adligo.jse.util.JSEPlatform;
 import org.adligo.xml_io.generator.models.ClassFieldMethods;
-import org.adligo.xml_io.generator.models.FieldMethods;
 import org.adligo.xml_io.generator.models.GeneratorContext;
 import org.adligo.xml_io.generator.models.Namespace;
 import org.adligo.xml_io.generator.models.SourceCodeGeneratorParams;
@@ -26,7 +24,7 @@ public class SourceCodeGenerator {
 	
 	public static final String THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY = "There was a error creating the directory ";
 	public static final String THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS = 
-		"The SourceCodeGenerator requires either a Mutant implementation of I_Immutable for model xml_io souce code generation.";
+		"The SourceCodeGenerator requires either a Mutant or A class with constructor parmeters souce code generation.";
 
 	public static void main(String [] args) throws Exception {
 		System.out.println("SourceCodeGenerator running" );
@@ -51,6 +49,7 @@ public class SourceCodeGenerator {
 		}
 		System.out.println("running in " + path);
 		
+		System.err.println("reading  " + path + File.separator + "gen.properties");
 		File propsFile = new File(path + File.separator + "gen.properties");
 
 		Properties props = new Properties();
