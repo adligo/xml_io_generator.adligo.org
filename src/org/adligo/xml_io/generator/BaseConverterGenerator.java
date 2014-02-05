@@ -105,12 +105,4 @@ public class BaseConverterGenerator {
 			}
 		}
 	}
-	
-	boolean isClassSerilizable() {
-		Class<?> mutantClazz = clazz.getClazz();
-		if (Serializable.class.isAssignableFrom(mutantClazz)) {
-			return true;
-		}
-		return false;
-	}
 }

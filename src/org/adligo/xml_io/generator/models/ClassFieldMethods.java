@@ -1,5 +1,6 @@
 package org.adligo.xml_io.generator.models;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -272,7 +273,9 @@ public class ClassFieldMethods {
 		
 		BigDecimal bd = new BigDecimal(result);
 		bd = bd.divide(new BigDecimal(VersionCalculator.DIVISOR));
-		bd = bd.add(new BigDecimal(getSerialVersionUID()));
+		if (Serializable.class.isAssignableFrom(clazz) ) {
+			bd = bd.add(new BigDecimal(getSerialVersionUID()));
+		} 
 		return bd;
 	}
 	

@@ -1,11 +1,8 @@
 package org.adligo.xml_io.generator;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
@@ -27,10 +24,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 	
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
-		if (!isClassSerilizable()) {
-			log.error("The class " + cfm.getClazz() + " is Not serilizable!");
-			return;
-		}
+		
 		ctx = pctx;
 		log.info("working on generators for class " + cfm.getClazz());
 		
