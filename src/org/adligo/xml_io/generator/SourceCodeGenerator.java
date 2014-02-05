@@ -24,7 +24,7 @@ public class SourceCodeGenerator {
 	
 	public static final String THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY = "There was a error creating the directory ";
 	public static final String THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS = 
-		"The SourceCodeGenerator requires either a Mutant or A class with constructor parmeters souce code generation.";
+		"The SourceCodeGenerator requires either a Mutant or A class with constructor parmeter for souce code generation.";
 
 	public static void main(String [] args) throws Exception {
 		System.out.println("SourceCodeGenerator running" );

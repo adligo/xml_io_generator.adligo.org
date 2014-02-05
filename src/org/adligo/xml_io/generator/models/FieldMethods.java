@@ -55,22 +55,19 @@ public class FieldMethods {
 			if (isBoolean(type)) {
 				if (new String("is" + name).equalsIgnoreCase(methodName) ) {
 					Class<?> returnType = meth.getReturnType();
-					Class<?> fieldClass = field.getType();
-					if (returnType.isAssignableFrom(fieldClass)) {
+					if (isBoolean(returnType)) {
 						getter = meth;
 						log.debug("it is!");
 					}
 				} else if (new String("has" + name).equalsIgnoreCase(methodName) ) {
 					Class<?> returnType = meth.getReturnType();
-					Class<?> fieldClass = field.getType();
-					if (returnType.isAssignableFrom(fieldClass)) {
+					if (isBoolean(returnType)) {
 						getter = meth;
 						log.debug("it is!");
 					}
 				} else if (new String("get" + name).equalsIgnoreCase(methodName) ) {
 					Class<?> returnType = meth.getReturnType();
-					Class<?> fieldClass = field.getType();
-					if (returnType.isAssignableFrom(fieldClass)) {
+					if (isBoolean(returnType)) {
 						getter = meth;
 						log.debug("it is!");
 					}
@@ -109,7 +106,7 @@ public class FieldMethods {
 		}
 		if (type.isPrimitive()) {
 			String name = type.getName();
-			if ("boolean".equals(name)) {
+			if (boolean.class.getName().equals(name)) {
 				return true;
 			}
 		}
