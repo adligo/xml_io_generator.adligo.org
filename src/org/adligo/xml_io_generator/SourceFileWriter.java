@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator;
+package org.adligo.xml_io_generator;
 
 import java.io.File;
 import java.io.FileNotFoundException;

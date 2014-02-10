@@ -1,8 +1,9 @@
-package org.adligo.xml_io.generator.models;
+package org.adligo.xml_io_generator.models;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -12,49 +13,14 @@ import java.util.StringTokenizer;
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
 import org.adligo.i.util.client.StringUtils;
-import org.adligo.xml_io.generator.utils.ModelDiscovery;
-import org.adligo.xml_io.generator.utils.PackageUtils;
+import org.adligo.xml_io_generator.GenPropertiesConstants;
+import org.adligo.xml_io_generator.utils.ModelDiscovery;
+import org.adligo.xml_io_generator.utils.PackageUtils;
 
 public class SourceCodeGeneratorParams {
 	private static final Log log = LogFactory.getLog(SourceCodeGeneratorParams.class);
 	
-	/**
-	 * true or false, see the field in this class useClassNamesInXml
-	 */
-	public static final String USE_CLASS_NAMES_IN_XML_PROPERTY = "useClassNamesInXml";
-	/**
-	 * true or false, see the field in this class useFieldNamesInXml
-	 */
-	public static final String USE_FIELD_NAMES_IN_XML_PROPERTY = "useFieldNamesInXml";
-	/**
-	 * package list 
-	 */
-	public static final String PACKAGE_LIST_PROPERTY = "packageList";
-	
-	/**
-	 * client projects may take on responsible for versioning, other wise versions are calculated.
-	 */
-	public static final String NAMESPACE_VERSION_PROPERTY = "namespaceVersion";
-	/**
-	 * the namespace suffic to add to the classes generated
-	 */
-	public static final String NAMESPACE_SUFFIX_PROPERTY = "namespaceSuffix";
-	/**
-	 * where to put the generated source classes
-	 */
-	public static final String OUTPUT_DIRECTORY_PROPERTY = "outputDirectory";
-	/**
-	 * a comma delimited list of classes to ignore
-	 */
-	public static final String IGNORE_CLASS_LIST = "ignoreClassList";
-	/**
-	 * a comma delimited list of text that will cause a class to be ignored
-	 */
-	public static final String IGNORE_CLASSES_CONTAINING = "ignoreClassesContaining";
-	/**
-	 * jars to ignore (not unzip into the xml_io_generator_temp for source code parsing)
-	 */
-	public static final String IGNORE_JAR_LIST = "ignoreJarList";
+
 	
 	private Map<String, List<Class<?>>> packageClassModels = new HashMap<String, List<Class<?>>>();
 	private List<String> ignoreClassList = new ArrayList<String>();
@@ -62,6 +28,7 @@ public class SourceCodeGeneratorParams {
 	private List<String> ignoreJarList = new ArrayList<String>();
 	private String version;
 	private String namespaceSuffix;
+	private Set<String> basePackages = new HashSet<String>();
 	
 	private String outputDirectory;
 	/**
@@ -80,37 +47,38 @@ public class SourceCodeGeneratorParams {
 	}
 	
 	public SourceCodeGeneratorParams(Properties props) throws IOException, ClassNotFoundException {
-		String val = props.getProperty(USE_CLASS_NAMES_IN_XML_PROPERTY);
+		String val = props.getProperty(GenPropertiesConstants.USE_CLASS_NAMES_IN_XML);
 		if (val != null) {
 			if ("false".equalsIgnoreCase(val)) {
 				useClassNamesInXml = false;
 			}
 		}
 		
-		val = props.getProperty(USE_FIELD_NAMES_IN_XML_PROPERTY);
+		val = props.getProperty(GenPropertiesConstants.USE_FIELD_NAMES_IN_XML);
 		if (val != null) {
 			if ("false".equalsIgnoreCase(val)) {
 				useFieldNamesInXml = false;
 			}
 		}
 		
-		val = props.getProperty(NAMESPACE_VERSION_PROPERTY);
+		val = props.getProperty(GenPropertiesConstants.NAMESPACE_VERSION);
 		if (!StringUtils.isEmpty(val)) {
 			version = val;
 		}
 	
-		val = props.getProperty(NAMESPACE_SUFFIX_PROPERTY);
+		val = props.getProperty(GenPropertiesConstants.NAMESPACE_SUFFIX);
 		if (!StringUtils.isEmpty(val)) {
 			namespaceSuffix = val;
 		}
 		
-		val = props.getProperty(OUTPUT_DIRECTORY_PROPERTY);
+		val = props.getProperty(GenPropertiesConstants.OUTPUT_DIRECTORY);
 		if (val == null) {
-			throw new IllegalArgumentException("The SourceCodeGenrator requires a " + OUTPUT_DIRECTORY_PROPERTY);
+			throw new IllegalArgumentException("The SourceCodeGenrator requires a " + 
+					GenPropertiesConstants.OUTPUT_DIRECTORY);
 		}
 		outputDirectory = val;
 		
-		val = props.getProperty(IGNORE_CLASS_LIST);
+		val = props.getProperty(GenPropertiesConstants.IGNORE_CLASS_LIST);
 		if (val != null) {
 			if (val.indexOf(",") == -1) {
 				ignoreClassList.add(val);
@@ -123,7 +91,7 @@ public class SourceCodeGeneratorParams {
 			}
 		}
 		
-		val = props.getProperty(IGNORE_CLASSES_CONTAINING);
+		val = props.getProperty(GenPropertiesConstants.IGNORE_CLASSES_CONTAINING);
 		if (val != null) {
 			if (val.indexOf(",") == -1) {
 				ignoreClassesContainingList.add(val);
@@ -137,7 +105,7 @@ public class SourceCodeGeneratorParams {
 		}
 		
 		
-		val = props.getProperty(IGNORE_JAR_LIST);
+		val = props.getProperty(GenPropertiesConstants.IGNORE_JAR_LIST);
 		if (val != null) {
 			if (val.indexOf(",") == -1) {
 				ignoreJarList.add(val);
@@ -150,21 +118,56 @@ public class SourceCodeGeneratorParams {
 			}
 		}
 		
-		val = props.getProperty(PACKAGE_LIST_PROPERTY);
+		val = props.getProperty(GenPropertiesConstants.BASE_PACKAGES);
+		if (val.indexOf(",") == -1) {
+			if (!StringUtils.isEmpty(val)) {
+				basePackages.add(val);
+			}
+		} else {
+			StringTokenizer tokenizer = new StringTokenizer(val, ",");
+			while (tokenizer.hasMoreElements()) {
+				String packageName = tokenizer.nextToken();
+				if (!StringUtils.isEmpty(packageName)) {
+					basePackages.add(packageName);
+				}
+			}
+		}
+		
+		val = props.getProperty(GenPropertiesConstants.PACKAGE_LIST);
 		if (log.isInfoEnabled()) {
-			log.info("read " + PACKAGE_LIST_PROPERTY + "=" + val);
+			log.info("read " + GenPropertiesConstants.PACKAGE_LIST + "=" + val);
 		}
 		if (val == null) {
-			throw new IllegalArgumentException("The property " + PACKAGE_LIST_PROPERTY + " is required");
+			throw new IllegalArgumentException("The property " + GenPropertiesConstants.PACKAGE_LIST + " is required");
 		}
 		PackageUtils pu = new PackageUtils(ignoreJarList);
 		if (val.indexOf(",") == -1) {
+			checkBasePackage(val);
 			discoverClassesInPackage(pu, val);
 		} else {
 			StringTokenizer tokenizer = new StringTokenizer(val, ",");
 			while (tokenizer.hasMoreElements()) {
 				String packageName = tokenizer.nextToken();
+				checkBasePackage(packageName);
 				discoverClassesInPackage(pu, packageName);
+			}
+		}
+	}
+
+	private void checkBasePackage(String val) {
+		if (StringUtils.isEmpty(namespaceSuffix)) {
+			if (!basePackages.isEmpty()) {
+				boolean foundBasePackage = false;
+				for (String bp: basePackages) {
+					if (val.indexOf(bp) == 0) {
+						foundBasePackage = true;
+					}
+				}
+				if (!foundBasePackage) {
+					throw new IllegalArgumentException("The package " + 
+							val + " must be in one of the basePackages " + 
+							basePackages);
+				}
 			}
 		}
 	}

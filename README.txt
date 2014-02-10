@@ -1,6 +1,25 @@
 This project generates xml_io Converters for custom models
 so that they may be serialized to the condensed xml_io xml format.
 
+See the models_core_xml_io project for an example
+outputDirectory where the java source code is going
+packageList what packages you want to create xml_io converters for
+ignoreClassList classes you want to ignore
+ignoreClassesContaining  text which will match to ignore classes
+ignoreJarList jars you want to ignore
+useClassNamesInXml if false it will obsfucate them ie a, b, c 
+useFieldNamesInXml if false it will obsfucate them ie a, b, c
+basePackages the base package you want to append the namespaceSuffix package to 
+namespaceSuffix the simple name of the namespace to append to the base package
+
+ie so if basePackage is org.adligo.models.core
+and the namespaceSuffix is xml_io
+you will get 
+org.adligo.models.core.xml_io
+org.adligo.models.core.xml_io.utils
+org.adligo.models.core.xml_io.ids
+
+
 The generator follows the following strategy to attempt to generate these Converters;
 using reflection check Class fields
      for each non transient field if there is a setter and getter

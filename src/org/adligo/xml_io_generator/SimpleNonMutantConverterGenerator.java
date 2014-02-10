@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator;
+package org.adligo.xml_io_generator;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -9,10 +9,10 @@ import org.adligo.i.log.client.LogFactory;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.Templates;
-import org.adligo.xml_io.generator.models.ClassFieldMethods;
-import org.adligo.xml_io.generator.models.FieldMethods;
-import org.adligo.xml_io.generator.models.FieldNameToUnderscore;
-import org.adligo.xml_io.generator.models.GeneratorContext;
+import org.adligo.xml_io_generator.models.ClassFieldMethods;
+import org.adligo.xml_io_generator.models.FieldMethods;
+import org.adligo.xml_io_generator.models.FieldNameToUnderscore;
+import org.adligo.xml_io_generator.models.GeneratorContext;
 
 public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 	private static final Log log = LogFactory.getLog(SimpleNonMutantConverterGenerator.class);

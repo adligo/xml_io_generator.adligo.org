@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator;
+package org.adligo.xml_io_generator;
 
 import java.io.IOException;
 import java.util.Date;
@@ -10,8 +10,8 @@ import org.adligo.i.util.client.StringUtils;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.Templates;
-import org.adligo.xml_io.generator.models.ClassFieldMethods;
-import org.adligo.xml_io.generator.models.GeneratorContext;
+import org.adligo.xml_io_generator.models.ClassFieldMethods;
+import org.adligo.xml_io_generator.models.GeneratorContext;
 
 public class SetupGenerator {
 	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_setup_template.xml", true);

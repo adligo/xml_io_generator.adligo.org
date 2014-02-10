@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator;
+package org.adligo.xml_io_generator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,10 +14,10 @@ import org.adligo.i.log.client.LogFactory;
 import org.adligo.i.log.client.LogPlatform;
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.jse.util.JSEPlatform;
-import org.adligo.xml_io.generator.models.ClassFieldMethods;
-import org.adligo.xml_io.generator.models.GeneratorContext;
-import org.adligo.xml_io.generator.models.Namespace;
-import org.adligo.xml_io.generator.models.SourceCodeGeneratorParams;
+import org.adligo.xml_io_generator.models.ClassFieldMethods;
+import org.adligo.xml_io_generator.models.GeneratorContext;
+import org.adligo.xml_io_generator.models.Namespace;
+import org.adligo.xml_io_generator.models.SourceCodeGeneratorParams;
 
 public class SourceCodeGenerator {
 	private static final Log log = LogFactory.getLog(SourceCodeGenerator.class);
@@ -57,11 +57,9 @@ public class SourceCodeGenerator {
 		try {
 			fis = new FileInputStream(propsFile);
 			props.load(fis);
-			log.warn("outputDirectory is " + props.getProperty("outputDirectory"));
-			log.warn("packageList is " + props.getProperty("packageList"));
-			log.warn("ignoreClassList is " + props.getProperty("ignoreClassList"));
-			log.warn("ignoreClassesContaining is " + props.getProperty("ignoreClassesContaining"));
-			log.warn("ignoreJarList is " + props.getProperty("ignoreJarList"));
+			for (String key: GenPropertiesConstants.KEYS) {
+				log.warn(key + " is " + props.getProperty(key));
+			}
 			
 			log.warn("starting souce code generation");
 			SourceCodeGeneratorParams params = new SourceCodeGeneratorParams(props);

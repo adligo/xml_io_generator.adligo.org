@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator.models;
+package org.adligo.xml_io_generator.models;
 
 public class FieldNameToUnderscore {
 

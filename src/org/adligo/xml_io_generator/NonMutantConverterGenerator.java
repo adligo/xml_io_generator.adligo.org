@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator;
+package org.adligo.xml_io_generator;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -10,17 +10,18 @@ import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.Templates;
 import org.adligo.xml_io.client.I_AttributeConverter;
-import org.adligo.xml_io.generator.models.ClassFieldMethods;
-import org.adligo.xml_io.generator.models.FieldMethods;
-import org.adligo.xml_io.generator.models.FieldNameToUnderscore;
-import org.adligo.xml_io.generator.models.GeneratorContext;
+import org.adligo.xml_io_generator.models.ClassFieldMethods;
+import org.adligo.xml_io_generator.models.FieldMethods;
+import org.adligo.xml_io_generator.models.FieldNameToUnderscore;
+import org.adligo.xml_io_generator.models.GeneratorContext;
 
-public class MutantConverterGenerator extends BaseConverterGenerator {
-	private static final Log log = LogFactory.getLog(MutantConverterGenerator.class);
+public class NonMutantConverterGenerator extends BaseConverterGenerator {
+	private static final Log log = LogFactory.getLog(NonMutantConverterGenerator.class);
 	
 	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_template.xml", true);
-	private static final Template template = templates.getTemplate("converter");
+	private static final Template template = templates.getTemplate("immutableConverter");
 
+	private Class<?> immutableFieldType;
 	
 	public void generate(ClassFieldMethods cfm, GeneratorContext pctx) throws IOException {
 		clazz = cfm;
@@ -36,11 +37,9 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		setUpTagName();
 		setupToXmlParams();
 		addAttributes(params);
+		addConstructorExceptions(clazz, params);
 		writeFile(cfm.getClazz(), template);
 	}
-
-
-	
 
 	
 	private void setupToXmlParams() {
@@ -50,16 +49,29 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 	}
 
 	private void addAttributes(Params parent) {
-		List<FieldMethods> fields = clazz.getFieldMethods();
+		
+		immutableFieldType = clazz.getImmutableFieldType();
+		ctx.addExtraImport(immutableFieldType.getName());
+		ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
+		List<FieldMethods> fields = cfm.getFieldMethods();
+		if (!ctx.isAwareOfClass(immutableFieldType)) {
+			ctx.addExtraImport(immutableFieldType.getName());
+		}
+		parent.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 		boolean hasChildren = false;
 		for (FieldMethods fm: fields) {
+			String fname = fm.getName();
+			if (log.isDebugEnabled()) {
+				log.debug("working on field " + fname);
+			}
 			
 			if (fm.isAttribute()) {
 				addAttributeParams(parent, fm);
 			} else {
 				Class<?> fieldType = fm.getFieldClass();
-				ClassFieldMethods cfm = new ClassFieldMethods(fieldType);
-				if (cfm.isAttribute()) {
+					
+				ClassFieldMethods cfmField = new ClassFieldMethods(fieldType);
+				if (cfmField.isAttribute()) {
 					addAttributeParams(parent, fm);
 				} else {
 					hasChildren = true;
@@ -69,19 +81,19 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 					if (!ctx.isUseFieldNamesInXml()) {
 						childName = childNameLetterCounter.getNextId();
 					}
-					String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+					String attributeConstant =  immutableFieldType.getSimpleName() + "Generator." +
+							FieldNameToUnderscore.toUnderscore(fieldName);
 					parent.addParam("child", attributeConstant + "_CHILD", childParams);
 					childParams.addParam("childName", childName);
 					String getterName = fm.getGetterName();
 					childParams.addParam("getter", getterName);
 					appendGenericClass(childParams);
 					
-					Class<?> clazz = fm.getFieldClass();
-					if (!FieldMethods.isAttribute(clazz)) {
-						String clazzName = fm.getFieldClassNameForImport();
-						ctx.addExtraImport(clazzName);
-					}
+					String clazzName = fm.getFieldClassNameForImport();
+					ctx.addExtraImport(clazzName);
 					
+					childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
+						
 					addSetter(fm, childParams);
 				}
 			}
@@ -116,12 +128,28 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 				attributeXml = attributeLetterCounter.getNextId();
 			}
 		}
-		String attributeConstant = FieldNameToUnderscore.toUnderscore(fieldName);
+		String firstFieldName = immutableFieldType.getSimpleName();
+		String shortGenClassName = immutableFieldType.getSimpleName() + "Generator";
+		if (!ctx.isGeneratedClassesInThisPackage(shortGenClassName)) {
+			try {
+				Class<?> genClass = Class.forName(firstFieldName + "Generator");
+				if (!ctx.isAwareOfClass(genClass)) {
+					ctx.addExtraImport(genClass.getName());
+				}
+			} catch (ClassNotFoundException e) {
+				throw new IllegalArgumentException("Error with attribute of class " + firstFieldName, e);
+			}
+		}
+		
+		String attributeConstant = shortGenClassName + "." +
+			FieldNameToUnderscore.toUnderscore(fieldName);
 		parent.addParam("attribute", attributeConstant + "_ATTRIBUTE", attributeParams);
 		attributeParams.addParam("attributeName", attributeXml);
 		String getterName = fm.getGetterName();
 		attributeParams.addParam("getter", getterName);
 		appendGenericClass(attributeParams);
+		
+		attributeParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 		
 		Class<?> clazz = fm.getFieldClass();
 		if (!FieldMethods.isAttribute(clazz)) {
@@ -132,10 +160,6 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		String fieldClass = fm.getFieldClassForSource();
 		attributeParams.addParam("fieldClass", fieldClass);
 		
-		
 		addSetter(fm, attributeParams);
 	}
-
-
-	
 }

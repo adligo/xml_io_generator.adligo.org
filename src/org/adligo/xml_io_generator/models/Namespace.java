@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator.models;
+package org.adligo.xml_io_generator.models;
 
 import org.adligo.models.core.client.DomainName;
 import org.adligo.models.core.client.InvalidParameterException;

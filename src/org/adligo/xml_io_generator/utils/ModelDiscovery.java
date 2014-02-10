@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator.utils;
+package org.adligo.xml_io_generator.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;

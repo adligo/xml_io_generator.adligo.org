@@ -1,4 +1,4 @@
-package org.adligo.xml_io.generator;
+package org.adligo.xml_io_generator;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -8,9 +8,9 @@ import org.adligo.i.util.client.StringUtils;
 import org.adligo.models.params.client.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml_io.client.LetterCounter;
-import org.adligo.xml_io.generator.models.ClassFieldMethods;
-import org.adligo.xml_io.generator.models.FieldMethods;
-import org.adligo.xml_io.generator.models.GeneratorContext;
+import org.adligo.xml_io_generator.models.ClassFieldMethods;
+import org.adligo.xml_io_generator.models.FieldMethods;
+import org.adligo.xml_io_generator.models.GeneratorContext;
 
 public class BaseConverterGenerator {
 	ClassFieldMethods clazz;
