@@ -41,24 +41,25 @@ public class SourceCodeGeneratorAntTask extends Task {
 		return success;
 	}
 
-	public void setSuccess(String success_property) {
-		this.success = success_property;
+	public void setSuccess(String p) {
+		this.success = p;
 	}
 
 	@Override
 	public void execute() throws BuildException {
+		
+		Project project = getProject();
+		if (project == null) {
+            throw new IllegalStateException(PROJECT_HAS_NOT_BEEN_SET);
+        }
 		try {
-			Project project = getProject();
-			if (project == null) {
-	            throw new IllegalStateException(PROJECT_HAS_NOT_BEEN_SET);
-	        }
 			if (StringUtils.isEmpty(classpath)) {
 				throw new IllegalStateException(CLASSPATH_WAS_NOT_SET);
 			}
 			if (StringUtils.isEmpty(success)) {
 				throw new IllegalStateException(SUCCESS_PROPERTY_WAS_NOT_SET);
 			}
-			project.setUserProperty(success, "false");
+			
 			if (StringUtils.isEmpty(dir)) {
 				dir = project.getBaseDir().getAbsolutePath();
 			}
@@ -82,6 +83,7 @@ public class SourceCodeGeneratorAntTask extends Task {
 			
 			project.setUserProperty(success, "true");
 		} catch (Exception x) {
+			project.setUserProperty(success, "false");
 			log.error(x.getMessage(), x);
 			throw new BuildException(x);
 		}

@@ -141,7 +141,9 @@ public class SourceCodeGenerator {
 		for (Entry<String,String> entry : entries) {
 			String oldPkg = entry.getKey();
 			List<Class<?>> classes = memory.getClasses(oldPkg);
-			allClasses.addAll(classes);
+			if (classes != null) {
+				allClasses.addAll(classes);
+			}
 		}
 		
 		if (allClasses.size() == 0) {
@@ -175,18 +177,19 @@ public class SourceCodeGenerator {
 			ctx.setNamespace(namespace);
 			
 			List<Class<?>> classes = memory.getClasses(oldPkg);
-			
-			for (Class<?> clazz : classes) {
-				ctx.clearExtraClassImports();
-				//mutants must be done first for complex non mutants
-				generateMutant(clazz, ctx);
+			if (classes != null) {
+				for (Class<?> clazz : classes) {
+					ctx.clearExtraClassImports();
+					//mutants must be done first for complex non mutants
+					generateMutant(clazz, ctx);
+				}
+				for (Class<?> clazz : classes) {
+					ctx.clearExtraClassImports();
+					generateNonMutant(clazz, ctx);
+				}
+				SetupGenerator setup = new SetupGenerator();
+				setup.generate(ctx);
 			}
-			for (Class<?> clazz : classes) {
-				ctx.clearExtraClassImports();
-				generateNonMutant(clazz, ctx);
-			}
-			SetupGenerator setup = new SetupGenerator();
-			setup.generate(ctx);
 		}
 	}
 	
