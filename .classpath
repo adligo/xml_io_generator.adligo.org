@@ -2,8 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/adi"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/adig"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/i_log"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/i_util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jse_util"/>
@@ -12,5 +10,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/models_core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/models_core_relations"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/params"/>
+	<classpathentry kind="var" path="MVN_REPO/org/apache/ant/ant/1.9.3/ant-1.9.3.jar" sourcepath="/ANT_SRC"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ant_log"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

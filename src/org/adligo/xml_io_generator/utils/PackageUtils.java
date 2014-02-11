@@ -154,6 +154,49 @@ public class PackageUtils {
 		return Collections.unmodifiableList(toRet);
 	}
 	
+	public List<String> getSubPackages(String packageName) throws IOException {
+		String pkgDir = getPackageDir(packageName);
+		File dir = new File(pkgDir);
+		File [] files = dir.listFiles();
+		
+		List<String> toRet = new ArrayList<String> ();
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].isDirectory()) {
+				toRet.add(pkgDir + File.separator + 
+						files[i].getName());
+			}
+		}
+		return toRet;
+	}
+	
+	public boolean hasSubPackages(String packageName) throws IOException {
+		String pkgDir = getPackageDir(packageName);
+		File dir = new File(pkgDir);
+		File [] files = dir.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].isDirectory()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public String getPackageDir(String packageName) throws IOException {
+		String exp = explodeTemp.getAbsolutePath();
+		exp = exp.substring(0, exp.length() - 2);
+		StringBuilder sb = new StringBuilder();
+		char [] pkgChars = packageName.toCharArray();
+		for (int i = 0; i < pkgChars.length; i++) {
+			char c = pkgChars[i];
+			if (c == '.') {
+				sb.append(File.separator);
+			} else {
+				sb.append(c);
+			}
+		}
+		return exp + File.separator + sb.toString();
+	}
+	
 	private void recursiveDelete(File f) {
 		if (f.isDirectory()) {
 			File [] files = f.listFiles();

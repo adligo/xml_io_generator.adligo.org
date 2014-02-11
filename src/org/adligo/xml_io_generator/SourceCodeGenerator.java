@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -15,6 +18,7 @@ import org.adligo.i.log.client.LogPlatform;
 import org.adligo.i.util.client.StringUtils;
 import org.adligo.jse.util.JSEPlatform;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;
+import org.adligo.xml_io_generator.models.GenPropertiesConstants;
 import org.adligo.xml_io_generator.models.GeneratorContext;
 import org.adligo.xml_io_generator.models.Namespace;
 import org.adligo.xml_io_generator.models.SourceCodeGeneratorParams;
@@ -34,7 +38,16 @@ public class SourceCodeGenerator {
 			path = new File(".").getAbsolutePath();
 		} 
 		System.out.println("SourceCodeGenerator path is " + path );
-		
+		if (args.length >= 2) {
+			String classpath = args[1];
+			StringTokenizer tokenizer = new StringTokenizer(classpath, ",");
+			List<URL> cpList = new ArrayList<URL>();
+			while (tokenizer.hasMoreElements()) {
+				String token = tokenizer.nextToken();
+				cpList.add(new URL(token));
+			}
+			new URLClassLoader(cpList.toArray(new URL[cpList.size()]));
+		}
 		
 		File runningDir = new File(path);
 		

@@ -13,7 +13,6 @@ import java.util.StringTokenizer;
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
 import org.adligo.i.util.client.StringUtils;
-import org.adligo.xml_io_generator.GenPropertiesConstants;
 import org.adligo.xml_io_generator.utils.ModelDiscovery;
 import org.adligo.xml_io_generator.utils.PackageUtils;
 
@@ -28,7 +27,7 @@ public class SourceCodeGeneratorParams {
 	private List<String> ignoreJarList = new ArrayList<String>();
 	private String version;
 	private String namespaceSuffix;
-	private Set<String> basePackages = new HashSet<String>();
+	private String basePackage;
 	
 	private String outputDirectory;
 	/**
@@ -118,61 +117,35 @@ public class SourceCodeGeneratorParams {
 			}
 		}
 		
-		val = props.getProperty(GenPropertiesConstants.BASE_PACKAGES);
-		if (val.indexOf(",") == -1) {
-			if (!StringUtils.isEmpty(val)) {
-				basePackages.add(val);
-			}
-		} else {
-			StringTokenizer tokenizer = new StringTokenizer(val, ",");
-			while (tokenizer.hasMoreElements()) {
-				String packageName = tokenizer.nextToken();
-				if (!StringUtils.isEmpty(packageName)) {
-					basePackages.add(packageName);
-				}
-			}
-		}
+		basePackage = props.getProperty(GenPropertiesConstants.BASE_PACKAGE);
 		
-		val = props.getProperty(GenPropertiesConstants.PACKAGE_LIST);
-		if (log.isInfoEnabled()) {
-			log.info("read " + GenPropertiesConstants.PACKAGE_LIST + "=" + val);
-		}
-		if (val == null) {
-			throw new IllegalArgumentException("The property " + GenPropertiesConstants.PACKAGE_LIST + " is required");
-		}
 		PackageUtils pu = new PackageUtils(ignoreJarList);
-		if (val.indexOf(",") == -1) {
-			checkBasePackage(val);
-			discoverClassesInPackage(pu, val);
-		} else {
-			StringTokenizer tokenizer = new StringTokenizer(val, ",");
-			while (tokenizer.hasMoreElements()) {
-				String packageName = tokenizer.nextToken();
-				checkBasePackage(packageName);
-				discoverClassesInPackage(pu, packageName);
-			}
-		}
-	}
-
-	private void checkBasePackage(String val) {
-		if (StringUtils.isEmpty(namespaceSuffix)) {
-			if (!basePackages.isEmpty()) {
-				boolean foundBasePackage = false;
-				for (String bp: basePackages) {
-					if (val.indexOf(bp) == 0) {
-						foundBasePackage = true;
-					}
-				}
-				if (!foundBasePackage) {
-					throw new IllegalArgumentException("The package " + 
-							val + " must be in one of the basePackages " + 
-							basePackages);
-				}
-			}
-		}
+		discoverClassesInPackage(pu, basePackage);
 	}
 
 	private void discoverClassesInPackage(PackageUtils pu, String packageName)
+			throws IOException, ClassNotFoundException {
+		if (pu.hasSubPackages(packageName)) {
+			List<String> subPackages = pu.getSubPackages(packageName);
+			for (String pkg: subPackages) {
+				discoverClassesInPackageRecursive(pu, pkg);
+			}
+		}
+		discoverClassesInSimplePackage(pu, packageName);
+	}
+	
+	private void discoverClassesInPackageRecursive(PackageUtils pu, String packageName)
+			throws IOException, ClassNotFoundException {
+		if (pu.hasSubPackages(packageName)) {
+			List<String> subPackages = pu.getSubPackages(packageName);
+			for (String pkg: subPackages) {
+				discoverClassesInPackageRecursive(pu, pkg);
+			}
+		}
+		discoverClassesInSimplePackage(pu, packageName);
+	}
+	
+	private void discoverClassesInSimplePackage(PackageUtils pu, String packageName)
 			throws IOException, ClassNotFoundException {
 		ModelDiscovery md = new ModelDiscovery(pu, packageName);
 		

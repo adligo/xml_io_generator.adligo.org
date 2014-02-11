@@ -1,4 +1,4 @@
-package org.adligo.xml_io_generator;
+package org.adligo.xml_io_generator.models;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,10 +13,6 @@ public class GenPropertiesConstants {
 	 * true or false, see the field in this class useFieldNamesInXml
 	 */
 	public static final String USE_FIELD_NAMES_IN_XML = "useFieldNamesInXml";
-	/**
-	 * package list 
-	 */
-	public static final String PACKAGE_LIST = "packageList";
 	
 	/**
 	 * client projects may take on responsible for versioning, other wise versions are calculated.
@@ -43,18 +39,17 @@ public class GenPropertiesConstants {
 	 */
 	public static final String IGNORE_JAR_LIST = "ignoreJarList";
 	
-	public static final String BASE_PACKAGES = "basePackages";
+	public static final String BASE_PACKAGE = "basePackage";
 	
 	public static final List<String> KEYS = getKeys() ;
 	
 	private static List<String> getKeys() {
 		List<String> keys = new ArrayList<String>();
 		keys.add(OUTPUT_DIRECTORY);
-		keys.add(PACKAGE_LIST);
 		keys.add(IGNORE_CLASS_LIST);
 		keys.add(IGNORE_CLASSES_CONTAINING);
 		keys.add(IGNORE_JAR_LIST);
-		keys.add(BASE_PACKAGES);
+		keys.add(BASE_PACKAGE);
 		keys.add(USE_CLASS_NAMES_IN_XML);
 		keys.add(USE_FIELD_NAMES_IN_XML);
 		keys.add(NAMESPACE_SUFFIX);
