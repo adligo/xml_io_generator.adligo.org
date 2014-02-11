@@ -5,13 +5,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
@@ -24,29 +23,20 @@ public class PackageUtils {
 	private List<String> cpDirEntries = new ArrayList<String>();
 	/**
 	 * map of package names to class names
+	 * from the input jars and dirs
 	 */
 	private Map<String,List<String>> packageClassMap= new HashMap<String, List<String>>();
 	private File explodeTemp;
 	private List<String> ignoreList = new ArrayList<String>();
 	
 
-	public PackageUtils( List<String> p, List<String> classpathEntries) {
-		if (p != null) {
-			ignoreList.addAll(p);
-		}
-		explodeTemp = new File("xml_io_generator_temp");
+	
+
+	public void decompress(List<String> classpathEntries) {
 		if (explodeTemp.exists()) {
 			recursiveDelete(explodeTemp);
 		}
 		explodeTemp.mkdir();
-		
-		Properties props = System.getProperties();
-		Set<Object> keys = props.keySet();
-		for (Object key: keys) {
-			if (log.isDebugEnabled()) {
-				log.debug("" + this.getClass().getName() + " says " + key + "=" + System.getProperty(key.toString()));
-			}
-		}
 		
 		for (String entry: classpathEntries) {
 			if (entry.length() >= 5) {
@@ -64,9 +54,6 @@ public class PackageUtils {
 				cpDirEntries.add(entry);
 			}
 		}
-		for (String dirName: cpDirEntries) {
-			addPackageClassNames(dirName, dirName, "");
-		}
 		ZipUtils unzip = new ZipUtils();
 		for (String zipName: cpJarEntries) {
 			if (log.isInfoEnabled()) {
@@ -76,13 +63,18 @@ public class PackageUtils {
 			
 			unzip.unzip(new File(zipName), explodeTemp);
 		}
-		String explodName = explodeTemp.getAbsolutePath();
-		addPackageClassNames(explodName, explodName, "");
+	}
+
+	public void addClasses(Collection<String> packageNames) {
+		for (String pkg: packageNames) {
+			addPackageClasses(pkg);
+		}
 	}
 	
-
-	private void addPackageClassNames(final String rootDirName, final String dirName, final String packageName) {
-		File dir = new File(dirName);
+	private void addPackageClasses(String packageName) {
+		File dir = new File(explodeTemp.getAbsoluteFile() +
+				File.separator + packageToDir(packageName));
+		
 		String [] classes = dir.list(new FilenameFilter() {
 			
 			@Override
@@ -112,88 +104,15 @@ public class PackageUtils {
 			}
 		}
 
-		//recurse
-		File [] childDirs = dir.listFiles();
-		if (childDirs == null) {
-			return;
-		}
-		for (int i = 0; i < childDirs.length; i++) {
-			File thisDir = childDirs[i];
-			if (!thisDir.isDirectory()) {
-				//skip loop block
-			} else {
-				String subName = thisDir.getName();
-				if (log.isDebugEnabled()) {
-					log.debug("" + this.getClass().getName() + " says checking directory " + subName);
-				}
-				String newPackageName = "";
-				if (packageName.length() == 0) {
-					newPackageName = subName;
-				} else {
-					newPackageName = packageName + "." + subName;
-				}
-				String newDirName = dirName + File.separator + subName;
-				
-				if (log.isDebugEnabled()) {
-					log.debug("" + this.getClass().getName() + " says package " +newPackageName  + 
-							" is under directory" + rootDirName);
-				}
-				addPackageClassNames(rootDirName, newDirName, newPackageName);
-			}
-		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<String> getClassesForPackage(String packageName) throws IOException {
 		List<String> toRet = packageClassMap.get(packageName);
 		if (toRet == null) {
 			return Collections.EMPTY_LIST;
 		}
 		return Collections.unmodifiableList(toRet);
-	}
-	
-	public List<String> getSubPackages(String packageName) throws IOException {
-		String pkgDir = getPackageDir(packageName);
-		File dir = new File(pkgDir);
-		File [] files = dir.listFiles();
-		
-		List<String> toRet = new ArrayList<String> ();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory()) {
-				toRet.add(pkgDir + File.separator + 
-						files[i].getName());
-			}
-		}
-		return toRet;
-	}
-	
-	public boolean hasSubPackages(String packageName) throws IOException {
-		String pkgDir = getPackageDir(packageName);
-		File dir = new File(pkgDir);
-		File [] files = dir.listFiles();
-		if (files != null) {
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isDirectory()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	public String getPackageDir(String packageName) throws IOException {
-		String exp = explodeTemp.getAbsolutePath();
-		exp = exp.substring(0, exp.length() - 2);
-		StringBuilder sb = new StringBuilder();
-		char [] pkgChars = packageName.toCharArray();
-		for (int i = 0; i < pkgChars.length; i++) {
-			char c = pkgChars[i];
-			if (c == '.') {
-				sb.append(File.separator);
-			} else {
-				sb.append(c);
-			}
-		}
-		return exp + File.separator + sb.toString();
 	}
 	
 	private void recursiveDelete(File f) {
@@ -211,4 +130,40 @@ public class PackageUtils {
 	public Set<String> getPackages() {
 		return packageClassMap.keySet();
 	}
+
+
+	public File getExplodeTemp() {
+		return explodeTemp;
+	}
+
+
+	public void setExplodeTemp(File explodeTemp) {
+		this.explodeTemp = explodeTemp;
+	}
+
+
+	public List<String> getIgnoreList() {
+		return ignoreList;
+	}
+
+
+	public void setIgnoreList(List<String> ignoreList) {
+		this.ignoreList = ignoreList;
+	}
+	
+	public static String packageToDir(String basePackage) {
+		StringBuilder sb = new StringBuilder();
+		char [] bpChars = basePackage.toCharArray();
+		for (int i = 0; i < bpChars.length; i++) {
+			char c = bpChars[i];
+			if (c == '.') {
+				sb.append(File.separator);
+			} else {
+				sb.append(c);
+			}
+		}
+		String baseDir = sb.toString();
+		return baseDir;
+	}
+
 }

@@ -1,8 +1,6 @@
 package org.adligo.xml_io_generator;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.adligo.ant_log.AntCommonInit;
 import org.adligo.i.log.client.Log;
@@ -15,11 +13,13 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 public class SourceCodeGeneratorAntTask extends Task {
+	public static final String SUCCESS_PROPERTY_WAS_NOT_SET = "Success Property was not set";
 	public static final String CLASSPATH_WAS_NOT_SET = "Classpath was not set";
 	private static final Log log = LogFactory.getLog(SourceCodeGeneratorAntTask.class);
 	public static final String PROJECT_HAS_NOT_BEEN_SET = "Project has not been set.";
 	private String dir;
 	private String classpath;
+	private String success;
 	
 	public String getDir() {
 		return dir;
@@ -37,6 +37,14 @@ public class SourceCodeGeneratorAntTask extends Task {
 		this.classpath = classpath;
 	}
 
+	public String getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(String success_property) {
+		this.success = success_property;
+	}
+
 	@Override
 	public void execute() throws BuildException {
 		try {
@@ -47,6 +55,10 @@ public class SourceCodeGeneratorAntTask extends Task {
 			if (StringUtils.isEmpty(classpath)) {
 				throw new IllegalStateException(CLASSPATH_WAS_NOT_SET);
 			}
+			if (StringUtils.isEmpty(success)) {
+				throw new IllegalStateException(SUCCESS_PROPERTY_WAS_NOT_SET);
+			}
+			project.setUserProperty(success, "false");
 			if (StringUtils.isEmpty(dir)) {
 				dir = project.getBaseDir().getAbsolutePath();
 			}
@@ -68,9 +80,10 @@ public class SourceCodeGeneratorAntTask extends Task {
 			params.setClasspath(classpathList);
 			SourceCodeGenerator.run(params);
 			
+			project.setUserProperty(success, "true");
 		} catch (Exception x) {
 			log.error(x.getMessage(), x);
-			System.exit(0);
+			throw new BuildException(x);
 		}
 	}
 	

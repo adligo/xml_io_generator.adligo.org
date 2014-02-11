@@ -1,9 +1,9 @@
 package org.adligo.xml_io_generator.models;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -28,6 +28,7 @@ public class SourceCodeGeneratorMemory {
 	private String version;
 	private String namespaceSuffix;
 	private String basePackage;
+	private String tempDir = "xml_io_generator_temp";
 	
 	private String outputDirectory;
 	/**
@@ -40,6 +41,7 @@ public class SourceCodeGeneratorMemory {
 	 * otherwise the LetterCounter will use something like a or aa
 	 */
 	private boolean useFieldNamesInXml = true;
+	private PackageMap packageMap;
 	
 	public SourceCodeGeneratorMemory() {
 		
@@ -121,31 +123,19 @@ public class SourceCodeGeneratorMemory {
 		
 		basePackage = props.getProperty(GenPropertiesConstants.BASE_PACKAGE);
 		
-		PackageUtils pu = new PackageUtils(ignoreJarList, classpathEntries);
-		discoverClassesInPackage(pu, basePackage);
+		PackageUtils pu = new PackageUtils();
+		pu.setExplodeTemp(new File(tempDir));
+		pu.setIgnoreList(ignoreJarList);
+		pu.decompress(classpathEntries);
+		
+		packageMap = new PackageMap(tempDir, basePackage, namespaceSuffix);
+		Set<String> originalPackages = packageMap.keySet();
+		pu.addClasses(originalPackages);
+		for (String pkg: originalPackages) {
+			discoverClassesInSimplePackage(pu, pkg);
+		}
 	}
 
-	private void discoverClassesInPackage(PackageUtils pu, String packageName)
-			throws IOException, ClassNotFoundException {
-		if (pu.hasSubPackages(packageName)) {
-			List<String> subPackages = pu.getSubPackages(packageName);
-			for (String pkg: subPackages) {
-				discoverClassesInPackageRecursive(pu, pkg);
-			}
-		}
-		discoverClassesInSimplePackage(pu, packageName);
-	}
-	
-	private void discoverClassesInPackageRecursive(PackageUtils pu, String packageName)
-			throws IOException, ClassNotFoundException {
-		if (pu.hasSubPackages(packageName)) {
-			List<String> subPackages = pu.getSubPackages(packageName);
-			for (String pkg: subPackages) {
-				discoverClassesInPackageRecursive(pu, pkg);
-			}
-		}
-		discoverClassesInSimplePackage(pu, packageName);
-	}
 	
 	private void discoverClassesInSimplePackage(PackageUtils pu, String packageName)
 			throws IOException, ClassNotFoundException {
@@ -234,6 +224,18 @@ public class SourceCodeGeneratorMemory {
 
 	public String getNamespaceSuffix() {
 		return namespaceSuffix;
+	}
+
+	public String getTempDir() {
+		return tempDir;
+	}
+
+	public String getBasePackage() {
+		return basePackage;
+	}
+
+	public PackageMap getPackageMap() {
+		return packageMap;
 	}
 	
 }

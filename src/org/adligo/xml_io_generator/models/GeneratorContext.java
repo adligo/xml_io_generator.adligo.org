@@ -1,5 +1,6 @@
 package org.adligo.xml_io_generator.models;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,8 +17,6 @@ import org.adligo.i.util.client.StringUtils;
 import org.adligo.xml_io.client.LetterCounter;
 
 public class GeneratorContext {
-	private String packageDirectory;
-	private String packageName;
 	private LetterCounter counter = new LetterCounter();
 	private String namespace;
 	private SourceCodeGeneratorMemory params;
@@ -25,12 +24,15 @@ public class GeneratorContext {
 	private List<ClassFieldMethods> classFieldMethods = new ArrayList<ClassFieldMethods>();
 	private String packageVersion;
 	private BigDecimal packageVersionNumber = new BigDecimal(0);
-	private String packageSuffix;
 	private List<Class<?>> mutants = new ArrayList<Class<?>>();
 	private Map<String,String> classToAttributeGeneratorNames = new HashMap<String, String>();
 	private Set<String> extraImports = new HashSet<String>();
 	private Set<String> extraClassImports = new HashSet<String>();
 	private Set<Class<?>> awareOfClasses = new HashSet<Class<?>>();
+	private String oldPackageName;
+	private File oldPackageDir;
+	private String newPackageName;
+	private File newPackageDir;
 	
 	public GeneratorContext() {
 		awareOfClasses.addAll(FieldMethods.ATTRIBUTE_CLASSES);
@@ -38,14 +40,6 @@ public class GeneratorContext {
 	
 	public String getNextId() {
 		return counter.getNextId();
-	}
-
-	public String getPackageDirectory() {
-		return packageDirectory;
-	}
-
-	public void setPackageDirectory(String packageDirectory) {
-		this.packageDirectory = packageDirectory;
 	}
 
 	public String getNamespace() {
@@ -84,13 +78,6 @@ public class GeneratorContext {
 		return classToGeneratorNames.entrySet();
 	}
 	
-	public String getPackageName() {
-		return packageName;
-	}
-
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
 
 	public boolean addClassFieldMethods(ClassFieldMethods e) {
 		return classFieldMethods.add(e);
@@ -130,14 +117,6 @@ public class GeneratorContext {
 		this.packageVersionNumber = packageVersionNumber;
 	}
 
-	public String getPackageSuffix() {
-		return packageSuffix;
-	}
-
-	public void setPackageSuffix(String packageSuffix) {
-		this.packageSuffix = packageSuffix;
-	}
-	
 	public void addMutant(Class<?> c) {
 		mutants.add(c);
 	}
@@ -186,6 +165,38 @@ public class GeneratorContext {
 	public boolean isGeneratedClassesInThisPackage(String simpleName) {
 		Collection<String> classes = classToGeneratorNames.values();
 		return classes.contains(simpleName);
+	}
+
+	public String getOldPackageName() {
+		return oldPackageName;
+	}
+
+	public void setOldPackageName(String oldPackageName) {
+		this.oldPackageName = oldPackageName;
+	}
+
+	public File getOldPackageDir() {
+		return oldPackageDir;
+	}
+
+	public void setOldPackageDir(File oldPackageDir) {
+		this.oldPackageDir = oldPackageDir;
+	}
+
+	public String getNewPackageName() {
+		return newPackageName;
+	}
+
+	public void setNewPackageName(String newPackageName) {
+		this.newPackageName = newPackageName;
+	}
+
+	public File getNewPackageDir() {
+		return newPackageDir;
+	}
+
+	public void setNewPackageDir(File newPackageDir) {
+		this.newPackageDir = newPackageDir;
 	}
 	
 }

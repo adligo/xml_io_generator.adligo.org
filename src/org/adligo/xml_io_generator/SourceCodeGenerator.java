@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -21,17 +24,21 @@ import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.GenPropertiesConstants;
 import org.adligo.xml_io_generator.models.GeneratorContext;
 import org.adligo.xml_io_generator.models.Namespace;
+import org.adligo.xml_io_generator.models.PackageMap;
 import org.adligo.xml_io_generator.models.SourceCodeGeneratorMemory;
 import org.adligo.xml_io_generator.models.SourceCodeGeneratorParams;
+import org.adligo.xml_io_generator.utils.PackageUtils;
 
 public class SourceCodeGenerator {
+	public static final String NO_CLASSES_FOUND_TO_GENERATE_XML_IO_SOURCE_FOR = "No classes found to generate xml_io source for";
+
 	private static final Log log = LogFactory.getLog(SourceCodeGenerator.class);
 	
 	public static final String THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY = "There was a error creating the directory ";
 	public static final String THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS = 
 		"The SourceCodeGenerator requires either a Mutant or A class with constructor parmeter for souce code generation.";
 
-	@SuppressWarnings("resource")
+	
 	public static void main(String [] args) throws Exception {
 
 		String path = args[0];
@@ -68,6 +75,8 @@ public class SourceCodeGenerator {
 		}
 		return classpathList;
 	}
+	
+	@SuppressWarnings("resource")
 	public static void run(SourceCodeGeneratorParams params) throws Exception {
 		log.warn("SourceCodeGenerator running" );
 		
@@ -83,7 +92,6 @@ public class SourceCodeGenerator {
 			log.error("The first argument passed in must be a directory.");
 			return;
 		}
-		
 		
 		System.err.println("reading  " + path + File.separator + "gen.properties");
 		File propsFile = new File(path + File.separator + "gen.properties");
@@ -120,36 +128,54 @@ public class SourceCodeGenerator {
 		
 		
 	}
-	public static void generate(SourceCodeGeneratorMemory params) throws IOException {
-		String dir = params.getOutputDirectory();
-		String suffix = params.getNamespaceSuffix();
+	public static void generate(SourceCodeGeneratorMemory memory) throws IOException {
+		String dir = memory.getOutputDirectory();
 		makeRootDir(dir);
 		
+		PackageMap pm = memory.getPackageMap();
 		
-		Set<String> packages = params.getPackages();
-		if (log.isInfoEnabled()) {
-			log.info("there are " + packages.size() + " packages");
+		makePackageDirectories(dir, pm);
+		
+		Set<Entry<String,String>> entries = pm.entrySet();
+		Set<Class<?>> allClasses = new HashSet<Class<?>>();
+		for (Entry<String,String> entry : entries) {
+			String oldPkg = entry.getKey();
+			List<Class<?>> classes = memory.getClasses(oldPkg);
+			allClasses.addAll(classes);
 		}
-		for (String name : packages) {
+		
+		if (allClasses.size() == 0) {
+			throw new IllegalStateException(NO_CLASSES_FOUND_TO_GENERATE_XML_IO_SOURCE_FOR);
+		}
+		
+		for (Entry<String,String> entry : entries) {
+			String oldPkg = entry.getKey();
+			String newPkg = entry.getValue();
 			if (log.isInfoEnabled()) {
-				log.info("working on package " + name);
+				log.info("working on package " + oldPkg);
+				log.info("generating to " + newPkg);
 			}
 			GeneratorContext ctx = new GeneratorContext();
-			String pkgDir = makePackageDirectories(name, dir, suffix);
-			ctx.setPackageDirectory(pkgDir);
-			ctx.setPackageName(name);
-			ctx.setPackageSuffix(suffix);
-			
-			String version = params.getVersion();
+			ctx.setOldPackageName(oldPkg);
+			File oldDir = new File(memory.getTempDir() + 
+						File.separator + PackageUtils.packageToDir(oldPkg));
+			ctx.setOldPackageDir(oldDir);
+			ctx.setNewPackageName(newPkg);
+			File newDir = new File(memory.getOutputDirectory() + 
+					File.separator + PackageUtils.packageToDir(newPkg));
+			ctx.setNewPackageDir(newDir);
+		
+			String version = memory.getVersion();
 			if (!StringUtils.isEmpty(version)) {
 				ctx.setPackageVersion(version);
 			}
 			
-			ctx.setParams(params);
-			String namespace = Namespace.toNamespace(name);
+			ctx.setParams(memory);
+			String namespace = Namespace.toNamespace(oldPkg);
 			ctx.setNamespace(namespace);
 			
-			List<Class<?>> classes = params.getClasses(name);
+			List<Class<?>> classes = memory.getClasses(oldPkg);
+			
 			for (Class<?> clazz : classes) {
 				ctx.clearExtraClassImports();
 				//mutants must be done first for complex non mutants
@@ -215,34 +241,27 @@ public class SourceCodeGenerator {
 		
 		
 	}
-	private static String makePackageDirectories(String packageName, String rootDir, String suffix) {
-		StringTokenizer token = new StringTokenizer(packageName, ".");
-	
-		StringBuilder sb = new StringBuilder();
-		sb.append(rootDir);
+	private static void makePackageDirectories(String rootDir, PackageMap pm) {
+		Collection<String> newPackages = pm.values();
+		for (String pkgName: newPackages) {
+			StringTokenizer token = new StringTokenizer(pkgName, ".");
 		
-		while (token.hasMoreElements()) {
-			sb.append(File.separator);
-			String dir = token.nextToken();
-			sb.append(dir);
-		}
-		String dirs = sb.toString();
-		File directories = new File(dirs);
-		if (!directories.exists()) {
-			if (!directories.mkdirs()) {
-				throw new IllegalStateException(THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY + dirs);
+			StringBuilder sb = new StringBuilder();
+			sb.append(rootDir);
+			
+			while (token.hasMoreElements()) {
+				sb.append(File.separator);
+				String dir = token.nextToken();
+				sb.append(dir);
 			}
-		}
-		if (!StringUtils.isEmpty(suffix)) {
-			dirs = dirs + File.separator + suffix;
-			directories = new File(dirs);
+			String dirs = sb.toString();
+			File directories = new File(dirs);
 			if (!directories.exists()) {
 				if (!directories.mkdirs()) {
 					throw new IllegalStateException(THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY + dirs);
 				}
 			}
 		}
-		return dirs;
 	}
 
 	private static void makeRootDir(String rootDir) {

@@ -11,6 +11,7 @@ import org.adligo.xml_io.client.LetterCounter;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.FieldMethods;
 import org.adligo.xml_io_generator.models.GeneratorContext;
+import org.adligo.xml_io_generator.models.PackageMap;
 
 public class BaseConverterGenerator {
 	ClassFieldMethods clazz;
@@ -43,21 +44,19 @@ public class BaseConverterGenerator {
 		
 		Package pkg = clazz.getPackage();
 		
-		String packageName = pkg.getName();
-		String packageSuffix = ctx.getPackageSuffix();
-		if (!StringUtils.isEmpty(packageSuffix)) {
-			packageName = packageName + "." + packageSuffix;
-		}
-		params.addParam("packageName", packageName);
+		String oldPackageName = ctx.getOldPackageName();
+		String newPackageName = ctx.getNewPackageName();
+		
+		params.addParam("packageName", newPackageName);
 		params.addParam("className", clazzName);
 		appendGenericClass(params);
 		
-		if (!StringUtils.isEmpty(packageSuffix)) {
+		if (!oldPackageName.equals(newPackageName)) {
 			params.addParam("extraImport",clazz.getName());
 		}
 		SourceFileWriter sfw = new SourceFileWriter();
-		String dir = ctx.getPackageDirectory();
 		
+		String dir = ctx.getNewPackageDir().getAbsolutePath();
 		sfw.setDir(dir);
 		sfw.setTemplate(template);
 		sfw.writeSourceFile(clazzName, params);

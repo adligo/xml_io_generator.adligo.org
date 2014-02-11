@@ -35,11 +35,7 @@ public class SetupGenerator {
 			params.addParam("extraImport", p);
 		}
 		
-		String pkg = ctx.getPackageName();
-		String packageSuffix = ctx.getPackageSuffix();
-		if (!StringUtils.isEmpty(packageSuffix)) {
-			pkg = pkg + "." + packageSuffix;
-		}
+		String pkg = ctx.getNewPackageName();
 		params.addParam("packageName", pkg);
 		
 		Set<Entry<String,String>> classNames = gc.getClassToConverterNames();
@@ -59,8 +55,9 @@ public class SetupGenerator {
 			params.addParam("attributeClass", gen, clazzParams);
 			clazzParams.addParam("attributeClassName", clazz);
 		}
-		
-		if (!StringUtils.isEmpty(packageSuffix)) {
+		String oldPackage = gc.getOldPackageName();
+		String newPackage = gc.getNewPackageName();
+		if (!oldPackage.equals(newPackage)) {
 			Iterator<ClassFieldMethods> cfms = gc.getClassFieldMethodsIterator();
 			while (cfms.hasNext()) {
 				ClassFieldMethods cfm = cfms.next();
@@ -69,7 +66,8 @@ public class SetupGenerator {
 			}
 		}
 		SourceFileWriter sfw = new SourceFileWriter();
-		String dir = ctx.getPackageDirectory();
+		String dir = ctx.getNewPackageDir().getAbsolutePath();
+		
 		sfw.setDir(dir);
 		sfw.setTemplate(template);
 		sfw.writeSourceFile("ConverterSetup", params);
