@@ -14,7 +14,7 @@ import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.GeneratorContext;
 
 public class SetupGenerator {
-	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_setup_template.xml", true);
+	private static final Templates templates = new Templates("/org/adligo/xml_io_generator/converter_setup_template.xml", true);
 	private static final Template template = templates.getTemplate("setup");
 	private GeneratorContext ctx;
 	

@@ -20,7 +20,7 @@ public class GeneratorContext {
 	private String packageName;
 	private LetterCounter counter = new LetterCounter();
 	private String namespace;
-	private SourceCodeGeneratorParams params;
+	private SourceCodeGeneratorMemory params;
 	private Map<String,String> classToGeneratorNames = new HashMap<String, String>();
 	private List<ClassFieldMethods> classFieldMethods = new ArrayList<ClassFieldMethods>();
 	private String packageVersion;
@@ -56,11 +56,11 @@ public class GeneratorContext {
 		this.namespace = namespace;
 	}
 
-	public SourceCodeGeneratorParams getParams() {
+	public SourceCodeGeneratorMemory getParams() {
 		return params;
 	}
 
-	public void setParams(SourceCodeGeneratorParams params) {
+	public void setParams(SourceCodeGeneratorMemory params) {
 		this.params = params;
 	}
 

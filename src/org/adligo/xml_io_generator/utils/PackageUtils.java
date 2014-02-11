@@ -29,11 +29,8 @@ public class PackageUtils {
 	private File explodeTemp;
 	private List<String> ignoreList = new ArrayList<String>();
 	
-	public PackageUtils() {
-		this( null);
-	}
 
-	public PackageUtils( List<String> p) {
+	public PackageUtils( List<String> p, List<String> classpathEntries) {
 		if (p != null) {
 			ignoreList.addAll(p);
 		}
@@ -51,20 +48,20 @@ public class PackageUtils {
 			}
 		}
 		
-		String classpath = System.getProperty("java.class.path");
-		System.out.println("" + this.getClass().getName() + " says yes classpath is " + classpath);
-		StringTokenizer st = new StringTokenizer(classpath, ":");
-		while (st.hasMoreElements()) {
-			String token = st.nextToken();
-			String isJar = token.substring(token.length()-4, token.length());
-			if (".jar".equals(isJar)) {
-				int lastPath = token.lastIndexOf(File.separator);
-				String jarName = token.substring(lastPath + 1, token.length());
-				if (!ignoreList.contains(jarName)) {
-					cpJarEntries.add(token);
+		for (String entry: classpathEntries) {
+			if (entry.length() >= 5) {
+				String isJar = entry.substring(entry.length()-4, entry.length());
+				if (".jar".equals(isJar)) {
+					int lastPath = entry.lastIndexOf(File.separator);
+					String jarName = entry.substring(lastPath + 1, entry.length());
+					if (!ignoreList.contains(jarName)) {
+						cpJarEntries.add(entry);
+					}
+				} else {
+					cpDirEntries.add(entry);
 				}
 			} else {
-				cpDirEntries.add(token);
+				cpDirEntries.add(entry);
 			}
 		}
 		for (String dirName: cpDirEntries) {
@@ -72,8 +69,8 @@ public class PackageUtils {
 		}
 		ZipUtils unzip = new ZipUtils();
 		for (String zipName: cpJarEntries) {
-			if (log.isDebugEnabled()) {
-				log.debug("" + this.getClass().getName() + " says extracting jar \n"+
+			if (log.isInfoEnabled()) {
+				log.info("" + this.getClass().getName() + " says extracting jar \n"+
 						zipName + " to \n" + explodeTemp.getAbsolutePath());
 			}
 			
@@ -173,9 +170,11 @@ public class PackageUtils {
 		String pkgDir = getPackageDir(packageName);
 		File dir = new File(pkgDir);
 		File [] files = dir.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory()) {
-				return true;
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].isDirectory()) {
+					return true;
+				}
 			}
 		}
 		return false;

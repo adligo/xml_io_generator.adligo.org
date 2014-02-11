@@ -18,7 +18,7 @@ import org.adligo.xml_io_generator.models.GeneratorContext;
 public class MutantConverterGenerator extends BaseConverterGenerator {
 	private static final Log log = LogFactory.getLog(MutantConverterGenerator.class);
 	
-	private static final Templates templates = new Templates("/org/adligo/xml_io/generator/converter_template.xml", true);
+	private static final Templates templates = new Templates("/org/adligo/xml_io_generator/converter_template.xml", true);
 	private static final Template template = templates.getTemplate("converter");
 
 	

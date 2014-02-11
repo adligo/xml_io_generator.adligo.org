@@ -21,6 +21,7 @@ import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.GenPropertiesConstants;
 import org.adligo.xml_io_generator.models.GeneratorContext;
 import org.adligo.xml_io_generator.models.Namespace;
+import org.adligo.xml_io_generator.models.SourceCodeGeneratorMemory;
 import org.adligo.xml_io_generator.models.SourceCodeGeneratorParams;
 
 public class SourceCodeGenerator {
@@ -30,25 +31,51 @@ public class SourceCodeGenerator {
 	public static final String THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS = 
 		"The SourceCodeGenerator requires either a Mutant or A class with constructor parmeter for souce code generation.";
 
+	@SuppressWarnings("resource")
 	public static void main(String [] args) throws Exception {
-		System.out.println("SourceCodeGenerator running" );
-		
+
 		String path = args[0];
 		if (StringUtils.isEmpty(path)) {
 			path = new File(".").getAbsolutePath();
 		} 
-		System.out.println("SourceCodeGenerator path is " + path );
-		if (args.length >= 2) {
-			String classpath = args[1];
-			StringTokenizer tokenizer = new StringTokenizer(classpath, ",");
-			List<URL> cpList = new ArrayList<URL>();
-			while (tokenizer.hasMoreElements()) {
-				String token = tokenizer.nextToken();
-				cpList.add(new URL(token));
-			}
-			new URLClassLoader(cpList.toArray(new URL[cpList.size()]));
+		SourceCodeGeneratorParams params = new SourceCodeGeneratorParams();
+		params.setPath(path);
+		
+		String classpath = args[1];
+		if (log.isInfoEnabled()) {
+			log.info("parsing classpath");
+			log.info(classpath);
 		}
 		
+		List<String> classpathList = toList(classpath);
+		params.setClasspath(classpathList);
+		
+		JSEPlatform.init();
+		if (!LogPlatform.isInit()) {
+			LogPlatform.init(path + File.separator + "adligo_log.properties");
+		}
+		System.out.println("running in " + path);
+		
+		SourceCodeGenerator.run(params);
+	}
+	public static List<String> toList(String classpath) {
+		List<String> classpathList = new ArrayList<String>();
+		StringTokenizer tokenizer = new StringTokenizer(classpath, ";");
+		
+		while (tokenizer.hasMoreElements()) {
+			String token = tokenizer.nextToken();
+			classpathList.add(token);
+		}
+		return classpathList;
+	}
+	public static void run(SourceCodeGeneratorParams params) throws Exception {
+		log.warn("SourceCodeGenerator running" );
+		
+		String path = params.getPath();
+		List<URL> cpList = params.getClasspathAsUrls();
+		//this makes things availabe to reflection
+		new URLClassLoader(cpList.toArray(new URL[cpList.size()]));
+	
 		File runningDir = new File(path);
 		
 		if (!runningDir.isDirectory()) {
@@ -56,11 +83,7 @@ public class SourceCodeGenerator {
 			log.error("The first argument passed in must be a directory.");
 			return;
 		}
-		JSEPlatform.init();
-		if (!LogPlatform.isInit()) {
-			LogPlatform.init(path + File.separator + "adligo_log.properties");
-		}
-		System.out.println("running in " + path);
+		
 		
 		System.err.println("reading  " + path + File.separator + "gen.properties");
 		File propsFile = new File(path + File.separator + "gen.properties");
@@ -75,16 +98,16 @@ public class SourceCodeGenerator {
 			}
 			
 			log.warn("starting souce code generation");
-			SourceCodeGeneratorParams params = new SourceCodeGeneratorParams(props);
-			generate(params);
+			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props, params.getClasspath());
+			generate(mem);
 		} catch (FileNotFoundException e) {
-			System.err.println("SouceCodeGenerator was not able to find the property file " + args[0] +
+			System.err.println("SouceCodeGenerator was not able to find the property file " + path +
 					" at " + propsFile.getAbsolutePath());
 			e.printStackTrace();
 			log.error(e.getMessage(), e);
 			return;
 		} catch (IOException e) {
-			System.err.println("SouceCodeGenerator had a problem loading the the property file " + args[0] +
+			System.err.println("SouceCodeGenerator had a problem loading the the property file " + path +
 					" at " + propsFile.getAbsolutePath());
 			e.printStackTrace();
 			log.error(e.getMessage(), e);
@@ -97,7 +120,7 @@ public class SourceCodeGenerator {
 		
 		
 	}
-	public static void generate(SourceCodeGeneratorParams params) throws IOException {
+	public static void generate(SourceCodeGeneratorMemory params) throws IOException {
 		String dir = params.getOutputDirectory();
 		String suffix = params.getNamespaceSuffix();
 		makeRootDir(dir);

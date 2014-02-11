@@ -1,14 +1,21 @@
 package org.adligo.xml_io_generator;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import org.adligo.ant_log.AntCommonInit;
 import org.adligo.i.log.client.Log;
 import org.adligo.i.log.client.LogFactory;
+import org.adligo.i.util.client.StringUtils;
+import org.adligo.xml_io_generator.models.SourceCodeGeneratorParams;
 import org.adligo.xml_io_generator.utils.ManifestParser;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 public class SourceCodeGeneratorAntTask extends Task {
+	public static final String CLASSPATH_WAS_NOT_SET = "Classpath was not set";
 	private static final Log log = LogFactory.getLog(SourceCodeGeneratorAntTask.class);
 	public static final String PROJECT_HAS_NOT_BEEN_SET = "Project has not been set.";
 	private String dir;
@@ -37,6 +44,12 @@ public class SourceCodeGeneratorAntTask extends Task {
 			if (project == null) {
 	            throw new IllegalStateException(PROJECT_HAS_NOT_BEEN_SET);
 	        }
+			if (StringUtils.isEmpty(classpath)) {
+				throw new IllegalStateException(CLASSPATH_WAS_NOT_SET);
+			}
+			if (StringUtils.isEmpty(dir)) {
+				dir = project.getBaseDir().getAbsolutePath();
+			}
 			ManifestParser mp = new ManifestParser();
 			mp.readManifest(SourceCodeGeneratorAntTask.class);
 			super.log("Adligo Source Code Generator Ant Task");
@@ -44,11 +57,20 @@ public class SourceCodeGeneratorAntTask extends Task {
 			log("Version: " + version);
 			AntCommonInit.initOrReload("adligo_log.properties", 
 					"Source Code Generator starting ", this);
-			String classpathList = project.getUserProperty(classpath);
-			SourceCodeGenerator.main(new String[] {dir, classpathList});
+			
+			String classpathEntries = project.getUserProperty(classpath);
+			if (StringUtils.isEmpty(classpathEntries)) {
+				classpathEntries = project.getProperty(classpath);
+			}
+			List<String> classpathList = SourceCodeGenerator.toList(classpathEntries);
+			SourceCodeGeneratorParams params = new SourceCodeGeneratorParams();
+			params.setPath(dir);
+			params.setClasspath(classpathList);
+			SourceCodeGenerator.run(params);
+			
 		} catch (Exception x) {
 			log.error(x.getMessage(), x);
-			throw new BuildException(x);
+			System.exit(0);
 		}
 	}
 	
