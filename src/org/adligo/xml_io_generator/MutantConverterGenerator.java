@@ -79,7 +79,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 					Class<?> clazz = fm.getFieldClass();
 					if (!FieldMethods.isAttribute(clazz)) {
 						String clazzName = fm.getFieldClassNameForImport();
-						ctx.addExtraImport(clazzName);
+						ctx.addExtraImport(ctx.getClassloader(),clazzName);
 					}
 					
 					addSetter(fm, childParams);
@@ -92,13 +92,13 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 			parent.addParam("doesNotHaveChildren");
 		}
 		if (clazz.isAttribute()) {
-			ctx.addExtraImport(I_AttributeConverter.class.getName());
+			ctx.addExtraImport(ctx.getClassloader(),I_AttributeConverter.class.getName());
 			Params attribParams = new Params();
 			parent.addParam("attributeConverter", attribParams);
 			attribParams.addParam("genericClass", clazz.getClazz().getSimpleName());
 			FieldMethods fm = fields.get(0);
 			Class<?> attribConstructorClass = clazz.getAttributeClass();
-			ctx.addExtraImport(attribConstructorClass.getName());
+			ctx.addExtraImport(ctx.getClassloader(),attribConstructorClass.getName());
 			attribParams.addParam("constructorClass", attribConstructorClass.getSimpleName());
 			addAttributeParams(attribParams, fm);
 		}
@@ -126,7 +126,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		Class<?> clazz = fm.getFieldClass();
 		if (!FieldMethods.isAttribute(clazz)) {
 			String clazzName = fm.getFieldClassNameForImport();
-			ctx.addExtraImport(clazzName);
+			ctx.addExtraImport(ctx.getClassloader(),clazzName);
 		}
 		
 		String fieldClass = fm.getFieldClassForSource();

@@ -51,11 +51,11 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 	private void addAttributes(Params parent) {
 		
 		immutableFieldType = clazz.getImmutableFieldType();
-		ctx.addExtraImport(immutableFieldType.getName());
+		ctx.addExtraImport(ctx.getClassloader(),immutableFieldType.getName());
 		ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
 		List<FieldMethods> fields = cfm.getFieldMethods();
 		if (!ctx.isAwareOfClass(immutableFieldType)) {
-			ctx.addExtraImport(immutableFieldType.getName());
+			ctx.addExtraImport(ctx.getClassloader(),immutableFieldType.getName());
 		}
 		parent.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 		boolean hasChildren = false;
@@ -90,7 +90,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 					appendGenericClass(childParams);
 					
 					String clazzName = fm.getFieldClassNameForImport();
-					ctx.addExtraImport(clazzName);
+					ctx.addExtraImport(ctx.getClassloader(),clazzName);
 					
 					childParams.addParam("genericMutantClass", immutableFieldType.getSimpleName());
 						
@@ -104,13 +104,13 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 			parent.addParam("doesNotHaveChildren");
 		}
 		if (clazz.isAttribute()) {
-			ctx.addExtraImport(I_AttributeConverter.class.getName());
+			ctx.addExtraImport(ctx.getClassloader(),I_AttributeConverter.class.getName());
 			Params attribParams = new Params();
 			parent.addParam("attributeConverter", attribParams);
 			attribParams.addParam("genericClass", clazz.getClazz().getSimpleName());
 			FieldMethods fm = fields.get(0);
 			Class<?> attribConstructorClass = clazz.getAttributeClass();
-			ctx.addExtraImport(attribConstructorClass.getName());
+			ctx.addExtraImport(ctx.getClassloader(),attribConstructorClass.getName());
 			attribParams.addParam("constructorClass", attribConstructorClass.getSimpleName());
 			addAttributeParams(attribParams, fm);
 		}
@@ -134,7 +134,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 			try {
 				Class<?> genClass = Class.forName(firstFieldName + "Generator");
 				if (!ctx.isAwareOfClass(genClass)) {
-					ctx.addExtraImport(genClass.getName());
+					ctx.addExtraImport(ctx.getClassloader(),genClass.getName());
 				}
 			} catch (ClassNotFoundException e) {
 				throw new IllegalArgumentException("Error with attribute of class " + firstFieldName, e);
@@ -154,7 +154,7 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 		Class<?> clazz = fm.getFieldClass();
 		if (!FieldMethods.isAttribute(clazz)) {
 			String clazzName = fm.getFieldClassNameForImport();
-			ctx.addExtraImport(clazzName);
+			ctx.addExtraImport(ctx.getClassloader(), clazzName);
 		}
 		
 		String fieldClass = fm.getFieldClassForSource();

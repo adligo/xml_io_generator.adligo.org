@@ -84,13 +84,16 @@ public class SourceCodeGenerator {
 		try {
 			Properties props = SourceCodeGenerator.loadGenProperties(path);
 			
-			log.warn("starting souce code generation");
-			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props, params.getClasspath());
+			log.warn("starting souce code generation ");
+			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props);
 			boolean sa = params.isStandAlone();
 			mem.setStandAlone(sa);
-			if (!sa) {
-				mem.setLibRoot(params.getLibRoot());
+			if (log.isInfoEnabled()) {
+				log.info("lib root is " + params.getLibRoot());
 			}
+			mem.setLibRoot(params.getLibRoot());
+			mem.loadClasses(params.getClasspath());
+			
 			generate(mem);
 		} catch (Exception x) {
 			x.printStackTrace();
@@ -181,7 +184,7 @@ public class SourceCodeGenerator {
 				ctx.setPackageVersion(version);
 			}
 			
-			ctx.setParams(memory);
+			ctx.setMemory(memory);
 			String namespace = Namespace.toNamespace(oldPkg);
 			ctx.setNamespace(namespace);
 			

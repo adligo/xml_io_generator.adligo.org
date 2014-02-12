@@ -19,7 +19,7 @@ import org.adligo.xml_io.client.LetterCounter;
 public class GeneratorContext {
 	private LetterCounter counter = new LetterCounter();
 	private String namespace;
-	private SourceCodeGeneratorMemory params;
+	private SourceCodeGeneratorMemory memory;
 	private Map<String,String> classToGeneratorNames = new HashMap<String, String>();
 	private List<ClassFieldMethods> classFieldMethods = new ArrayList<ClassFieldMethods>();
 	private String packageVersion;
@@ -50,20 +50,20 @@ public class GeneratorContext {
 		this.namespace = namespace;
 	}
 
-	public SourceCodeGeneratorMemory getParams() {
-		return params;
+	public SourceCodeGeneratorMemory getMemory() {
+		return memory;
 	}
 
-	public void setParams(SourceCodeGeneratorMemory params) {
-		this.params = params;
+	public void setMemory(SourceCodeGeneratorMemory params) {
+		this.memory = params;
 	}
 
 	public boolean isUseClassNamesInXml() {
-		return params.isUseClassNamesInXml();
+		return memory.isUseClassNamesInXml();
 	}
 
 	public boolean isUseFieldNamesInXml() {
-		return params.isUseFieldNamesInXml();
+		return memory.isUseFieldNamesInXml();
 	}
 	
 	public void addClassToConverterNames(String className, String converterName) {
@@ -140,11 +140,12 @@ public class GeneratorContext {
 		return Collections.unmodifiableSet(extraClassImports);
 	}
 	
-	public void addExtraImport(String p) {
+	public void addExtraImport(ClassLoader loader, String p) {
 		extraImports.add(p);
 		extraClassImports.add(p);
 		try {
-			awareOfClasses.add(Class.forName(p));
+			Class<?> c = loader.loadClass(p);
+			awareOfClasses.add(c);
 		} catch (ClassNotFoundException x) {
 			throw new IllegalArgumentException(x);
 		}
@@ -197,6 +198,10 @@ public class GeneratorContext {
 
 	public void setNewPackageDir(File newPackageDir) {
 		this.newPackageDir = newPackageDir;
+	}
+
+	public ClassLoader getClassloader() {
+		return memory.getClassloader();
 	}
 	
 }

@@ -103,8 +103,8 @@ public class SourceCodeGeneratorTask extends Task {
 				if (StringUtils.isEmpty(libRoot)) {
 					throw new Exception(UNKNOWN_LIB_ROOT_WITH_STAND_ALONE_TRUE);
 				}
-				params.setLibRoot(libRoot);
 			}
+			params.setLibRoot(libRoot);
 			SourceCodeGenerator.run(params);
 			
 			project.setUserProperty(success, "true");

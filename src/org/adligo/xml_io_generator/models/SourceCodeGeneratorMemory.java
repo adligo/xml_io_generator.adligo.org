@@ -2,6 +2,7 @@ package org.adligo.xml_io_generator.models;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -29,25 +30,10 @@ public class SourceCodeGeneratorMemory {
 	private String namespaceSuffix;
 	private String basePackage;
 	private String tempDir = "xml_io_generator_temp";
-	public String getLibRoot() {
-		return libRoot;
-	}
-
-	public void setLibRoot(String libRoot) {
-		this.libRoot = libRoot;
-	}
-
+	
+	private ClassLoader classloader = null;
 	private String libRoot;
 	private boolean standAlone = false;
-	
-	public boolean isStandAlone() {
-		return standAlone;
-	}
-
-	public void setStandAlone(boolean standAlone) {
-		this.standAlone = standAlone;
-	}
-
 	private String outputDirectory;
 	/**
 	 * if true the class simple name will be used in the xml/schmea ie DomainName
@@ -66,8 +52,8 @@ public class SourceCodeGeneratorMemory {
 	}
 	
 	@SuppressWarnings("resource")
-	public SourceCodeGeneratorMemory(Properties props, 
-			List<String> classpathEntries) throws IOException, ClassNotFoundException {
+	public SourceCodeGeneratorMemory(Properties props
+			) throws IOException, ClassNotFoundException {
 		
 		String val = props.getProperty(GenPropertiesConstants.USE_CLASS_NAMES_IN_XML);
 		if (val != null) {
@@ -142,13 +128,34 @@ public class SourceCodeGeneratorMemory {
 		
 		basePackage = props.getProperty(GenPropertiesConstants.BASE_PACKAGE);
 		
+	}
+
+	public void loadClasses(List<String> classpathEntries)
+			throws MalformedURLException, IOException, ClassNotFoundException {
 		PackageUtils pu = new PackageUtils();
 		File tempDirFile = new File(tempDir);
 		pu.setExplodeTemp(tempDirFile);
 		pu.setIgnoreList(ignoreJarList);
-		pu.decompress(classpathEntries);
-		new URLClassLoader(new URL[] {new URL("file:" + File.separator +
-		                   File.separator + tempDirFile.getAbsolutePath())});
+		if (libRoot == null) {
+			pu.decompress(classpathEntries);
+			if (log.isWarnEnabled()) {
+				log.warn("Loading classes from " + tempDirFile);
+			}
+			if (!tempDirFile.exists()) {
+				throw new IOException("dir should exist " + tempDirFile);
+			}
+			classloader = new URLClassLoader(new URL[] {tempDirFile.toURI().toURL()});
+		} else {
+			String expFile = libRoot + File.separator + "xml-io-exp";
+			File expFileDir = new File(expFile);
+			if (log.isWarnEnabled()) {
+				log.warn("Loading classes from " + expFile);
+			}
+			if (!tempDirFile.exists()) {
+				throw new IOException("dir should exist " + expFileDir);
+			}
+			classloader = new URLClassLoader(new URL[] {expFileDir.toURI().toURL()});
+		}
 		
 		packageMap = new PackageMap(tempDir, basePackage, namespaceSuffix);
 		Set<String> originalPackages = packageMap.keySet();
@@ -161,7 +168,8 @@ public class SourceCodeGeneratorMemory {
 	
 	private void discoverClassesInSimplePackage(PackageUtils pu, String packageName)
 			throws IOException, ClassNotFoundException {
-		ModelDiscovery md = new ModelDiscovery(pu, packageName);
+		
+		ModelDiscovery md = new ModelDiscovery(classloader, pu, packageName);
 		
 		List<Class<?>> classes = md.getModels();
 		if (log.isInfoEnabled()) {
@@ -260,4 +268,29 @@ public class SourceCodeGeneratorMemory {
 		return packageMap;
 	}
 	
+	public String getLibRoot() {
+		return libRoot;
+	}
+
+	public void setLibRoot(String libRoot) {
+		this.libRoot = libRoot;
+	}
+	
+
+	public boolean isStandAlone() {
+		return standAlone;
+	}
+
+	public void setStandAlone(boolean standAlone) {
+		this.standAlone = standAlone;
+	}
+
+	public ClassLoader getClassloader() {
+		return classloader;
+	}
+
+	public void setClassloader(ClassLoader classloader) {
+		this.classloader = classloader;
+	}
+
 }

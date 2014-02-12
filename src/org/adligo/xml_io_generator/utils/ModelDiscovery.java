@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class ModelDiscovery {
 	private List<Class<?>> models = new ArrayList<Class<?>>();
 	
-	public ModelDiscovery(PackageUtils pu, String packageName) throws IOException, ClassNotFoundException {
+	public ModelDiscovery(ClassLoader loader, PackageUtils pu, String packageName) throws IOException, ClassNotFoundException {
 		List<String> classNames = pu.getClassesForPackage(packageName);
 		for (String name: classNames) {
 			String nameWithOutDotClass = name.substring(0, name.length() - 6);
-			Class<?> clazz = Class.forName(packageName + "." + nameWithOutDotClass);
+			Class<?> clazz = loader.loadClass(packageName + "." + nameWithOutDotClass);
 			if (!clazz.isInterface()) {
 				models.add(clazz);
 			}

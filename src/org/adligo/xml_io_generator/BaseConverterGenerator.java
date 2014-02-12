@@ -71,9 +71,9 @@ public class BaseConverterGenerator {
 	void addSetter(FieldMethods fm, Params parentParams) {
 		Class<?> setterParamClass = fm.getSetterParameterClass();
 		if (!FieldMethods.isAttribute(setterParamClass)) {
-			ctx.addExtraImport(setterParamClass.getName());
+			ctx.addExtraImport(ctx.getClassloader(),setterParamClass.getName());
 		} else if (FieldMethods.isImportClass(setterParamClass)) {
-			ctx.addExtraImport(setterParamClass.getName());
+			ctx.addExtraImport(ctx.getClassloader(),setterParamClass.getName());
 		}
 		String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
 		parentParams.addParam("classCastable", fieldClassCastable);
@@ -87,7 +87,7 @@ public class BaseConverterGenerator {
 			for (int i = 0; i < setterExceptions.length; i++) {
 				Class<?> exception = setterExceptions[i];
 				parentParams.addParam("setterException", exception.getSimpleName());
-				ctx.addExtraImport(exception.getName());
+				ctx.addExtraImport(ctx.getClassloader(),exception.getName());
 			}
 		}
 	}
@@ -100,7 +100,7 @@ public class BaseConverterGenerator {
 			for (int i = 0; i < exceptions.length; i++) {
 				Class<?> exception = exceptions[i];
 				parentParams.addParam("constructorException", exception.getSimpleName());
-				ctx.addExtraImport(exception.getName());
+				ctx.addExtraImport(ctx.getClassloader(),exception.getName());
 			}
 		}
 	}
