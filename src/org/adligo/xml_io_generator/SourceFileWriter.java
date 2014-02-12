@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import org.adligo.models.params.client.I_TemplateParams;
+import org.adligo.models.params.shared.I_TemplateParams;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.TemplateParserEngine;
 

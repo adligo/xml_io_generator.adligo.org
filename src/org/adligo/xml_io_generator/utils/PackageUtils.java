@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.adligo.i.log.client.Log;
-import org.adligo.i.log.client.LogFactory;
+import org.adligo.i.log.shared.Log;
+import org.adligo.i.log.shared.LogFactory;
 
 
 public class PackageUtils {
@@ -72,8 +72,12 @@ public class PackageUtils {
 	}
 	
 	private void addPackageClasses(String packageName) {
-		File dir = new File(explodeTemp.getAbsoluteFile() +
-				File.separator + packageToDir(packageName));
+		String path = explodeTemp.getAbsoluteFile() +
+				File.separator + packageToDir(packageName);
+		if (log.isInfoEnabled()) {
+			log.info("checking for classes in " + path);
+		}
+		File dir = new File(path);
 		
 		String [] classes = dir.list(new FilenameFilter() {
 			
@@ -85,7 +89,15 @@ public class PackageUtils {
 				return false;
 			}
 		});
-		if (classes != null) {
+		if (classes == null) {
+			if (log.isInfoEnabled()) {
+				log.info("the package " + packageName + " has  NO classes.");
+			}
+			
+		} else {
+			if (log.isInfoEnabled()) {
+				log.info("the package " + packageName + " has " + classes.length + " classes.");
+			}
 			if (classes.length >= 1) {
 				if (log.isDebugEnabled()) {
 					log.debug("" + this.getClass().getName() + " says adding the following classes to pacakge \n"

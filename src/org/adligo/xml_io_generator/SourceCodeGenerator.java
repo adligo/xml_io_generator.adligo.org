@@ -15,10 +15,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.adligo.i.log.client.Log;
-import org.adligo.i.log.client.LogFactory;
-import org.adligo.i.log.client.LogPlatform;
-import org.adligo.i.util.client.StringUtils;
+import org.adligo.i.log.shared.Log;
+import org.adligo.i.log.shared.LogFactory;
+import org.adligo.i.log.shared.LogPlatform;
+import org.adligo.i.util.shared.StringUtils;
 import org.adligo.jse.util.JSEPlatform;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.GenPropertiesConstants;

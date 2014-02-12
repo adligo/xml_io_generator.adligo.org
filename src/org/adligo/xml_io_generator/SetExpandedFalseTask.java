@@ -6,9 +6,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.adligo.ant_log.AntCommonInit;
-import org.adligo.i.log.client.Log;
-import org.adligo.i.log.client.LogFactory;
-import org.adligo.i.util.client.StringUtils;
+import org.adligo.i.log.shared.Log;
+import org.adligo.i.log.shared.LogFactory;
+import org.adligo.i.util.shared.StringUtils;
 import org.adligo.xml_io_generator.utils.ManifestParser;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;

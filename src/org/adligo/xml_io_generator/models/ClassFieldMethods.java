@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.adligo.i.log.client.Log;
-import org.adligo.i.log.client.LogFactory;
-import org.adligo.i.util.client.I_Immutable;
+import org.adligo.i.log.shared.Log;
+import org.adligo.i.log.shared.LogFactory;
+import org.adligo.i.util.shared.I_Immutable;
 
 public class ClassFieldMethods {
 	private static final Log log = LogFactory.getLog(ClassFieldMethods.class);

@@ -3,9 +3,9 @@ package org.adligo.xml_io_generator;
 import java.util.List;
 
 import org.adligo.ant_log.AntCommonInit;
-import org.adligo.i.log.client.Log;
-import org.adligo.i.log.client.LogFactory;
-import org.adligo.i.util.client.StringUtils;
+import org.adligo.i.log.shared.Log;
+import org.adligo.i.log.shared.LogFactory;
+import org.adligo.i.util.shared.StringUtils;
 import org.adligo.xml_io_generator.models.SourceCodeGeneratorParams;
 import org.adligo.xml_io_generator.utils.ManifestParser;
 import org.apache.tools.ant.BuildException;

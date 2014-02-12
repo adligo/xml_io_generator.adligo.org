@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.adligo.i.util.client.StringUtils;
-import org.adligo.models.params.client.Params;
+import org.adligo.i.util.shared.StringUtils;
+import org.adligo.models.params.shared.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.Templates;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;

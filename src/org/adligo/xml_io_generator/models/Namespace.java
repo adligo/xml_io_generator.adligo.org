@@ -1,7 +1,7 @@
 package org.adligo.xml_io_generator.models;
 
-import org.adligo.models.core.client.DomainName;
-import org.adligo.models.core.client.InvalidParameterException;
+import org.adligo.models.core.shared.DomainName;
+import org.adligo.models.core.shared.InvalidParameterException;
 
 public class Namespace {
 

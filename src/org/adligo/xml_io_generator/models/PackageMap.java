@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.adligo.i.log.client.Log;
-import org.adligo.i.log.client.LogFactory;
-import org.adligo.i.util.client.StringUtils;
+import org.adligo.i.log.shared.Log;
+import org.adligo.i.log.shared.LogFactory;
+import org.adligo.i.util.shared.StringUtils;
 import org.adligo.xml_io_generator.utils.PackageUtils;
 
 public class PackageMap {
@@ -42,18 +42,20 @@ public class PackageMap {
 			log.info("checking " + root);
 		}
 		File [] children = root.listFiles();
-		for (int i = 0; i < children.length; i++) {
-			File dir = children[i];
-			String name = dir.getName();
-			if (dir.isDirectory()) {
-				
-				String subOld = oldBasePackage + "." + name;
-				String subNew = newBasePackage + "." + name;
-				oldToNew.put(subOld, subNew );
-				if (log.isInfoEnabled()) {
-					log.info("adding " + subOld + " to " + subNew);
+		if (children != null) {
+			for (int i = 0; i < children.length; i++) {
+				File dir = children[i];
+				String name = dir.getName();
+				if (dir.isDirectory()) {
+					
+					String subOld = oldBasePackage + "." + name;
+					String subNew = newBasePackage + "." + name;
+					oldToNew.put(subOld, subNew );
+					if (log.isInfoEnabled()) {
+						log.info("adding " + subOld + " to " + subNew);
+					}
+					recurse(dir, subOld, subNew);
 				}
-				recurse(dir, subOld, subNew);
 			}
 		}
 	}

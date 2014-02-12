@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Set;
 
-import org.adligo.i.util.client.StringUtils;
-import org.adligo.models.params.client.Params;
+import org.adligo.i.util.shared.StringUtils;
+import org.adligo.models.params.shared.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml_io.client.LetterCounter;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;

@@ -13,9 +13,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.adligo.i.log.client.Log;
-import org.adligo.i.log.client.LogFactory;
-import org.adligo.i.util.client.StringUtils;
+import org.adligo.i.log.shared.Log;
+import org.adligo.i.log.shared.LogFactory;
+import org.adligo.i.util.shared.StringUtils;
 import org.adligo.xml_io_generator.utils.ModelDiscovery;
 import org.adligo.xml_io_generator.utils.PackageUtils;
 
@@ -146,15 +146,16 @@ public class SourceCodeGeneratorMemory {
 			}
 			classloader = new URLClassLoader(new URL[] {tempDirFile.toURI().toURL()});
 		} else {
-			String expFile = libRoot + File.separator + "xml-io-exp";
-			File expFileDir = new File(expFile);
+			tempDir = libRoot + File.separator + "xml-io-exp";
+			File expFileDir = new File(tempDir);
 			if (log.isWarnEnabled()) {
-				log.warn("Loading classes from " + expFile);
+				log.warn("Loading classes from " + tempDir);
 			}
 			if (!expFileDir.exists()) {
 				throw new IOException("dir should exist " + expFileDir);
 			}
 			classloader = new URLClassLoader(new URL[] {expFileDir.toURI().toURL()});
+			pu.setExplodeTemp(new File(tempDir));
 		}
 		
 		packageMap = new PackageMap(tempDir, basePackage, namespaceSuffix);
