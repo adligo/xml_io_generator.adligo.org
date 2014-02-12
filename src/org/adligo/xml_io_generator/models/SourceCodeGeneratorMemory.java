@@ -151,7 +151,7 @@ public class SourceCodeGeneratorMemory {
 			if (log.isWarnEnabled()) {
 				log.warn("Loading classes from " + expFile);
 			}
-			if (!tempDirFile.exists()) {
+			if (!expFileDir.exists()) {
 				throw new IOException("dir should exist " + expFileDir);
 			}
 			classloader = new URLClassLoader(new URL[] {expFileDir.toURI().toURL()});
