@@ -76,47 +76,22 @@ public class SourceCodeGenerator {
 		return classpathList;
 	}
 	
-	@SuppressWarnings("resource")
 	public static void run(SourceCodeGeneratorParams params) throws Exception {
 		log.warn("SourceCodeGenerator running" );
 		
 		String path = params.getPath();
 	
-		File runningDir = new File(path);
-		
-		if (!runningDir.isDirectory()) {
-			System.out.println("The first argument passed in must be a directory.");
-			log.error("The first argument passed in must be a directory.");
-			return;
-		}
-		
-		System.err.println("reading  " + path + File.separator + "gen.properties");
-		File propsFile = new File(path + File.separator + "gen.properties");
-
-		Properties props = new Properties();
-		FileInputStream fis;
 		try {
-			fis = new FileInputStream(propsFile);
-			props.load(fis);
-			for (String key: GenPropertiesConstants.KEYS) {
-				log.warn(key + " is " + props.getProperty(key));
-			}
+			Properties props = SourceCodeGenerator.loadGenProperties(path);
 			
 			log.warn("starting souce code generation");
 			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props, params.getClasspath());
+			boolean sa = params.isStandAlone();
+			mem.setStandAlone(sa);
+			if (!sa) {
+				mem.setLibRoot(params.getLibRoot());
+			}
 			generate(mem);
-		} catch (FileNotFoundException e) {
-			System.err.println("SouceCodeGenerator was not able to find the property file " + path +
-					" at " + propsFile.getAbsolutePath());
-			e.printStackTrace();
-			log.error(e.getMessage(), e);
-			return;
-		} catch (IOException e) {
-			System.err.println("SouceCodeGenerator had a problem loading the the property file " + path +
-					" at " + propsFile.getAbsolutePath());
-			e.printStackTrace();
-			log.error(e.getMessage(), e);
-			return;
 		} catch (Exception x) {
 			x.printStackTrace();
 			log.error(x.getMessage(), x);
@@ -125,6 +100,43 @@ public class SourceCodeGenerator {
 		
 		
 	}
+	
+	public static Properties loadGenProperties(String runningDir) throws IOException {
+		Properties props = new Properties();
+		FileInputStream fis = null;
+		File dir = new File(runningDir);
+		
+		if (!dir.isDirectory()) {
+			throw new IOException("the dir " + dir + " is not a directory, and must be passed in as arg[0]"
+					+ " or baseDir if being called from the command line");
+		}
+		
+		String propsFileDir = runningDir + File.separator + "gen.properties";
+		
+		
+		if (log.isWarnEnabled()) {
+			log.warn("attempting read of " + propsFileDir);
+		}
+		try {
+			fis = new FileInputStream(new File(propsFileDir));
+			props.load(fis);
+			for (String key: GenPropertiesConstants.KEYS) {
+				log.warn(key + " is " + props.getProperty(key));
+			}
+		} catch (FileNotFoundException e) {
+			throw new IOException("SouceCodeGenerator was not able to find the property file " + runningDir +
+					" at " + propsFileDir,e);
+		} catch (IOException e) {
+			throw new IOException("SouceCodeGenerator was not able to find the property file " + runningDir +
+					" at " + propsFileDir,e);
+		} finally {
+			if (fis != null) {
+				fis.close();
+			}
+		}
+		return props;
+	}
+	
 	public static void generate(SourceCodeGeneratorMemory memory) throws IOException {
 		String dir = memory.getOutputDirectory();
 		makeRootDir(dir);

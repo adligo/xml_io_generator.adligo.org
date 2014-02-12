@@ -21,8 +21,6 @@ import org.adligo.xml_io_generator.utils.PackageUtils;
 public class SourceCodeGeneratorMemory {
 	private static final Log log = LogFactory.getLog(SourceCodeGeneratorMemory.class);
 	
-
-	
 	private Map<String, List<Class<?>>> packageClassModels = new HashMap<String, List<Class<?>>>();
 	private List<String> ignoreClassList = new ArrayList<String>();
 	private List<String> ignoreClassesContainingList = new ArrayList<String>();
@@ -31,7 +29,25 @@ public class SourceCodeGeneratorMemory {
 	private String namespaceSuffix;
 	private String basePackage;
 	private String tempDir = "xml_io_generator_temp";
+	public String getLibRoot() {
+		return libRoot;
+	}
+
+	public void setLibRoot(String libRoot) {
+		this.libRoot = libRoot;
+	}
+
+	private String libRoot;
+	private boolean standAlone = false;
 	
+	public boolean isStandAlone() {
+		return standAlone;
+	}
+
+	public void setStandAlone(boolean standAlone) {
+		this.standAlone = standAlone;
+	}
+
 	private String outputDirectory;
 	/**
 	 * if true the class simple name will be used in the xml/schmea ie DomainName

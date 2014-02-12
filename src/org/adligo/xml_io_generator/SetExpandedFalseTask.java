@@ -25,6 +25,7 @@ public class SetExpandedFalseTask extends Task {
 	private String libRoot;
 	private String standAlone;
 	private String firstBuild;
+	private String success;
 	
 	public String getLibRoot() {
 		return libRoot;
@@ -48,6 +49,14 @@ public class SetExpandedFalseTask extends Task {
 
 	public void setFirstBuild(String firstBuild) {
 		this.firstBuild = firstBuild;
+	}
+
+	public String getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(String success) {
+		this.success = success;
 	}
 
 	@Override
@@ -91,7 +100,9 @@ public class SetExpandedFalseTask extends Task {
 					}
 				}
 			}
+			project.setUserProperty(success, "true");
 		} catch (Exception x) {
+			project.setUserProperty(success, "false");
 			log.error(x.getMessage(), x);
 			throw new BuildException(x);
 		}

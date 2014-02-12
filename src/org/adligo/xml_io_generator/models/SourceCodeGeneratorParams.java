@@ -19,6 +19,9 @@ public class SourceCodeGeneratorParams {
 	public List<String> getClasspath() {
 		return classpath;
 	}
+	private boolean standAlone = false;
+	private String libRoot;
+	
 	public List<URL> getClasspathAsUrls() throws MalformedURLException {
 		List<URL> cpList = new ArrayList<URL>();
 		for (String entry: classpath) {
@@ -28,6 +31,18 @@ public class SourceCodeGeneratorParams {
 	}
 	
 	public void setClasspath(List<String> classpath) {
-		this.classpath = new ArrayList(classpath);
+		this.classpath = new ArrayList<String>(classpath);
+	}
+	public boolean isStandAlone() {
+		return standAlone;
+	}
+	public void setStandAlone(boolean standAlone) {
+		this.standAlone = standAlone;
+	}
+	public String getLibRoot() {
+		return libRoot;
+	}
+	public void setLibRoot(String libRoot) {
+		this.libRoot = libRoot;
 	}
 }

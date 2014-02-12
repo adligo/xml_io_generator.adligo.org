@@ -13,21 +13,24 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 public class SourceCodeGeneratorTask extends Task {
+	public static final String UNKNOWN_LIB_ROOT_WITH_STAND_ALONE_TRUE = "Unknown libRoot with standAlone!=true.";
 	public static final String SUCCESS_PROPERTY_WAS_NOT_SET = "Success Property was not set";
 	public static final String CLASSPATH_WAS_NOT_SET = "Classpath was not set";
 	private static final Log log = LogFactory.getLog(SourceCodeGeneratorTask.class);
 	public static final String PROJECT_HAS_NOT_BEEN_SET = "Project has not been set.";
-	private String dir;
 	private String classpath;
 	private String success;
+	/**
+	 * the lib_root from the ant build
+	 * usually ${user.home}/conf/adligo
+	 */
+	private String libRoot;
+	/**
+	 * if running the build.xml file for a project outside of
+	 * jse-main-build.xml
+	 */
+	private String standAlone;
 	
-	public String getDir() {
-		return dir;
-	}
-
-	public void setDir(String dir) {
-		this.dir = dir;
-	}
 
 	public String getClasspath() {
 		return classpath;
@@ -45,6 +48,22 @@ public class SourceCodeGeneratorTask extends Task {
 		this.success = p;
 	}
 
+	public String getLibRoot() {
+		return libRoot;
+	}
+
+	public void setLibRoot(String libRoot) {
+		this.libRoot = libRoot;
+	}
+
+	public String getStandAlone() {
+		return standAlone;
+	}
+
+	public void setStandAlone(String standAlone) {
+		this.standAlone = standAlone;
+	}
+
 	@Override
 	public void execute() throws BuildException {
 		
@@ -60,9 +79,7 @@ public class SourceCodeGeneratorTask extends Task {
 				throw new IllegalStateException(SUCCESS_PROPERTY_WAS_NOT_SET);
 			}
 			
-			if (StringUtils.isEmpty(dir)) {
-				dir = project.getBaseDir().getAbsolutePath();
-			}
+			
 			ManifestParser mp = new ManifestParser();
 			mp.readManifest(SourceCodeGeneratorTask.class);
 			super.log("Adligo Source Code Generator Ant Task");
@@ -77,8 +94,17 @@ public class SourceCodeGeneratorTask extends Task {
 			}
 			List<String> classpathList = SourceCodeGenerator.toList(classpathEntries);
 			SourceCodeGeneratorParams params = new SourceCodeGeneratorParams();
+			String dir = project.getBaseDir().getAbsolutePath();
 			params.setPath(dir);
 			params.setClasspath(classpathList);
+			if ("true".equalsIgnoreCase(standAlone)) {
+				params.setStandAlone(true);
+			} else {
+				if (StringUtils.isEmpty(libRoot)) {
+					throw new Exception(UNKNOWN_LIB_ROOT_WITH_STAND_ALONE_TRUE);
+				}
+				params.setLibRoot(libRoot);
+			}
 			SourceCodeGenerator.run(params);
 			
 			project.setUserProperty(success, "true");
