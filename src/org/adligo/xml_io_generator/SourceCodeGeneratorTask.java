@@ -12,10 +12,10 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
-public class SourceCodeGeneratorAntTask extends Task {
+public class SourceCodeGeneratorTask extends Task {
 	public static final String SUCCESS_PROPERTY_WAS_NOT_SET = "Success Property was not set";
 	public static final String CLASSPATH_WAS_NOT_SET = "Classpath was not set";
-	private static final Log log = LogFactory.getLog(SourceCodeGeneratorAntTask.class);
+	private static final Log log = LogFactory.getLog(SourceCodeGeneratorTask.class);
 	public static final String PROJECT_HAS_NOT_BEEN_SET = "Project has not been set.";
 	private String dir;
 	private String classpath;
@@ -64,7 +64,7 @@ public class SourceCodeGeneratorAntTask extends Task {
 				dir = project.getBaseDir().getAbsolutePath();
 			}
 			ManifestParser mp = new ManifestParser();
-			mp.readManifest(SourceCodeGeneratorAntTask.class);
+			mp.readManifest(SourceCodeGeneratorTask.class);
 			super.log("Adligo Source Code Generator Ant Task");
 			String version = mp.get(ManifestParser.IMPLEMENTATION_VERSION);
 			log("Version: " + version);

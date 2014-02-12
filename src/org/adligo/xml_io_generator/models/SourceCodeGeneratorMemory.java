@@ -2,6 +2,8 @@ package org.adligo.xml_io_generator.models;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ public class SourceCodeGeneratorMemory {
 		
 	}
 	
+	@SuppressWarnings("resource")
 	public SourceCodeGeneratorMemory(Properties props, 
 			List<String> classpathEntries) throws IOException, ClassNotFoundException {
 		
@@ -124,9 +127,12 @@ public class SourceCodeGeneratorMemory {
 		basePackage = props.getProperty(GenPropertiesConstants.BASE_PACKAGE);
 		
 		PackageUtils pu = new PackageUtils();
-		pu.setExplodeTemp(new File(tempDir));
+		File tempDirFile = new File(tempDir);
+		pu.setExplodeTemp(tempDirFile);
 		pu.setIgnoreList(ignoreJarList);
 		pu.decompress(classpathEntries);
+		new URLClassLoader(new URL[] {new URL("file:" + File.separator +
+		                   File.separator + tempDirFile.getAbsolutePath())});
 		
 		packageMap = new PackageMap(tempDir, basePackage, namespaceSuffix);
 		Set<String> originalPackages = packageMap.keySet();

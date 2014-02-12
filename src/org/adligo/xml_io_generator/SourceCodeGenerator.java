@@ -81,9 +81,6 @@ public class SourceCodeGenerator {
 		log.warn("SourceCodeGenerator running" );
 		
 		String path = params.getPath();
-		List<URL> cpList = params.getClasspathAsUrls();
-		//this makes things availabe to reflection
-		new URLClassLoader(cpList.toArray(new URL[cpList.size()]));
 	
 		File runningDir = new File(path);
 		
