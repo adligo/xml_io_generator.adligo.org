@@ -24,6 +24,7 @@ public class SetExpandedFalseTask extends Task {
 	 */
 	private String libRoot;
 	private String standAlone;
+	private String clean;
 	private String firstBuild;
 	private String success;
 	

@@ -81,27 +81,19 @@ public class SourceCodeGenerator {
 		
 		String path = params.getPath();
 	
-		try {
-			Properties props = SourceCodeGenerator.loadGenProperties(path);
-			
-			log.warn("starting souce code generation ");
-			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props);
-			boolean sa = params.isStandAlone();
-			mem.setStandAlone(sa);
-			if (log.isInfoEnabled()) {
-				log.info("lib root is " + params.getLibRoot());
-			}
-			mem.setLibRoot(params.getLibRoot());
-			mem.loadClasses(params.getClasspath());
-			
-			generate(mem);
-		} catch (Exception x) {
-			x.printStackTrace();
-			log.error(x.getMessage(), x);
-			return;
+		Properties props = SourceCodeGenerator.loadGenProperties(path);
+		
+		log.warn("starting souce code generation ");
+		SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props);
+		boolean sa = params.isStandAlone();
+		mem.setStandAlone(sa);
+		if (log.isInfoEnabled()) {
+			log.info("lib root is " + params.getLibRoot());
 		}
+		mem.setLibRoot(params.getLibRoot());
+		mem.loadClasses(params.getClasspath());
 		
-		
+		generate(mem);
 	}
 	
 	public static Properties loadGenProperties(String runningDir) throws IOException {
