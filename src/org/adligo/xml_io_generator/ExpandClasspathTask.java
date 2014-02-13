@@ -196,7 +196,6 @@ public class ExpandClasspathTask extends Task {
 		} catch (Exception x) {
 			project.setUserProperty(success, "false");
 			log.error(x.getMessage(), x);
-			throw new BuildException(x);
 		}
 	}
 	

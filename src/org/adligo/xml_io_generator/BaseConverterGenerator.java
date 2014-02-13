@@ -7,7 +7,7 @@ import java.util.Set;
 import org.adligo.i.util.shared.StringUtils;
 import org.adligo.models.params.shared.Params;
 import org.adligo.xml.parsers.template.Template;
-import org.adligo.xml_io.client.LetterCounter;
+import org.adligo.xml_io.shared.LetterCounter;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.FieldMethods;
 import org.adligo.xml_io_generator.models.GeneratorContext;

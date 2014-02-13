@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.adligo.i.log.shared.Log;
 import org.adligo.i.log.shared.LogFactory;
-import org.adligo.xml_io.client.converters.DefaultNamespaceConverters;
+import org.adligo.xml_io.shared.converters.DefaultNamespaceConverters;
 
 
 public class FieldMethods {

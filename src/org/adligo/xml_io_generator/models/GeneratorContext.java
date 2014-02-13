@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.adligo.i.util.shared.StringUtils;
-import org.adligo.xml_io.client.LetterCounter;
+import org.adligo.xml_io.shared.LetterCounter;
 
 public class GeneratorContext {
 	private LetterCounter counter = new LetterCounter();

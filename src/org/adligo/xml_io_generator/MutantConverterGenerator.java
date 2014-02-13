@@ -9,7 +9,7 @@ import org.adligo.i.log.shared.LogFactory;
 import org.adligo.models.params.shared.Params;
 import org.adligo.xml.parsers.template.Template;
 import org.adligo.xml.parsers.template.Templates;
-import org.adligo.xml_io.client.I_AttributeConverter;
+import org.adligo.xml_io.shared.I_AttributeConverter;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.FieldMethods;
 import org.adligo.xml_io_generator.models.FieldNameToUnderscore;
