@@ -21,6 +21,7 @@ import org.adligo.i.log.shared.LogPlatform;
 import org.adligo.i.util.shared.StringUtils;
 import org.adligo.jse.util.JSEPlatform;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;
+import org.adligo.xml_io_generator.models.GenProperties;
 import org.adligo.xml_io_generator.models.GenPropertiesConstants;
 import org.adligo.xml_io_generator.models.GeneratorContext;
 import org.adligo.xml_io_generator.models.Namespace;
@@ -77,62 +78,37 @@ public class SourceCodeGenerator {
 	}
 	
 	public static void run(SourceCodeGeneratorParams params) throws Exception {
-		log.warn("SourceCodeGenerator running" );
-		
-		String path = params.getPath();
-	
-		Properties props = SourceCodeGenerator.loadGenProperties(path);
-		
-		log.warn("starting souce code generation ");
-		SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props);
-		boolean sa = params.isStandAlone();
-		mem.setStandAlone(sa);
-		if (log.isInfoEnabled()) {
-			log.info("lib root is " + params.getLibRoot());
-		}
-		mem.setLibRoot(params.getLibRoot());
-		mem.loadClasses(params.getClasspath());
-		
-		generate(mem);
-	}
-	
-	public static Properties loadGenProperties(String runningDir) throws IOException {
-		Properties props = new Properties();
-		FileInputStream fis = null;
-		File dir = new File(runningDir);
-		
-		if (!dir.isDirectory()) {
-			throw new IOException("the dir " + dir + " is not a directory, and must be passed in as arg[0]"
-					+ " or baseDir if being called from the command line");
-		}
-		
-		String propsFileDir = runningDir + File.separator + "gen.properties";
-		
-		
-		if (log.isWarnEnabled()) {
-			log.warn("attempting read of " + propsFileDir);
-		}
 		try {
-			fis = new FileInputStream(new File(propsFileDir));
-			props.load(fis);
-			for (String key: GenPropertiesConstants.KEYS) {
-				log.warn(key + " is " + props.getProperty(key));
+			log.warn("SourceCodeGenerator running" );
+			
+			String path = params.getPath();
+		
+			Properties props = GenProperties.loadGenProperties(path);
+			
+			log.warn("starting souce code generation ");
+			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props);
+			boolean sa = params.isStandAlone();
+			mem.setStandAlone(sa);
+			if (log.isInfoEnabled()) {
+				log.info("lib root is " + params.getLibRoot());
 			}
-		} catch (FileNotFoundException e) {
-			throw new IOException("SouceCodeGenerator was not able to find the property file " + runningDir +
-					" at " + propsFileDir,e);
-		} catch (IOException e) {
-			throw new IOException("SouceCodeGenerator was not able to find the property file " + runningDir +
-					" at " + propsFileDir,e);
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
+			mem.setLibRoot(params.getLibRoot());
+			mem.setupClassloader(params.getClasspath());
+			
+			generate(mem);
+		} catch (Exception x) {
+			log.error("SourceCodeGenerator caught exception in run " + x.getMessage());
+			log.error(x.getMessage(), x);
+			throw x;
 		}
-		return props;
 	}
+	
+	
 	
 	public static void generate(SourceCodeGeneratorMemory memory) throws IOException {
+		if (log.isInfoEnabled()) {
+			log.info("Generating Source Code...");
+		}
 		String dir = memory.getOutputDirectory();
 		makeRootDir(dir);
 		

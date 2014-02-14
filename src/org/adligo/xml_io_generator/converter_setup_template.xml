@@ -4,9 +4,9 @@
 package <param name="packageName"><value/></param>;
 <param name="extraImport">import <value/>;
 </param>
-import org.adligo.xml_io.client.I_NamespaceConverters;
-import org.adligo.xml_io.client.NamespaceConverters;
-import org.adligo.xml_io.client.NamespaceConvertersMutant;
+import org.adligo.xml_io.shared.I_NamespaceConverters;
+import org.adligo.xml_io.shared.NamespaceConverters;
+import org.adligo.xml_io.shared.NamespaceConvertersMutant;
 
 public class ConverterSetup {
 	public static final String NAMESPACE = "<param name="namespace"><value/></param>";

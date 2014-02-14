@@ -130,7 +130,7 @@ public class SourceCodeGeneratorMemory {
 		
 	}
 
-	public void loadClasses(List<String> classpathEntries)
+	public void setupClassloader(List<String> classpathEntries)
 			throws MalformedURLException, IOException, ClassNotFoundException {
 		PackageUtils pu = new PackageUtils();
 		File tempDirFile = new File(tempDir);
@@ -164,6 +164,9 @@ public class SourceCodeGeneratorMemory {
 		for (String pkg: originalPackages) {
 			discoverClassesInSimplePackage(pu, pkg);
 		}
+		if (log.isInfoEnabled()) {
+			log.info("Finished setting up classloader...");
+		}
 	}
 
 	
@@ -174,7 +177,7 @@ public class SourceCodeGeneratorMemory {
 		
 		List<Class<?>> classes = md.getModels();
 		if (log.isInfoEnabled()) {
-			log.info("there are " + classes.size() + " classes in package " + packageName);
+			log.info("discoverClassesInSimplePackage there are " + classes.size() + " classes in package " + packageName);
 		}
 		for (Class<?> mod: classes) {
 			if (log.isDebugEnabled()) {
@@ -286,12 +289,13 @@ public class SourceCodeGeneratorMemory {
 		this.standAlone = standAlone;
 	}
 
-	public ClassLoader getClassloader() {
-		return classloader;
-	}
-
-	public void setClassloader(ClassLoader classloader) {
-		this.classloader = classloader;
+	public Class<?> loadClass(String p) throws IOException {
+		try {
+			return classloader.loadClass(p);
+		} catch (ClassNotFoundException x) {
+			log.error(x.getMessage(), x);
+			throw new IOException(x);
+		}
 	}
 
 }

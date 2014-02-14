@@ -49,7 +49,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		toXml.addParam("namespace", ns);
 	}
 
-	private void addAttributes(Params parent) {
+	private void addAttributes(Params parent) throws IOException {
 		List<FieldMethods> fields = clazz.getFieldMethods();
 		boolean hasChildren = false;
 		for (FieldMethods fm: fields) {
@@ -79,7 +79,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 					Class<?> clazz = fm.getFieldClass();
 					if (!FieldMethods.isAttribute(clazz)) {
 						String clazzName = fm.getFieldClassNameForImport();
-						ctx.addExtraImport(ctx.getClassloader(),clazzName);
+						ctx.addExtraImport(clazzName);
 					}
 					
 					addSetter(fm, childParams);
@@ -92,20 +92,20 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 			parent.addParam("doesNotHaveChildren");
 		}
 		if (clazz.isAttribute()) {
-			ctx.addExtraImport(ctx.getClassloader(),I_AttributeConverter.class.getName());
+			ctx.addExtraImport(I_AttributeConverter.class.getName());
 			Params attribParams = new Params();
 			parent.addParam("attributeConverter", attribParams);
 			attribParams.addParam("genericClass", clazz.getClazz().getSimpleName());
 			FieldMethods fm = fields.get(0);
 			Class<?> attribConstructorClass = clazz.getAttributeClass();
-			ctx.addExtraImport(ctx.getClassloader(),attribConstructorClass.getName());
+			ctx.addExtraImport(attribConstructorClass.getName());
 			attribParams.addParam("constructorClass", attribConstructorClass.getSimpleName());
 			addAttributeParams(attribParams, fm);
 		}
 	}
 
 
-	private void addAttributeParams(Params parent, FieldMethods fm) {
+	private void addAttributeParams(Params parent, FieldMethods fm) throws IOException  {
 		Params attributeParams = new Params();
 		String fieldName = fm.getName();
 		String attributeXml = fieldName;
@@ -126,7 +126,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		Class<?> clazz = fm.getFieldClass();
 		if (!FieldMethods.isAttribute(clazz)) {
 			String clazzName = fm.getFieldClassNameForImport();
-			ctx.addExtraImport(ctx.getClassloader(),clazzName);
+			ctx.addExtraImport(clazzName);
 		}
 		
 		String fieldClass = fm.getFieldClassForSource();

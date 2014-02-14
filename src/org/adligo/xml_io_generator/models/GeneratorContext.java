@@ -1,6 +1,7 @@
 package org.adligo.xml_io_generator.models;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -140,15 +141,11 @@ public class GeneratorContext {
 		return Collections.unmodifiableSet(extraClassImports);
 	}
 	
-	public void addExtraImport(ClassLoader loader, String p) {
+	public void addExtraImport(String p) throws IOException {
 		extraImports.add(p);
 		extraClassImports.add(p);
-		try {
-			Class<?> c = loader.loadClass(p);
-			awareOfClasses.add(c);
-		} catch (ClassNotFoundException x) {
-			throw new IllegalArgumentException(x);
-		}
+		Class<?> c = loadClass(p);
+		awareOfClasses.add(c);
 	}
 	
 	public void clearExtraClassImports() {
@@ -200,8 +197,8 @@ public class GeneratorContext {
 		this.newPackageDir = newPackageDir;
 	}
 
-	public ClassLoader getClassloader() {
-		return memory.getClassloader();
+	public Class<?> loadClass(String p) throws IOException {
+		return memory.loadClass(p);
 	}
 	
 }
