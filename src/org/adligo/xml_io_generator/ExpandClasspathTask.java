@@ -209,8 +209,10 @@ public class ExpandClasspathTask extends Task {
 				recursiveDelete(children[i]);
 			}
 		}
-		if (!base.delete()) {
-			throw new IOException("Failed to delete " + base);
+		if (base.exists()) {
+			if (!base.delete()) {
+				throw new IOException("Failed to delete " + base);
+			}
 		}
 	}
 	
