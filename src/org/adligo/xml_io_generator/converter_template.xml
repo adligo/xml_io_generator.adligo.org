@@ -5,19 +5,13 @@ package <param name="packageName"><value/></param>;
 <param name="extraImport">import <value/>;
 </param>
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.adligo.models.params.shared.I_XMLBuilder;
 import org.adligo.models.params.shared.Parser;
 import org.adligo.models.params.shared.TagAttribute;
 import org.adligo.models.params.shared.TagInfo;
 
 import org.adligo.i.util.shared.I_Iterator;
-import org.adligo.xml_io.shared.I_AttributeSetter;
 import org.adligo.xml_io.shared.I_Converter;
-import org.adligo.xml_io.shared.I_FieldSetter;
 import org.adligo.xml_io.shared.Xml_IOWriterContext;
 import org.adligo.xml_io.shared.Xml_IOReaderContext;
 import org.adligo.xml_io.shared.ObjectFromXml;
@@ -186,9 +180,6 @@ package <param name="packageName"><value/></param>;
 <param name="extraImport">import <value/>;
 </param>
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.adligo.i.util.shared.I_Iterator;
 import org.adligo.models.params.shared.I_XMLBuilder;
@@ -196,10 +187,8 @@ import org.adligo.models.params.shared.Parser;
 import org.adligo.models.params.shared.TagAttribute;
 import org.adligo.models.params.shared.TagInfo;
 
-import org.adligo.xml_io.shared.I_AttributeSetter;
 import org.adligo.xml_io.shared.I_AttributeConverter;
 import org.adligo.xml_io.shared.I_Converter;
-import org.adligo.xml_io.shared.I_FieldSetter;
 import org.adligo.xml_io.shared.Xml_IOWriterContext;
 import org.adligo.xml_io.shared.Xml_IOReaderContext;
 import org.adligo.xml_io.shared.ObjectFromXml;
@@ -291,10 +280,6 @@ package <param name="packageName"><value/></param>;
 <param name="extraImport">import <value/>;
 </param>
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.adligo.i.util.shared.I_Iterator;
 
 import org.adligo.models.params.shared.I_XMLBuilder;
@@ -302,9 +287,7 @@ import org.adligo.models.params.shared.Parser;
 import org.adligo.models.params.shared.TagAttribute;
 import org.adligo.models.params.shared.TagInfo;
 
-import org.adligo.xml_io.shared.I_AttributeSetter;
 import org.adligo.xml_io.shared.I_Converter;
-import org.adligo.xml_io.shared.I_FieldSetter;
 import org.adligo.xml_io.shared.Xml_IOWriterContext;
 import org.adligo.xml_io.shared.Xml_IOReaderContext;
 import org.adligo.xml_io.shared.ObjectFromXml;

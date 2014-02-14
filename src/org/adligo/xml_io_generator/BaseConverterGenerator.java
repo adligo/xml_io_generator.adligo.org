@@ -68,12 +68,12 @@ public class BaseConverterGenerator {
 		parent.addParam("genericClass", name);
 	}
 	
-	void addSetter(FieldMethods fm, Params parentParams) throws IOException {
+	void addSetter(FieldMethods fm, Params parentParams, Set<String> extraImports) throws IOException {
 		Class<?> setterParamClass = fm.getSetterParameterClass();
 		if (!FieldMethods.isAttribute(setterParamClass)) {
-			ctx.addExtraImport(setterParamClass.getName());
+			extraImports.add(setterParamClass.getName());
 		} else if (FieldMethods.isImportClass(setterParamClass)) {
-			ctx.addExtraImport(setterParamClass.getName());
+			extraImports.add(setterParamClass.getName());
 		}
 		String fieldClassCastable = FieldMethods.getClassCastableForSource(setterParamClass);
 		parentParams.addParam("classCastable", fieldClassCastable);
@@ -87,12 +87,12 @@ public class BaseConverterGenerator {
 			for (int i = 0; i < setterExceptions.length; i++) {
 				Class<?> exception = setterExceptions[i];
 				parentParams.addParam("setterException", exception.getSimpleName());
-				ctx.addExtraImport(exception.getName());
+				extraImports.add(exception.getName());
 			}
 		}
 	}
 	
-	void addConstructorExceptions(ClassFieldMethods cfm, Params parentParams) throws IOException {
+	void addConstructorExceptions(ClassFieldMethods cfm, Params parentParams, Set<String> extraImports) throws IOException {
 		
 		Class<?> [] exceptions = cfm.constructorExceptions();
 		if (exceptions.length >= 1) {
@@ -100,7 +100,7 @@ public class BaseConverterGenerator {
 			for (int i = 0; i < exceptions.length; i++) {
 				Class<?> exception = exceptions[i];
 				parentParams.addParam("constructorException", exception.getSimpleName());
-				ctx.addExtraImport(exception.getName());
+				extraImports.add(exception.getName());
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package org.adligo.xml_io_generator;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -59,10 +60,17 @@ public class SetupGenerator {
 		String newPackage = gc.getNewPackageName();
 		if (!oldPackage.equals(newPackage)) {
 			Iterator<ClassFieldMethods> cfms = gc.getClassFieldMethodsIterator();
+			
+			Set<String> extraIs = new HashSet<String>();
 			while (cfms.hasNext()) {
 				ClassFieldMethods cfm = cfms.next();
 				Class<?> clazz = cfm.getClazz();
-				params.addParam("extraImport",clazz.getName());
+				extraIs.add(clazz.getName());
+				
+			}
+			extraIs.removeAll(extraImports);
+			for (String name: extraIs) {
+				params.addParam("extraImport",name);
 			}
 		}
 		SourceFileWriter sfw = new SourceFileWriter();

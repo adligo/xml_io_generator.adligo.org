@@ -2,7 +2,9 @@ package org.adligo.xml_io_generator;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.adligo.i.log.shared.Log;
 import org.adligo.i.log.shared.LogFactory;
@@ -36,8 +38,12 @@ public class SimpleNonMutantConverterGenerator extends BaseConverterGenerator {
 		ctx.addClassToAttributeConverterNames(genericClassName, genericClassName + "Generator");
 		setUpTagName();
 		setupToXmlParams();
+		Set<String> extraImports = new HashSet<String>();
 		addAttributes(params);
-		addConstructorExceptions(clazz, params);
+		addConstructorExceptions(clazz, params, extraImports);
+		for (String imp: extraImports) {
+			ctx.addExtraImport(imp);
+		}
 		writeFile(cfm.getClazz(), template);
 	}
 
