@@ -190,13 +190,14 @@ public class ExpandClasspathTask extends Task {
 	private void deleteAll() throws IOException{
 		File [] subs = new File(libRoot + File.separator + 
 				"xml-io-exp").listFiles();
-		
-		for (int i = 0; i < subs.length; i++) {
-			File file = subs[i];
-			if (log.isInfoEnabled()) {
-				log.info("deleting " + file);
+		if (subs != null) {
+			for (int i = 0; i < subs.length; i++) {
+				File file = subs[i];
+				if (log.isInfoEnabled()) {
+					log.info("deleting " + file);
+				}
+				recursiveDelete(file);
 			}
-			recursiveDelete(file);
 		}
 	}
 	
