@@ -66,6 +66,13 @@ public class SourceCodeGeneratorTask extends Task {
 
 	@Override
 	public void execute() throws BuildException {
+		ManifestParser mp = new ManifestParser();
+		mp.readManifest(SourceCodeGeneratorTask.class);
+		super.log("Adligo Source Code Generator Ant Task");
+		String version = mp.get(ManifestParser.IMPLEMENTATION_VERSION);
+		log("Version: " + version);
+		AntCommonInit.initOrReload("adligo_log.properties", 
+				"Source Code Generator starting ", this);
 		
 		Project project = getProject();
 		if (project == null) {
@@ -78,15 +85,6 @@ public class SourceCodeGeneratorTask extends Task {
 			if (StringUtils.isEmpty(success)) {
 				throw new IllegalStateException(SUCCESS_PROPERTY_WAS_NOT_SET);
 			}
-			
-			
-			ManifestParser mp = new ManifestParser();
-			mp.readManifest(SourceCodeGeneratorTask.class);
-			super.log("Adligo Source Code Generator Ant Task");
-			String version = mp.get(ManifestParser.IMPLEMENTATION_VERSION);
-			log("Version: " + version);
-			AntCommonInit.initOrReload("adligo_log.properties", 
-					"Source Code Generator starting ", this);
 			
 			String classpathEntries = project.getUserProperty(classpath);
 			if (StringUtils.isEmpty(classpathEntries)) {

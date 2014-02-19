@@ -1,8 +1,10 @@
 package org.adligo.xml_io_generator.models;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -11,10 +13,23 @@ import java.util.List;
 
 import org.adligo.i.log.shared.Log;
 import org.adligo.i.log.shared.LogFactory;
-import org.adligo.i.util.shared.I_Immutable;
+import org.adligo.xml_io.shared.I_AttributeConverter;
+import org.adligo.xml_io.shared.NamespaceConverters;
+import org.adligo.xml_io.shared.converters.DefaultNamespaceConverters;
 
 public class ClassFieldMethods {
+	public static final String UNABLE_TO_USE_I_IMMUTABLE = "Unable to use class org.adligo.models.core.I_Immutable from the custom url class loader.";
 	private static final Log log = LogFactory.getLog(ClassFieldMethods.class);
+	private static Class<?> I_IMMUTABLE;
+	
+	public static Class<?> getI_IMMUTABLE() {
+		return I_IMMUTABLE;
+	}
+
+	public static void setI_IMMUTABLE(Class<?> i_IMMUTABLE) {
+		I_IMMUTABLE = i_IMMUTABLE;
+	}
+
 	private Class<?> clazz;
 	private List<FieldMethods> fieldMethods = new ArrayList<FieldMethods>();
 	/**
@@ -30,18 +45,27 @@ public class ClassFieldMethods {
 	 */
 	private String immutableFieldName;
 	
-	private Constructor constructor;
+	private Constructor<?> constructor;
 	
-	public ClassFieldMethods(Class<?> clazz) {
+	public ClassFieldMethods(Class<?> clazz) throws IOException {
+		if (log.isInfoEnabled()) {
+			log.info("Working on class " + clazz);
+		}
 		this.clazz = clazz;
 		if (clazz.isInterface()) {
 			return;
 		}
 		recurseAllParentFieldMethods(clazz);
-		if (I_Immutable.class.isAssignableFrom(clazz)) {
+		
+		if (I_IMMUTABLE.isAssignableFrom(clazz)) {
+			if (log.isInfoEnabled()) {
+				log.info("The class " + clazz + " is I_Immutable.");
+			}
 			try {
-				I_Immutable item = (I_Immutable) clazz.newInstance();
-				immutableFieldName = item.getImmutableFieldName();
+				Object item = clazz.newInstance();
+				Method m = clazz.getMethod("getImmutableFieldName", new Class [] {});
+				immutableFieldName = (String) m.invoke(item, new Class [] {});
+				
 				if (immutableFieldName == null) {
 					throw new IllegalArgumentException("I_Immutable " + 
 							clazz + " should not return null from getImmutableFieldName()");
@@ -90,10 +114,27 @@ public class ClassFieldMethods {
 			} catch (InstantiationException e) {
 				log.error("the class " + clazz + " requires a default constructor.", e);
 			} catch (IllegalAccessException e) {
-				log.error(e.getMessage(), e);
+				throw new IOException(UNABLE_TO_USE_I_IMMUTABLE, e);
+			} catch (NoSuchMethodException e) {
+				throw new IOException(UNABLE_TO_USE_I_IMMUTABLE, e);
+			} catch (SecurityException e) {
+				throw new IOException(UNABLE_TO_USE_I_IMMUTABLE, e);
+			} catch (IllegalArgumentException e) {
+				throw new IOException(UNABLE_TO_USE_I_IMMUTABLE, e);
+			} catch (InvocationTargetException e) {
+				throw new IOException(UNABLE_TO_USE_I_IMMUTABLE, e);
 			}
 		} else {
-			
+			if (fieldMethods.size() == 1) {
+				Class<?> fc = fieldMethods.get(0).getFieldClass();
+				NamespaceConverters nc = DefaultNamespaceConverters.getDefaultNamespaceConverters();
+				I_AttributeConverter<?> ac = nc.getAttributeConverter(fc);
+				
+				if (!fc.isInterface() && ac == null) {
+					throw new IllegalStateException("The class " + clazz +
+							" has no fields and is not assignable to I_Immutable");
+				}
+			}
 		}
 	}
 
@@ -136,7 +177,7 @@ public class ClassFieldMethods {
 		for (FieldMethods fm : fieldMethods) {
 			if (fm.getGetter() == null || fm.getSetter() == null) {
 				if (log.isInfoEnabled()) {
-					log.info("FieldMethod " + fm + " caused class " + clazz + " to not be a mutant.");
+					log.info("FieldMethod " + fm + " caused class " + clazz + " to be a NonMutant.");
 				}
 				return false;
 			}
@@ -156,6 +197,12 @@ public class ClassFieldMethods {
 		}
 		if (clazz.isEnum()) {
 			return true;
+		}
+		if (immutableFieldType == null) {
+			log.error("The immutable field type for class " + clazz + " is null.");
+		}
+		if (constructorType == null) {
+			log.error("The constructor type for class " + clazz + " is null.");
 		}
 		return false;
 	}
@@ -179,7 +226,7 @@ public class ClassFieldMethods {
 	 *  User -> UserMutant -> multiple fields no it is NOT
 	 * @return
 	 */
-	public boolean isAttribute() {
+	public boolean isAttribute() throws IOException {
 		if (FieldMethods.isAttribute(clazz)) {
 			return true;
 		}
@@ -200,7 +247,7 @@ public class ClassFieldMethods {
 	}
 	
 	
-	public Class<?> getAttributeClass() {
+	public Class<?> getAttributeClass() throws IOException {
 		if (FieldMethods.isAttribute(clazz)) {
 			return clazz;
 		}
@@ -310,4 +357,6 @@ public class ClassFieldMethods {
 	public Class<?>[] constructorExceptions() {
 		return constructor.getExceptionTypes();
 	}
+	
+	
 }

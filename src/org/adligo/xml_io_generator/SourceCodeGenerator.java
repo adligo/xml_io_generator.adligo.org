@@ -1,11 +1,7 @@
 package org.adligo.xml_io_generator;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,7 +18,6 @@ import org.adligo.i.util.shared.StringUtils;
 import org.adligo.jse.util.JSEPlatform;
 import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.GenProperties;
-import org.adligo.xml_io_generator.models.GenPropertiesConstants;
 import org.adligo.xml_io_generator.models.GeneratorContext;
 import org.adligo.xml_io_generator.models.Namespace;
 import org.adligo.xml_io_generator.models.PackageMap;
@@ -37,7 +32,7 @@ public class SourceCodeGenerator {
 	
 	public static final String THERE_WAS_A_ERROR_CREATING_THE_DIRECTORY = "There was a error creating the directory ";
 	public static final String THE_SOURCE_CODE_GENERATOR_REQUIRES_EITHER_A_MUTANT_OR_SINGLE_FIELD_W_CONSTRUCTOR_MODELS = 
-		"The SourceCodeGenerator requires either a Mutant or A class with constructor parmeter for souce code generation.";
+		"The SourceCodeGenerator requires either a Mutant or a Class with Constructor Parmeter for Souce Code Generation.";
 
 	
 	public static void main(String [] args) throws Exception {

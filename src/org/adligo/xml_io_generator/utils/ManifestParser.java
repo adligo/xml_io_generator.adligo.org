@@ -75,7 +75,6 @@ public class ManifestParser {
 	
 
 	public void readManifest(Class<?> clazz) {
-		URLClassLoader cl = (URLClassLoader) clazz.getClassLoader();
 		URL location = clazz.getResource('/' + clazz.getName().replace(".", "/")
                  + ".class");
 		String jarPath = location.getPath();

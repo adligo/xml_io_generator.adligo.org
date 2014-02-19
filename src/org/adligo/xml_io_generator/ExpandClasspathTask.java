@@ -73,6 +73,12 @@ public class ExpandClasspathTask extends Task {
 
 	@Override
 	public void execute() throws BuildException {
+		ManifestParser mp = new ManifestParser();
+		super.log("Adligo Expand Classpath Ant Task");
+		String version = mp.get(ManifestParser.IMPLEMENTATION_VERSION);
+		log("Version: " + version);
+		AntCommonInit.initOrReload("adligo_log.properties", 
+				"Set Expanded False starting ", this);
 		
 		Project project = getProject();
 		if (project == null) {
@@ -99,13 +105,6 @@ public class ExpandClasspathTask extends Task {
 					classpathEntries.add(tokenizer.nextToken());
 				}
 			}
-			ManifestParser mp = new ManifestParser();
-			mp.readManifest(ExpandClasspathTask.class);
-			super.log("Adligo Expand Classpath Ant Task");
-			String version = mp.get(ManifestParser.IMPLEMENTATION_VERSION);
-			log("Version: " + version);
-			AntCommonInit.initOrReload("adligo_log.properties", 
-					"Expanding Jars starting ", this);
 			if ("true".equalsIgnoreCase(clean)) {
 				deleteAll();
 			} else if ("true".equalsIgnoreCase(standAlone)) {

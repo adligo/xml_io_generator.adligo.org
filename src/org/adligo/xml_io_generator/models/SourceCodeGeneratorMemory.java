@@ -51,7 +51,6 @@ public class SourceCodeGeneratorMemory {
 		
 	}
 	
-	@SuppressWarnings("resource")
 	public SourceCodeGeneratorMemory(Properties props
 			) throws IOException, ClassNotFoundException {
 		
@@ -157,6 +156,9 @@ public class SourceCodeGeneratorMemory {
 			classloader = new URLClassLoader(new URL[] {expFileDir.toURI().toURL()});
 			pu.setExplodeTemp(new File(tempDir));
 		}
+		
+		Class<?> im = classloader.loadClass("org.adligo.i.util.shared.I_Immutable");
+		ClassFieldMethods.setI_IMMUTABLE(im);
 		
 		packageMap = new PackageMap(tempDir, basePackage, namespaceSuffix);
 		Set<String> originalPackages = packageMap.keySet();

@@ -21,6 +21,7 @@ import org.adligo.xml_io_generator.models.ClassFieldMethods;
 import org.adligo.xml_io_generator.models.FieldMethods;
 import org.adligo.xml_io_generator.models.FieldNameToUnderscore;
 import org.adligo.xml_io_generator.models.GeneratorContext;
+import org.adligo.xml_io_generator.models.SourceCodeGeneratorMemory;
 
 public class MutantConverterGenerator extends BaseConverterGenerator {
 	private static final Log log = LogFactory.getLog(MutantConverterGenerator.class);
@@ -43,7 +44,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		setUpTagName();
 		setupToXmlParams();
 		Set<String> extraImports = new HashSet<String>();
-		addAttributes(params, extraImports);
+		addAttributes(params, extraImports, pctx.getMemory());
 		for (String imp: extraImports) {
 			ctx.addExtraImport(imp);
 		}
@@ -60,7 +61,7 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 		toXml.addParam("namespace", ns);
 	}
 
-	private void addAttributes(Params parent, Set<String> extraImports) throws IOException {
+	private void addAttributes(Params parent, Set<String> extraImports, SourceCodeGeneratorMemory mem) throws IOException {
 		List<FieldMethods> fields = clazz.getFieldMethods();
 		boolean hasChildren = false;
 		if (fields.size() > 0) {

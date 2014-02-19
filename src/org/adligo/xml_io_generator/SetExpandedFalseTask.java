@@ -65,6 +65,12 @@ public class SetExpandedFalseTask extends Task {
 
 	@Override
 	public void execute() throws BuildException {
+		ManifestParser mp = new ManifestParser();
+		super.log("Adligo Set Expanded False Ant Task");
+		String version = mp.get(ManifestParser.IMPLEMENTATION_VERSION);
+		log("Version: " + version);
+		AntCommonInit.initOrReload("adligo_log.properties", 
+				"Set Expanded False starting ", this);
 		
 		Project project = getProject();
 		if (project == null) {
@@ -74,12 +80,7 @@ public class SetExpandedFalseTask extends Task {
 			if (StringUtils.isEmpty(libRoot)) {
 				throw new IllegalStateException(DIR_HAS_NOT_BEEN_SET);
 			}
-			ManifestParser mp = new ManifestParser();
-			super.log("Adligo Set Expanded False Ant Task");
-			String version = mp.get(ManifestParser.IMPLEMENTATION_VERSION);
-			log("Version: " + version);
-			AntCommonInit.initOrReload("adligo_log.properties", 
-					"Set Expanded False starting ", this);
+			
 			
 			if ("true".equals(clean)) {
 				setAllExpandedFalse(project);
