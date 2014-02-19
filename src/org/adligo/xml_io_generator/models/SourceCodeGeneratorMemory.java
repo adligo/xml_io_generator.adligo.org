@@ -51,7 +51,7 @@ public class SourceCodeGeneratorMemory {
 		
 	}
 	
-	public SourceCodeGeneratorMemory(Properties props
+	public SourceCodeGeneratorMemory(Properties props, String basePath
 			) throws IOException, ClassNotFoundException {
 		
 		String val = props.getProperty(GenPropertiesConstants.USE_CLASS_NAMES_IN_XML);
@@ -83,7 +83,7 @@ public class SourceCodeGeneratorMemory {
 			throw new IllegalArgumentException("The SourceCodeGenrator requires a " + 
 					GenPropertiesConstants.OUTPUT_DIRECTORY);
 		}
-		outputDirectory = val;
+		outputDirectory = basePath + File.separator + val;
 		
 		val = props.getProperty(GenPropertiesConstants.IGNORE_CLASS_LIST);
 		if (val != null) {

@@ -81,7 +81,7 @@ public class SourceCodeGenerator {
 			Properties props = GenProperties.loadGenProperties(path);
 			
 			log.warn("starting souce code generation ");
-			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props);
+			SourceCodeGeneratorMemory mem = new SourceCodeGeneratorMemory(props, path);
 			boolean sa = params.isStandAlone();
 			mem.setStandAlone(sa);
 			if (log.isInfoEnabled()) {
