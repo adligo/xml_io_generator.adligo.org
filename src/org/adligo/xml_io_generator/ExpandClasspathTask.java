@@ -158,6 +158,7 @@ public class ExpandClasspathTask extends Task {
 				}
 			}
 			chars = sb.toString().toCharArray();
+			sb = new StringBuilder();
 			for (int i = 0; i < chars.length; i++) {
 				char c = chars[i];
 				if (c == '.') {
@@ -169,6 +170,9 @@ public class ExpandClasspathTask extends Task {
 			String justNamePartOfJar = sb.toString();
 			
 			String key = "expanded_jar_" + justNamePartOfJar;
+			if (log.isDebugEnabled()) {
+				log.debug("checking property " + key);
+			}
 			String tf = (String) props.get(key);
 			if (!"true".equals(tf)) {
 				ZipUtils zu = new ZipUtils();
