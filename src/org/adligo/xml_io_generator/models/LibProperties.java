@@ -14,14 +14,14 @@ public class LibProperties {
 	private static final Log log = LogFactory.getLog(LibProperties.class);
 	
 	public static void storeProperties(String libRoot, 
-			String comment, Properties props) throws IOException {
+			String comment, Properties props, String platform) throws IOException {
 		
 		FileOutputStream fos = new FileOutputStream(new File(libRoot + File.separator +
-				"adligo_jse_lib.properties"));
+				"adligo_" + platform +"_lib.properties"));
 		props.store(fos,comment);
 		fos.close();
 	}
-	public static Properties loadProperties(String libRoot) throws IOException {
+	public static Properties loadProperties(String libRoot, String platform) throws IOException {
 		Properties props = new Properties();
 		FileInputStream fis = null;
 		File dir = new File(libRoot);
@@ -31,7 +31,7 @@ public class LibProperties {
 					+ " or libRoot if being called from the command line");
 		}
 		
-		String propsFile = dir + File.separator + "adligo_jse_lib.properties";
+		String propsFile = dir + File.separator + "adligo_" + platform +"_lib.properties";
 		
 		
 		if (log.isWarnEnabled()) {

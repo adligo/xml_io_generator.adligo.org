@@ -22,6 +22,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 public class ExpandClasspathTask extends Task {
+	public static final String PLATFORM_IS_NOT_SET = "Platform is not set.";
 	public static final String CLASSPATH_WAS_NOT_SET = "Classpath was not set";
 	private static final Log log = LogFactory.getLog(ExpandClasspathTask.class);
 	public static final String PROJECT_HAS_NOT_BEEN_SET = "Project has not been set.";
@@ -30,6 +31,7 @@ public class ExpandClasspathTask extends Task {
 	private String clean;
 	private String standAlone;
 	private String success;
+	private String platform;
 	
 	public String getLibRoot() {
 		return libRoot;
@@ -71,6 +73,14 @@ public class ExpandClasspathTask extends Task {
 		this.success = success;
 	}
 
+	public String getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
 	@Override
 	public void execute() throws BuildException {
 		ManifestParser mp = new ManifestParser();
@@ -82,16 +92,18 @@ public class ExpandClasspathTask extends Task {
 		
 		Project project = getProject();
 		if (project == null) {
-            throw new IllegalStateException(PROJECT_HAS_NOT_BEEN_SET);
+            throw new BuildException(PROJECT_HAS_NOT_BEEN_SET);
         }
 		try {
 			if (StringUtils.isEmpty(classpath)) {
-				throw new IllegalStateException(CLASSPATH_WAS_NOT_SET);
+				throw new BuildException(CLASSPATH_WAS_NOT_SET);
 			}
-			
+			if (StringUtils.isEmpty(platform)) {
+				throw new BuildException(PLATFORM_IS_NOT_SET);
+			}
 			Properties props = new Properties();
 			FileInputStream fis = new FileInputStream(libRoot + File.separator +
-					"adligo_jse_lib.properties");
+					"adligo_" + platform + "_lib.properties");
 			props.load(fis);
 			fis.close();
 			String classpathFromAnt = project.getProperty(classpath);
@@ -114,7 +126,7 @@ public class ExpandClasspathTask extends Task {
 				expandOrCopyfilesToXmlIoExp(props, jarOrDir);
 			}
 			FileOutputStream fos = new FileOutputStream(libRoot + File.separator + 
-					"adligo_jse_lib.properties");
+					"adligo_" + platform + "_lib.properties");
 			props.store(fos, "Expanded several jars which don't need to "
 					+ "be expaneded again until a full jse-main-build.xml");
 			fos.close();
@@ -141,7 +153,14 @@ public class ExpandClasspathTask extends Task {
 				char c = chars[i];
 				if (c == File.separatorChar) {
 					sb = new StringBuilder();
-				} else if (c == '.') {
+				} else {
+					sb.append(c);
+				}
+			}
+			chars = sb.toString().toCharArray();
+			for (int i = 0; i < chars.length; i++) {
+				char c = chars[i];
+				if (c == '.') {
 					break;
 				} else {
 					sb.append(c);

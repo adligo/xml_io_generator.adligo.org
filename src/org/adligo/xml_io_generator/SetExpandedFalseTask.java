@@ -19,6 +19,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 public class SetExpandedFalseTask extends Task {
+	public static final String PLATFORM_IS_NOT_SET = "Platform is not set.";
 	public static final String DIR_HAS_NOT_BEEN_SET = "Dir has not been set.";
 	public static final String CLASSPATH_WAS_NOT_SET = "Classpath was not set";
 	private static final Log log = LogFactory.getLog(SetExpandedFalseTask.class);
@@ -30,6 +31,7 @@ public class SetExpandedFalseTask extends Task {
 	private String standAlone;
 	private String clean;
 	private String success;
+	private String platform;
 	
 	public String getLibRoot() {
 		return libRoot;
@@ -63,6 +65,14 @@ public class SetExpandedFalseTask extends Task {
 		this.success = success;
 	}
 
+	public String getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
 	@Override
 	public void execute() throws BuildException {
 		ManifestParser mp = new ManifestParser();
@@ -74,13 +84,15 @@ public class SetExpandedFalseTask extends Task {
 		
 		Project project = getProject();
 		if (project == null) {
-            throw new IllegalStateException(PROJECT_HAS_NOT_BEEN_SET);
+            throw new BuildException(PROJECT_HAS_NOT_BEEN_SET);
         }
 		try {
 			if (StringUtils.isEmpty(libRoot)) {
-				throw new IllegalStateException(DIR_HAS_NOT_BEEN_SET);
+				throw new BuildException(DIR_HAS_NOT_BEEN_SET);
 			}
-			
+			if (StringUtils.isEmpty(platform)) {
+				throw new BuildException(PLATFORM_IS_NOT_SET);
+			}
 			
 			if ("true".equals(clean)) {
 				setAllExpandedFalse(project);
@@ -97,7 +109,7 @@ public class SetExpandedFalseTask extends Task {
 	private void setAllExpandedFalse(Project project)
 			throws FileNotFoundException, IOException {
 		
-		Properties props = LibProperties.loadProperties(libRoot);
+		Properties props = LibProperties.loadProperties(libRoot, platform);
 		
 		
 		Set<Entry<Object,Object>> entries = props.entrySet();
@@ -108,13 +120,13 @@ public class SetExpandedFalseTask extends Task {
 			} 
 		}
 		LibProperties.storeProperties(libRoot, 
-				"Set all expanded to false", props);
+				"Set all expanded to false", props, platform);
 	}
 	
 	private void setBasePackageExpandedFalse(Project project)
 			throws FileNotFoundException, IOException {
 
-		Properties props = LibProperties.loadProperties(libRoot);
+		Properties props = LibProperties.loadProperties(libRoot, platform);
 		File baseDir = project.getBaseDir();
 		Properties genProps = GenProperties.loadGenProperties(baseDir.getAbsolutePath());
 		
@@ -124,7 +136,7 @@ public class SetExpandedFalseTask extends Task {
 		props.setProperty("expanded_jar_" + baseProjectName, "false");
 		
 		LibProperties.storeProperties(libRoot, "Set all expanded_jar_" + 
-					baseProjectName + " to false", props);
+					baseProjectName + " to false", props, platform);
 	}
 	
 	
