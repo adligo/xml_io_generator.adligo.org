@@ -192,7 +192,7 @@ public class SourceCodeGenerator {
 		
 		if (cfm.isMutant()) {
 			//do nothing
-		} else if (cfm.isValid()) {
+		} else if (cfm.isValidImmutable()) {
 			if (cfm.isSimpleImmutable()) {
 				if (log.isInfoEnabled()) {
 					log.info("generating simple immutable generator for " + clazz);

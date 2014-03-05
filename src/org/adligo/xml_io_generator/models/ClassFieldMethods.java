@@ -190,7 +190,7 @@ public class ClassFieldMethods {
 	 * which can be cast to one of its fields
 	 * @return
 	 */
-	public boolean isValid() {
+	public boolean isValidImmutable() {
 
 		if (immutableFieldType != null && constructorType != null) {
 			return true;
@@ -230,7 +230,7 @@ public class ClassFieldMethods {
 		if (FieldMethods.isAttribute(clazz)) {
 			return true;
 		}
-		if (isValid()) {
+		if (isValidImmutable()) {
 			if (isEnum()) {
 				return true;
 			}
@@ -251,7 +251,7 @@ public class ClassFieldMethods {
 		if (FieldMethods.isAttribute(clazz)) {
 			return clazz;
 		}
-		if (isValid()) {
+		if (isValidImmutable()) {
 			ClassFieldMethods cfm = new ClassFieldMethods(immutableFieldType);
 			return cfm.getAttributeClass();
 		} else if (fieldMethods.size() == 1) {
