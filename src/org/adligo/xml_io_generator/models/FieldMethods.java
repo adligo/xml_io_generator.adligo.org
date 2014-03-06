@@ -13,7 +13,7 @@ import org.adligo.i.log.shared.LogFactory;
 import org.adligo.xml_io.shared.converters.DefaultNamespaceConverters;
 
 
-public class FieldMethods {
+public class FieldMethods implements Comparable<FieldMethods> {
 	public static final String MAP = "Map";
 	public static final String COLLECTION = "Collection";
 	private static final Log log = LogFactory.getLog(FieldMethods.class);
@@ -260,5 +260,13 @@ public class FieldMethods {
 	
 	public Class<?>[] getGetterExceptions() {
 		return getter.getExceptionTypes();
+	}
+
+	@Override
+	public int compareTo(FieldMethods o) {
+		String myName = field.getName();
+		Field otherField = o.getField();
+		String otherName = otherField.getName();
+		return myName.compareTo(otherName);
 	}
 }

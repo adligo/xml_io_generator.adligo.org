@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.adligo.i.log.shared.Log;
 import org.adligo.i.log.shared.LogFactory;
@@ -73,7 +74,10 @@ public class MutantConverterGenerator extends BaseConverterGenerator {
 			extraImports.add(Map.class.getName());
 			extraImports.add(HashMap.class.getName());
 		}
-		for (FieldMethods fm: fields) {
+		TreeSet<FieldMethods> sortedFields = new TreeSet<FieldMethods>();
+		sortedFields.addAll(fields);
+		
+		for (FieldMethods fm: sortedFields) {
 			
 			if (fm.isAttribute()) {
 				addAttributeParams(parent, fm, extraImports);

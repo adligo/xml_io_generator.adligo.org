@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.adligo.i.log.shared.Log;
 import org.adligo.i.log.shared.LogFactory;
@@ -80,8 +81,10 @@ public class NonMutantConverterGenerator extends BaseConverterGenerator {
 			extraImports.add(Map.class.getName());
 			extraImports.add(HashMap.class.getName());
 		}
+		TreeSet<FieldMethods> sortedFields = new TreeSet<FieldMethods>();
+		sortedFields.addAll(fields);
 		
-		for (FieldMethods fm: fields) {
+		for (FieldMethods fm: sortedFields) {
 			
 			String fname = fm.getName();
 			if (log.isDebugEnabled()) {
