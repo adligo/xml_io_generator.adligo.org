@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:fabricate_project xmlns:tns="http://www.adligo.org/fabricate/xml/io/project/v1_0" 
+    xmlns:lns="http://www.adligo.org/fabricate/xml/io/library/v1_0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+    <tns:stages>
+        <tns:stage name="jar" />
+    </tns:stages>
+    <lns:dependencies>
+        <lns:project>ant_log.adligo.org</lns:project>
+        <lns:project>i_adi.adligo.org</lns:project>
+        <lns:project>i_log.adligo.org</lns:project>
+        <lns:project>i_util.adligo.org</lns:project>
+        <lns:project>jse_util.adligo.org</lns:project>
+        <lns:project>models_core.adligo.org</lns:project>
+        <lns:project>models_core_relations.adligo.org</lns:project>
+        <lns:project>params.adligo.org</lns:project>
+        <lns:project>xml_io.adligo.org</lns:project>
+        <lns:project>xmlt.adligo.org</lns:project>
+    </lns:dependencies>
+ </tns:fabricate_project>
