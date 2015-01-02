@@ -6,6 +6,7 @@
         <tns:stage name="jar" />
     </tns:stages>
     <lns:dependencies>
+        <lns:library>ant</lns:library>
         <lns:project>ant_log.adligo.org</lns:project>
         <lns:project>i_adi.adligo.org</lns:project>
         <lns:project>i_log.adligo.org</lns:project>
