@@ -1,4 +1,6 @@
-classes/
-classes_e/
-bin/
+/bin/
+/build/
+/classes/
+/classes_e/
+
 xml_io_generator.jar
